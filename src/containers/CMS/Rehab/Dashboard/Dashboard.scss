@@ -1,0 +1,34 @@
+@import "../../../../styles/abstracts/variables.scss";
+@import "../../../../styles/abstracts/mixins.scss";
+.dashboard {
+  &__chart {
+    border: 1px solid $color_thin_border;
+    padding: 20px;
+    margin: 10px 0;
+  }
+
+  &__tile1 {
+    @include fadeIn(0.5s, 0.1s);
+  }
+  &__tile2 {
+    @include fadeIn(0.5s, 0.4s);
+  }
+  &__tile3 {
+    @include fadeIn(0.5s, 0.8s);
+  }
+  &__tile4 {
+    @include fadeIn(0.5s, 1.2s);
+  }
+  &__tile5 {
+    @include fadeIn(0.5s, 0.2s);
+  }
+  &__tile6 {
+    @include fadeIn(0.5s, 0.6s);
+  }
+  &__tile7 {
+    @include fadeIn(0.5s, 1s);
+  }
+  &__tile8 {
+    @include fadeIn(0.5s, 1.4s);
+  }
+}

@@ -1,0 +1,48 @@
+.contact-modal {
+  position: relative;
+  background: #fff;
+  border: #9999 1px solid;
+  display: block;
+  padding: 20px;
+  overflow: visible;
+
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  height: 370px;
+  width: 650px;
+  z-index: 2 !important;
+
+  -webkit-box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
+  box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
+
+  & .ui.selection.dropdown {
+    min-width: 120px;
+    max-width: 120px;
+    min-height: 37px !important;
+    padding: 9px;
+    padding-left: 15px;
+  }
+
+  &__title {
+    margin: 0 0 10px 0;
+    font-weight: 300;
+    height: 30px;
+  }
+
+  &__body {
+    font-size: 16px;
+    font-weight: 300;
+    margin: 0 0 15px 0;
+    word-break: break-all;
+    height: 210px;
+    padding-left: 10px;
+    //min-height: 170px;
+  }
+
+  // &__footer {
+  // }
+}

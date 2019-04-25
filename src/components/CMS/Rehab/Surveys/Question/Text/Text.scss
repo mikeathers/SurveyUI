@@ -1,0 +1,7 @@
+@import "../../../../../../styles/abstracts/variables.scss";
+
+.question-textarea:focus {
+  border-color: #eee !important;
+  box-shadow: $box_shadow_primary !important;
+  transition: box-shadow 0.3s ease-in-out !important;
+}

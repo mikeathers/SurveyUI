@@ -1,0 +1,75 @@
+@import "../../../../styles/abstracts/variables.scss";
+.usermenu {
+  position: relative;
+  margin-right: 10px;
+  padding: 10px;
+
+  &--open {
+    border: 1px solid #ccc;
+  }
+
+  &--close {
+    border: 1px solid transparent;
+  }
+
+  &__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  &__avatar {
+    height: 50px;
+    width: 50px;
+    border-radius: 100px;
+    margin-right: 15px;
+  }
+
+  &__username {
+    margin-bottom: 0;
+    margin-right: 10px;
+  }
+
+  &__dropdown {
+    position: absolute;
+    display: none;
+    height: 230px;
+    border: 1px solid #ccc;
+    border-top: none;
+    width: 101%;
+    top: 70px;
+    left: -1px;
+    padding: 15px;
+    background-color: #fff;
+    z-index: 1;
+    flex-direction: column;
+    box-shadow: $box-shadow-primary;
+
+    &--open {
+      display: flex;
+    }
+
+    &--close {
+      display: none;
+    }
+  }
+
+  &__link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    height: 40px;
+    width: 90%;
+    margin-bottom: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    &:hover {
+      border: 1px solid #eee;
+      background-color: $color_hover;
+    }
+  }
+}

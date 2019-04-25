@@ -1,0 +1,43 @@
+@import "../../../../../styles/abstracts/variables.scss";
+
+.case-admin-menu {
+  height: 50px;
+
+  background-color: rgba(238, 238, 238, 0.2);
+
+  height: 100%;
+  margin-bottom: 30px;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 90px;
+    margin-right: 20px;
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+
+    & i {
+      font-size: 30px;
+      padding: 8px;
+      border-radius: 50%;
+    }
+
+    &--selected {
+      border-bottom: 2px solid $color_primary;
+      background-color: rgba(238, 238, 238, 0.5);
+      // // background-color: $color_primary;
+
+      // & i {
+      //   padding: 8px;
+      //   border-radius: 50%;
+      //   background-color: rgba(238, 238, 238, 1);
+      // }
+    }
+  }
+}

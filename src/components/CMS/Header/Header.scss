@@ -1,0 +1,94 @@
+@import "../../../styles/abstracts/variables.scss";
+@import "../../../styles/abstracts/mixins.scss";
+
+.header {
+  min-height: 70px;
+  width: 100vw;
+  background-color: $color_slate_primary;
+  color: $color_white;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  z-index: 10000;
+  position: fixed;
+  display: none;
+
+  @include respond(tab-port) {
+    display: flex;
+  }
+
+  &__checkbox {
+    display: none;
+  }
+
+  &__button {
+    height: 40px;
+    width: 40px;
+    position: absolute;
+    z-index: 2000;
+    text-align: center;
+    cursor: pointer;
+    right: 15px;
+    top: -2px;
+  }
+
+  &__icon {
+    position: relative;
+    margin-top: 35px;
+  }
+
+  &__icon,
+  &__icon::before,
+  &__icon::after {
+    width: 30px;
+    height: 2px;
+    background-color: #eee;
+    display: inline-block;
+  }
+
+  &__icon::before,
+  &__icon::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    transition: all 0.2s;
+  }
+
+  &__icon::before {
+    top: -8px;
+  }
+  &__icon::after {
+    top: 8px;
+  }
+
+  &__button:hover &__icon::before {
+    top: -10px;
+  }
+
+  &__button:hover &__icon::after {
+    top: 10px;
+  }
+
+  &__checkbox:checked + &__button &__icon {
+    background-color: transparent;
+  }
+
+  &__checkbox:checked + &__button &__icon::before {
+    top: 0;
+    transform: rotate(135deg);
+  }
+
+  &__checkbox:checked + &__button &__icon::after {
+    top: 0;
+    transform: rotate(-135deg);
+  }
+
+  &__checkbox:checked ~ &__background {
+    transform: scale(20);
+  }
+
+  &__checkbox:checked ~ &__content {
+    display: block;
+    width: 100%;
+  }
+}

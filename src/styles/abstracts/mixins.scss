@@ -1,0 +1,144 @@
+@import "../../styles/base/animations.scss";
+
+@mixin absCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin fadeIn($x, $y) {
+  opacity: 0;
+  opacity: 1 \9; /*just in case ie*/
+  -webkit-animation: fadeIn ease-in;
+  -moz-animation: fadeIn ease-in;
+  animation: fadeIn ease-in;
+
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+
+  -webkit-animation-duration: $x;
+  -moz-animation-duration: $x;
+  animation-duration: $x;
+
+  -webkit-animation-delay: $y;
+  -moz-animation-delay: $y;
+  animation-delay: $y;
+}
+
+@mixin fadeOut($x, $y) {
+  opacity: 1;
+  opacity: 1 \9; /*just in case ie*/
+  -webkit-animation: fadeIn ease-in;
+  -moz-animation: fadeIn ease-in;
+  animation: fadeIn ease-in;
+
+  -webkit-animation-fill-mode: backwards;
+  -moz-animation-fill-mode: backwards;
+  animation-fill-mode: backwards;
+
+  -webkit-animation-duration: $x;
+  -moz-animation-duration: $x;
+  animation-duration: $x;
+
+  -webkit-animation-delay: $y;
+  -moz-animation-delay: $y;
+  animation-delay: $y;
+}
+
+@mixin fadeUp($x, $y) {
+  opacity: 0;
+  opacity: 1 \9; /*just in case ie*/
+  -webkit-animation: moveInBottom ease-out;
+  -moz-animation: moveInBottom ease-out;
+  animation: moveInBottom ease-out;
+
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+
+  -webkit-animation-duration: $x;
+  -moz-animation-duration: $x;
+  animation-duration: $x;
+
+  -webkit-animation-delay: $y;
+  -moz-animation-delay: $y;
+  animation-delay: $y;
+}
+
+@mixin fadeInLeft($x, $y) {
+  opacity: 0;
+  opacity: 1 \9; /*just in case ie*/
+  -webkit-animation: moveInLeft ease-out;
+  -moz-animation: moveInLeft ease-out;
+  animation: moveInLeft ease-out;
+
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+
+  -webkit-animation-duration: $x;
+  -moz-animation-duration: $x;
+  animation-duration: $x;
+
+  -webkit-animation-delay: $y;
+  -moz-animation-delay: $y;
+  animation-delay: $y;
+}
+
+// MEDIA QUERY MANAGER
+/*
+0 - 600px:      Phone
+600 - 900px:    Tablet portrait
+900 - 1200px:   Tablet landscape
+[1200 - 1800] is where our normal styles apply
+1800px + :      Big desktop
+$breakpoint arguement choices:
+- phone
+- tab-port
+- tab-land
+- big-desktop
+ORDER: Base + typography > general layout + grid > page layout > components
+1em = 16px
+*/
+
+@mixin respond($breakpoint) {
+  // @if $breakpoint == phone {
+  //     @media only screen and (max-width: 37.5em) { @content };    //600px
+  // }
+
+  // @if $breakpoint == tab-port {
+  //     @media only screen and (max-width: 65em) { @content };     //900px
+  // }
+
+  @if $breakpoint == phone {
+    @media only screen and (max-width: 28em) {
+      @content;
+    } //420px
+  }
+
+  @if $breakpoint == tab-port {
+    @media only screen and (max-width: 50em) {
+      @content;
+    } //820px
+  }
+
+  @if $breakpoint == tab-land {
+    @media only screen and (max-width: 75em) {
+      @content;
+    } //1200px
+  }
+
+  @if $breakpoint == desktop {
+    @media only screen and (min-width: 76.5em) {
+      @content;
+    } //1224
+  }
+
+  @if $breakpoint == big-desktop {
+    @media only screen and (min-width: 125em) {
+      @content;
+    } //2000
+  }
+}

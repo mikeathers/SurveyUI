@@ -1,0 +1,34 @@
+@import "../../../../styles/abstracts/variables.scss";
+.card {
+  border: 1px solid $color_thin_border;
+  border-radius: 0px;
+  padding: 10px;
+  // box-shadow: $box_shadow_primary;
+  margin-bottom: 1rem;
+
+  & h3 {
+    font-size: 20px;
+  }
+
+  &__title-container {
+    border-bottom: 1px solid $color_thin_border;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__collapse-btn {
+    color: #aaa;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 5px;
+  }
+
+  &__content {
+    margin-top: 10px;
+    padding: 10px;
+  }
+
+  &__not-collapsible {
+    padding-bottom: 10px;
+  }
+}

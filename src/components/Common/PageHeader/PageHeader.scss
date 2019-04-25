@@ -1,0 +1,21 @@
+.pageheader {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &__title {
+    & h2 {
+      margin-bottom: -20px !important;
+    }
+
+    & h3 {
+      margin-bottom: 10px !important;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+  }
+}

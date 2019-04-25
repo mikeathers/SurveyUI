@@ -1,0 +1,54 @@
+@import "../../../../../styles/abstracts/variables.scss";
+
+.secondary-menu-item {
+  color: $color_white_faded;
+  padding: 5px;
+  margin-bottom: 5px;
+  cursor: pointer;
+
+  & i {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  &:hover {
+    background-color: $color_faded_selected;
+    transition: all 0.3s ease;
+    color: $color_white_faded;
+  }
+
+  &:focus {
+    color: $color_white_faded;
+    text-decoration: none;
+  }
+
+  & a {
+    color: $color_white_faded;
+    width: 100%;
+    display: flex;
+  }
+}
+
+.secondary-menu-item--selected {
+  background-color: $color_faded_selected;
+  color: $color_white;
+  border: none;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+  border-left: $color_primary 1px solid;
+
+  &:hover {
+    background-color: $color_faded_selected;
+    transition: all 0.3s ease;
+    color: $color_white;
+  }
+
+  &:focus {
+    color: $color_white;
+    text-decoration: none;
+  }
+
+  & a {
+    color: $color_white;
+  }
+}

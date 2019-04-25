@@ -1,0 +1,92 @@
+@import "../abstracts/variables.scss";
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  scroll-behavior: smooth;
+
+  // This defines what 1rem is
+  // font-size: 62.5%; //1 rem = 10px; 10px/16px = 62.5%
+
+  // @include respond(tab-land) { // width < 1200?
+  //     font-size: 56.25%; //1 rem = 9px, 9/16 = 50%
+  // }
+
+  // @include respond(tab-port) { // width < 900?
+  //     font-size: 50%; //1 rem = 8px, 8/16 = 50%
+  // }
+
+  // @include respond(big-desktop) {
+  //     font-size: 75%; //1rem = 12, 12/16
+  // }
+}
+
+body {
+  //background-color: #eee !important;
+  box-sizing: border-box;
+
+  @include respond(tab-port) {
+    padding: 0;
+  }
+
+  scroll-behavior: smooth;
+
+  color: $color_default_text;
+  font-size: 14px;
+}
+
+::selection {
+  background-color: $color-primary;
+  color: $color-white;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: "Barlow", sans-serif;
+  font-weight: 500 !important;
+}
+
+p,
+a,
+input {
+  font-family: "Roboto", sans-serif;
+  font-size: 14px !important;
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+ul {
+  margin-bottom: 0 !important;
+}
+
+.strong {
+  font-weight: 500;
+}
+
+.light {
+  color: $color_light_text;
+}
+
+.light-title {
+  font-weight: 400;
+}
+.ui.input > input {
+  height: 37.5px;
+}
+
+.validate {
+  border: 1px solid red !important;
+  border-radius: 3px !important;
+}

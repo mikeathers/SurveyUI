@@ -1,0 +1,11 @@
+.multichoice {
+  margin-bottom: -1rem;
+  display: flex;
+  flex-direction: column;
+
+  &__clear {
+    align-self: flex-end;
+    margin-bottom: 1rem !important;
+    cursor: pointer;
+  }
+}

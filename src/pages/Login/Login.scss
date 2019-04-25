@@ -1,0 +1,55 @@
+@import "../../styles/abstracts/mixins.scss";
+@import "../../styles/abstracts/variables.scss";
+
+.login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  position: relative;
+  height: 100vh;
+
+  &:before {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: -1;
+
+    width: 110%;
+    height: 100%;
+
+    background: url("./img/bridge.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    opacity: 1;
+
+    -webkit-filter: blur(5px);
+    -moz-filter: blur(5px);
+    -o-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: blur(5px);
+    transform: scale(1.1);
+  }
+
+  &__form {
+    @include absCenter();
+
+    padding: 40px;
+    height: 50vh;
+    width: 400px;
+    background-color: #fff;
+    border: 1px solid rgb(175, 175, 175);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    -webkit-box-shadow: 0px -1px 25px -8px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px -1px 25px -8px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px -1px 25px -8px rgba(0, 0, 0, 0.75);
+  }
+}

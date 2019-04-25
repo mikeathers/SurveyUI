@@ -1,0 +1,41 @@
+@import "../../../../../styles/abstracts/variables.scss";
+
+.question {
+  margin-bottom: 1rem;
+  transition: box-shadow 0.1s ease;
+  border: 1px solid #fff;
+  padding: 1rem;
+  &:hover {
+    border: 1px solid #eee;
+    box-shadow: $box_shadow_primary;
+  }
+}
+
+// .question-text {
+//   display: flex;
+//   padding-bottom: 5px;
+//   font-size: 18px;
+
+//   &__number {
+//     padding: 10px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     height: 17px;
+//     width: 17px;
+//     background-color: rgb(212, 212, 212);
+//     color: grey;
+//     margin-right: 6px;
+//     border-radius: 3px;
+
+//     &--completed {
+//       background-color: $color_primary;
+//       color: #fff;
+//       transition: all 0.2s ease-in-out;
+//     }
+//   }
+
+//   p {
+//     font-weight: 500;
+//   }
+// }

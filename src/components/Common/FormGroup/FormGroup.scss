@@ -1,0 +1,20 @@
+@import "../../../styles/abstracts/mixins.scss";
+
+.sform-group {
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  flex-basis: 45%;
+  margin-bottom: 15px;
+
+  & p:first-of-type {
+    font-weight: 500 !important;
+    margin-right: 1rem;
+    width: 100px;
+  }
+}
+
+.sform-group-inline {
+  flex-direction: row;
+}

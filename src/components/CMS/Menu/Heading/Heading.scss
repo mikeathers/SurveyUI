@@ -1,0 +1,17 @@
+@import "../../../../styles/abstracts/variables.scss";
+@import "../../../../styles/abstracts/mixins.scss";
+
+.menu-heading {
+  padding-top: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  color: $color_white;
+
+  @include respond(tab-port) {
+    display: none;
+  }
+
+  hr {
+    border-bottom: 0.1px solid $color_faded_selected;
+  }
+}

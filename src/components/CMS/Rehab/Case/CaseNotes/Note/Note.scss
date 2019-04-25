@@ -1,0 +1,48 @@
+@import "../../../../../../styles/abstracts/variables.scss";
+@import "../../../../../../styles/abstracts/mixins.scss";
+.casenote {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 10px;
+  position: relative;
+  &:hover {
+    background-color: #eee;
+    cursor: pointer;
+  }
+
+  &__note {
+    width: 80%;
+  }
+
+  &__created {
+    display: flex;
+    flex-direction: column;
+
+    & p {
+      margin-left: 10px;
+      font-size: 12px !important;
+    }
+  }
+
+  &__close {
+    position: absolute;
+    height: 17px;
+    width: 17px;
+    background-color: $color_danger;
+    right: -5px;
+    top: -5px;
+    color: $color_white;
+    display: flex;
+    justify-content: center;
+    border-radius: 50px;
+    display: none;
+    & p {
+      margin-top: -1px;
+    }
+  }
+
+  &:hover &__close {
+    display: flex;
+  }
+}

@@ -1,0 +1,18 @@
+@import "../../../../../../../styles/abstracts/variables.scss";
+.letter-template {
+  padding: 0.5rem;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &:hover {
+    background-color: $color_hover;
+    cursor: pointer;
+  }
+  & p {
+    margin-bottom: 0;
+  }
+}

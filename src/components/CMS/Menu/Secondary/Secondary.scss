@@ -1,0 +1,15 @@
+@import "../../../../styles/abstracts/variables.scss";
+@import "../../../../styles/abstracts/mixins.scss";
+.secondary-menu {
+  min-height: 85vh;
+  width: 150px;
+  background-color: $color_slate_secondary;
+  padding: 5px;
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  @include respond(desktop) {
+    margin-top: 0;
+  }
+}

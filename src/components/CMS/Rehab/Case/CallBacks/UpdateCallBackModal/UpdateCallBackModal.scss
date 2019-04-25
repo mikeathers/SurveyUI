@@ -1,0 +1,102 @@
+@import "../../../../../../styles/abstracts/variables.scss";
+
+.update-callback-modal {
+  position: relative;
+  background: #fff;
+  border: #9999 1px solid;
+  display: block;
+  padding: 20px;
+  overflow: visible;
+
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  height: 240px;
+  width: 700px;
+  z-index: 2 !important;
+
+  -webkit-box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
+  box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
+
+  &__title {
+    margin: 0 0 10px 0;
+    font-weight: 300;
+    height: 30px;
+  }
+
+  &__body {
+    // font-size: 16px;
+    font-weight: 300;
+    margin: 0 0 15px 0;
+    word-break: break-all;
+    padding-left: 10px;
+
+    & .ui.selection.dropdown {
+      min-width: 200px;
+      max-width: 200px;
+    }
+
+    & .react-datepicker {
+      &__header {
+        background-color: $color_slate_primary;
+        border-bottom: 1px solid #aeaeae;
+      }
+      &__current-month {
+        color: $color_white;
+      }
+      &__day-name {
+        color: $color_white;
+      }
+      &__day--selected {
+        background-color: $color_primary;
+      }
+      &__time-list-item--selected {
+        background-color: $color_primary !important;
+        &:hover {
+          background-color: $color_primary !important;
+        }
+      }
+      &__input-container {
+        & input {
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 3px;
+
+          cursor: pointer;
+          word-wrap: break-word;
+          line-height: 1em;
+          white-space: normal;
+          outline: 0;
+          -webkit-transform: rotateZ(0);
+          transform: rotateZ(0);
+          min-width: 14em;
+          min-height: 2.71428571em;
+          background: #fff;
+          display: inline-block;
+          padding: 0.78571429em 2.1em 0.78571429em 1em;
+          color: rgba(0, 0, 0, 0.87);
+          -webkit-box-shadow: none;
+          box-shadow: none;
+          border: 1px solid rgba(34, 36, 38, 0.15);
+          border-radius: 0.28571429rem;
+          -webkit-transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
+          transition: width 0.1s ease, -webkit-box-shadow 0.1s ease;
+          transition: box-shadow 0.1s ease, width 0.1s ease;
+          transition: box-shadow 0.1s ease, width 0.1s ease,
+            -webkit-box-shadow 0.1s ease;
+          max-height: 37px;
+          min-height: 37px;
+        }
+      }
+    }
+
+    & .react-datepicker-time {
+      &__header {
+        color: $color_white;
+      }
+    }
+  }
+}

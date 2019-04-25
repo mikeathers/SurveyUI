@@ -1,0 +1,32 @@
+@import "../../../../../styles/abstracts/variables.scss";
+.contact-details-table {
+  margin-top: -10px;
+
+  & thead {
+    & tr {
+      font-weight: 500;
+      & :nth-child(2) {
+        width: 150px;
+      }
+    }
+  }
+
+  & tbody {
+    & tr {
+      word-wrap: wrap;
+      word-break: break-all;
+      &:hover {
+        background-color: $color_hover;
+        cursor: pointer;
+      }
+    }
+  }
+
+  & tr {
+    height: 30px;
+  }
+  & td {
+    padding: 10px;
+    min-width: 100px;
+  }
+}

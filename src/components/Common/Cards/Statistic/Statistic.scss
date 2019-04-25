@@ -1,0 +1,7 @@
+@import "../../../../styles/abstracts/variables.scss";
+@import "../../../../styles/abstracts/mixins.scss";
+.statistic {
+  border: 1px solid $color_thin_border;
+  padding: 20px;
+  margin: 10px 0;
+}

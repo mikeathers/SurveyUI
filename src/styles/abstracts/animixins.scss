@@ -1,0 +1,119 @@
+@mixin animated($duration, $delay) {
+  -webkit-animation-fill-mode: both;
+  -moz-animation-fill-mode: both;
+  -ms-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation-duration: $duration;
+  -moz-animation-duration: $duration;
+  -ms-animation-duration: $duration;
+  animation-duration: $duration;
+  -webkit-animation-delay: $delay;
+  -moz-animation-delay: $delay;
+  -ms-animation-delay: $delay;
+  animation-delay: $delay;
+}
+
+// Fade-in / Fade-out
+@-webkit-keyframes fade-in { 0% {opacity: 0;} 100% {opacity: 1;} }
+@-moz-keyframes    fade-in { 0% {opacity: 0;} 100% {opacity: 1;} }
+@keyframes         fade-in { 0% {opacity: 0;} 100% {opacity: 1;} }
+@mixin fade-in($duration: 1s, $delay: 0s) {
+  @include animated($duration, $delay);
+  -webkit-animation-name: fade-in;
+  -moz-animation-name: fade-in;
+  animation-name: fade-in;
+}
+
+@-webkit-keyframes fade-out { 0% {opacity: 1;} 100% {opacity: 0;} }
+@-moz-keyframes    fade-out { 0% {opacity: 1;} 100% {opacity: 0;} }
+@keyframes         fade-out { 0% {opacity: 1;} 100% {opacity: 0;} }
+@mixin fade-out($duration: 1s, $delay: 0s) {
+  @include animated($duration, $delay);
+  -webkit-animation-name: fade-out;
+  -moz-animation-name: fade-out;
+  animation-name: fade-out;
+}
+
+// Fade-up / Fade-down
+@-webkit-keyframes fade-in-up { 0% { opacity: 0; -webkit-transform: translateY(20px); } 100% { opacity: 1; -webkit-transform: translateY(0); } }
+@-moz-keyframes    fade-in-up { 0% { opacity: 0; -moz-transform: translateY(20px);}     100% { opacity: 1; -moz-transform: translateY(0); } }
+@keyframes         fade-in-up { 0% { opacity: 0;  transform: translateY(20px); }        100% { opacity: 1; transform: translateY(0); } }
+@mixin fade-in-up($duration: 1s, $delay: 0s) {
+  @include animated($duration, $delay);
+  -webkit-animation-name: fade-in-up;
+  -moz-animation-name: fade-in-up;
+  animation-name: fade-in-up;
+}
+
+@-webkit-keyframes fade-out-down { 0% { opacity: 1; -webkit-transform: translateY(0); } 100% { opacity: 0; -webkit-transform: translateY(20px); } }
+@-moz-keyframes    fade-out-down { 0% { opacity: 1; -moz-transform: translateY(0); }    100% { opacity: 0; -moz-transform: translateY(20px); } }
+@keyframes         fade-out-down { 0% { opacity: 1; transform: translateY(0); }         100% { opacity: 0; transform: translateY(20px); } }
+@mixin fade-out-down($duration: 1s, $delay: 0s) {
+  @include animated($duration, $delay);
+  -webkit-animation-name: fade-out-down;
+  -moz-animation-name: fade-out-down;
+  animation-name: fade-out-down;
+}
+
+@-webkit-keyframes fade-in-down { 0% { opacity: 0; -webkit-transform: translateY(-20px); } 100% { opacity: 1; -webkit-transform: translateY(0); } }
+@-moz-keyframes    fade-in-down { 0% { opacity: 0; -moz-transform: translateY(-20px); }    100% { opacity: 1; -moz-transform: translateY(0); } }
+@keyframes         fade-in-down { 0% { opacity: 0; transform: translateY(-20px); }         100% { opacity: 1; transform: translateY(0); } }
+@mixin fade-in-down($duration: 1s, $delay: 0s) {
+  @include animated($duration, $delay);
+  -webkit-animation-name: fade-in-down;
+  -moz-animation-name: fade-in-down;
+  animation-name: fade-in-down;
+}
+
+// Fade-left
+@-webkit-keyframes fade-in-left { 0% { opacity: 0; -webkit-transform: translateX(-20px); } 100% { opacity: 1; -webkit-transform: translateX(0); } }
+@-moz-keyframes    fade-in-left { 0% { opacity: 0; -moz-transform: translateX(-20px); }    100% { opacity: 1; -moz-transform: translateX(0); } }
+@keyframes         fade-in-left { 0% { opacity: 0; transform: translateX(-20px); }         100% { opacity: 1; transform: translateX(0); } }
+@mixin fade-in-left($duration: 1s, $delay: 0s) {
+  @include animated($duration, $delay);
+  -webkit-animation-name: fade-in-left;
+  -moz-animation-name: fade-in-left;
+  animation-name: fade-in-left;
+}
+@-webkit-keyframes fade-out-left { 0% { opacity: 1; -webkit-transform: translateX(0); } 100% { opacity: 0; -webkit-transform: translateX(-20px); } }
+@-moz-keyframes    fade-out-left { 0% { opacity: 1; -moz-transform: translateX(0); }    100% { opacity: 0; -moz-transform: translateX(-20px); } }
+@keyframes         fade-out-left { 0% { opacity: 1; transform: translateX(0); }         100% { opacity: 0; transform: translateX(-20px); } }
+@mixin fade-out-left($duration: 1s, $delay: 0s) {
+  @include animated($duration, $delay);
+  -webkit-animation-name: fade-out-left;
+  -moz-animation-name: fade-out-left;
+  animation-name: fade-out-left;
+}
+
+// Fade-right
+@-webkit-keyframes fade-in-right { 0% { opacity: 0; -webkit-transform: translateX(20px); } 100% { opacity: 1; -webkit-transform: translateX(0); } }
+@-moz-keyframes    fade-in-right { 0% { opacity: 0; -moz-transform: translateX(20px); }    100% { opacity: 1; -moz-transform: translateX(0); } }
+@keyframes         fade-in-right { 0% { opacity: 0; transform: translateX(20px); }         100% { opacity: 1; transform: translateX(0); } }
+@mixin fade-in-right($duration: 1s, $delay: 0s) {
+  @include animated($duration, $delay);
+  -webkit-animation-name: fade-in-right;
+  -moz-animation-name: fade-in-right;
+  animation-name: fade-in-right;
+}
+@-webkit-keyframes fade-out-right { 0% { opacity: 1; -webkit-transform: translateX(0); } 100% { opacity: 0; -webkit-transform: translateX(20px); } }
+@-moz-keyframes    fade-out-right { 0% { opacity: 1; -moz-transform: translateX(0); }    100% { opacity: 0;  -moz-transform: translateX(20px); } }
+@keyframes         fade-out-right { 0% { opacity: 1; transform: translateX(0); }         100% { opacity: 0; transform: translateX(20px); } }
+@mixin fade-out-right($duration: 1s, $delay: 0s) {
+  @include animated($duration, $delay);
+  -webkit-animation-name: fade-out-right;
+  -moz-animation-name: fade-out-right;
+  animation-name: fade-out-right;
+}
+
+
+// Pulsate
+@-webkit-keyframes pulsate { 0% { -webkit-transform: scale(1); } 50% { -webkit-transform: scale(1.2); } 100% { -webkit-transform: scale(1); } }
+@-moz-keyframes    pulsate { 0% { -moz-transform: scale(1); }    50% { -moz-transform: scale(1.2); } 100% { -moz-transform: scale(1); } }
+@keyframes         pulsate { 0% { transform: scale(1); }         50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+@mixin pulsate($duration: 1s, $delay: 0s, $iteration: 2) {
+  @include animated($duration, $delay);
+  -webkit-animation-name: pulsate;
+  -moz-animation-name: pulsate;
+  animation-name: pulsate;
+  animation-iteration-count: $iteration;
+}

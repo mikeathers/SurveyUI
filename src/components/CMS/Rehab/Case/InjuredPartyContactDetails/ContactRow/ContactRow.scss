@@ -1,0 +1,31 @@
+@import "../../../../../../styles/abstracts/variables.scss";
+
+.contact-row {
+  & td:last-of-type {
+    display: flex;
+    justify-content: flex-end;
+  }
+  &__close {
+    position: absolute;
+    height: 17px;
+    width: 17px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 80px;
+    display: none;
+    margin-left: 15px;
+    margin-top: -15px;
+    background-color: $color_danger;
+
+    & p {
+      margin-bottom: 2px;
+      margin-left: 1px;
+      color: $color_white;
+    }
+  }
+
+  &:hover &__close {
+    display: flex;
+  }
+}

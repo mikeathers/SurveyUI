@@ -1,0 +1,14 @@
+@import "../../../../styles/abstracts/variables.scss";
+@import "../../../../styles/abstracts/mixins.scss";
+
+.side-menu-footer {
+  margin-top: 0rem;
+  display: flex;
+  align-self: center;
+  justify-content: center;
+  color: $color_white;
+
+  @include respond(desktop) {
+    margin-top: 2rem;
+  }
+}

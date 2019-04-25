@@ -1,0 +1,29 @@
+@import "../../../../styles/abstracts/variables.scss";
+.tablerow {
+  width: 100%;
+  padding: 2px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+
+  height: 65px;
+  border: 1px solid #eee;
+  border-top: none;
+  color: #555;
+  padding: 10px;
+  text-decoration: none !important;
+  transition: background-color 0.2s ease;
+  //font-weight: 600;
+
+  &__select-all {
+    width: 15%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &:hover {
+    background-color: #eee;
+    background-color: $color_hover;
+  }
+}

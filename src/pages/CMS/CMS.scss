@@ -1,0 +1,32 @@
+@import "../../styles/abstracts/variables.scss";
+@import "../../styles/abstracts/mixins.scss";
+
+.cms {
+  &__container {
+    position: relative;
+    min-height: 100vh;
+    float: right;
+    width: calc(100% - 300px);
+
+    @include respond(tab-port) {
+      margin-top: 70px;
+      width: 100%;
+    }
+  }
+
+  &__content {
+    padding-top: 1rem;
+    @include respond(desktop) {
+      padding: 2rem;
+    }
+  }
+}
+
+// .pull-content-right .cms__container {
+//   left: 0;
+//   -webkit-transform: translate3d(0, 0, 0);
+//   -moz-transform: translate3d(0, 0, 0);
+//   -o-transform: translate3d(0, 0, 0);
+//   -ms-transform: translate3d(0, 0, 0);
+//   transform: translate3d(0, 0, 0);
+// }

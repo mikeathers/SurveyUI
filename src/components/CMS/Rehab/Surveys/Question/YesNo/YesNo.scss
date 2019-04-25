@@ -1,0 +1,16 @@
+.yesno {
+  &__container {
+    display: flex;
+
+    & label {
+      margin-right: 20px;
+    }
+  }
+
+  &__clear {
+    display: flex;
+    justify-content: flex-end;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

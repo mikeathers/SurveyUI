@@ -1,0 +1,22 @@
+.case-activity {
+  max-height: 350px;
+  overflow: hidden;
+  overflow-y: scroll;
+
+  &__table {
+    width: 101%;
+    margin-top: -10px;
+    & thead {
+      & td {
+        padding: 10px;
+        font-weight: 500;
+      }
+    }
+
+    & tbody {
+      & td {
+        padding: 10px;
+      }
+    }
+  }
+}

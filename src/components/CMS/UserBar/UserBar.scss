@@ -1,0 +1,58 @@
+@import "../../../styles/abstracts/variables.scss";
+@import "../../../styles/abstracts/mixins.scss";
+
+.userbar {
+  width: 100%;
+  height: 5rem;
+  background-color: $color_white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  padding-left: 3rem;
+  box-shadow: $box_shadow_primary;
+
+  &__useritems {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    transition: all 0.2s ease;
+    margin-right: 10px;
+    cursor: pointer;
+    &:hover {
+      background-color: #eee;
+    }
+  }
+
+  &__username {
+    margin-bottom: 0;
+    margin-right: 10px;
+  }
+
+  &__avatar {
+    height: 50px;
+    width: 50px;
+    border-radius: 100px;
+    margin-right: 15px;
+  }
+
+  &__logo {
+    height: 40px;
+  }
+
+  &__search {
+    & input {
+      border: none;
+      outline: none;
+      padding: 7px;
+      transition: all 0.3s ease;
+      border-bottom: 1px solid $color_grey_light;
+      width: 15rem;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+}

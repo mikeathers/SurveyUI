@@ -1,0 +1,16 @@
+.DraftEditor-root {
+  height: auto !important;
+}
+
+.email-template-builder {
+  &__editor {
+    min-height: 400px;
+  }
+}
+
+.rdw-suggestion-dropdown {
+  max-height: 350px !important;
+}
+.DraftEditor-editorContainer {
+  z-index: 0;
+}

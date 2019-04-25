@@ -1,0 +1,45 @@
+@import "../../../styles/abstracts/variables.scss";
+@import "../../../styles/abstracts/mixins.scss";
+
+.side-menu {
+  background-color: $color_slate_secondary;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: auto;
+  display: flex;
+  width: 300px;
+  color: #fff;
+  font-weight: 200;
+  z-index: 1;
+
+  @include respond(tab-port) {
+    left: 0;
+    top: 69px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    -webkit-transform: translate3d(-300px, 0, 0);
+    -moz-transform: translate3d(-300px, 0, 0);
+    -o-transform: translate3d(-300px, 0, 0);
+    -ms-transform: translate3d(-300px, 0, 0);
+    transform: translate3d(-300px, 0, 0);
+    -webkit-transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
+    -moz-transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
+    -o-transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
+    -ms-transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
+    transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
+  }
+
+  &__secondary {
+    width: 100%;
+  }
+}
+
+.side-menu-open .side-menu {
+  -webkit-transform: translate3d(0px, 0, 0);
+  -moz-transform: translate3d(0px, 0, 0);
+  -o-transform: translate3d(0px, 0, 0);
+  -ms-transform: translate3d(0px, 0, 0);
+  transform: translate3d(0px, 0, 0);
+}

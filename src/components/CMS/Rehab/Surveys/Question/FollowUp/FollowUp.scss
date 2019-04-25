@@ -1,0 +1,11 @@
+.followup {
+  margin-bottom: -1rem;
+  display: flex;
+  flex-direction: column;
+
+  &__clear {
+    align-self: flex-end;
+    margin-top: 1rem;
+    cursor: pointer;
+  }
+}

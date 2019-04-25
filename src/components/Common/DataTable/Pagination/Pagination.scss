@@ -1,0 +1,32 @@
+@import "../../../../styles/abstracts/variables.scss";
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+
+  &__page-number {
+    padding: 4px 10px;
+    border: none;
+    border-radius: 0.25rem;
+    -webkit-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    background-color: #fff;
+    outline: none !important;
+
+    &:hover {
+      background-color: #eee;
+    }
+
+    &--selected {
+      background-color: $color_primary;
+      color: #fff;
+
+      &:hover {
+        color: #fff;
+        background-color: $color_primary;
+      }
+    }
+  }
+}

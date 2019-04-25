@@ -1,0 +1,61 @@
+@import "../../../../../styles/abstracts/variables.scss";
+
+.primary-menu-item {
+  height: 100px;
+  width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  color: $color_white_faded;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(238, 238, 238, 0.1);
+    transition: all 0.3s ease;
+    color: $color_white_faded;
+  }
+
+  &:focus {
+    color: $color_white_faded;
+    text-decoration: none;
+  }
+
+  & i {
+    font-size: 2.3rem;
+  }
+
+  & a {
+    color: $color_white_faded;
+    height: 100px;
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+}
+
+.primary-menu-item--selected {
+  background-color: $color_premex_green;
+  background-color: $color_primary;
+  color: $color_white;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $color_premex_green;
+    background-color: $color_primary;
+    transition: all 0.3s ease;
+    color: $color_white;
+  }
+
+  &:focus {
+    color: $color_white;
+    text-decoration: none;
+  }
+
+  & a {
+    color: $color_white;
+  }
+}

@@ -1,0 +1,40 @@
+@import "../../../../styles/abstracts/variables.scss";
+@import "../../../../styles/abstracts/mixins.scss";
+
+.datatable__functionality {
+  display: flex;
+  margin-bottom: 15px;
+  justify-content: space-between;
+  flex-direction: column;
+
+  @include respond(desktop) {
+    flex-direction: row;
+  }
+
+  &-left {
+    display: flex;
+    margin-bottom: 10px;
+    align-items: center;
+
+    & p {
+      align-self: center;
+    }
+
+    & .tiny {
+      margin-left: 10px !important;
+      font-size: 13.7143px !important;
+      height: 34.5313px;
+    }
+
+    & .form-control {
+      width: 100px !important;
+      margin-left: 5px;
+    }
+  }
+
+  &-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
