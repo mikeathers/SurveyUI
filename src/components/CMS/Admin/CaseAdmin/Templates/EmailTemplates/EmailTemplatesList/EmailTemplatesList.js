@@ -83,7 +83,11 @@ export default class EmailTemplatesList extends Component {
   };
 
   removeEmailTemplate = id => {
-    api.removeEmailTemplate(id).then(res => {
+    const removeEmailTemplateRequest = {
+      emailTemplateId: id,
+      actionedBy: this.props.username
+    };
+    api.removeEmailTemplate(removeEmailTemplateRequest).then(res => {
       if (this._isMounted) {
         if (!res.data.hasErrors) {
           this.setState({

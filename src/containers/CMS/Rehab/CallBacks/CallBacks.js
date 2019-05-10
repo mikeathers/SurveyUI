@@ -20,7 +20,8 @@ class CallBacks extends Component {
     super(props);
     this.state = {
       callbacks: [],
-      showErrorModal: false
+      showErrorModal: false,
+      errorMessage: null
     };
     this.checkForErrors = checkForErrors.bind(this);
   }
@@ -84,7 +85,10 @@ class CallBacks extends Component {
         </Row>
         <ErrorModal
           isModalOpen={this.state.showErrorModal}
-          closeModal={() => this.setState({ showErrorModal: false })}
+          closeModal={() =>
+            this.setState({ showErrorModal: false, errorMessage: null })
+          }
+          errorMessage={this.state.errorMessage}
         />
       </Container>
     );

@@ -2,7 +2,6 @@ import React from "react";
 import { Router } from "react-router-dom";
 import { connect } from "react-redux";
 import createHistory from "history/createBrowserHistory";
-
 import AppRoutes from "./AppRoutes";
 
 const history = createHistory();

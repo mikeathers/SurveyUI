@@ -114,7 +114,7 @@ class Survey extends Component {
 
           {/* RIGHT SIDE */}
           <Col lg={6} sm={12}>
-            <Row>
+            {/* <Row>
               <Col sm={12}>
                 <CaseDetails
                   mi3dCase={this.props.mi3dCase}
@@ -126,13 +126,14 @@ class Survey extends Component {
               <Col sm={12}>
                 <InjuredPartyDetails />
               </Col>
-            </Row>
+            </Row> */}
             <Row>
               <Col sm={12}>
                 <SurveyBuilder
                   completedQuestions={this.state.completedQuestions}
                   mi3dCase={this.props.mi3dCase}
                   bdCase={this.props.case}
+                  username={this.props.username}
                 />
               </Col>
             </Row>

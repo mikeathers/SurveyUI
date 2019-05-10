@@ -11,6 +11,7 @@ const LetterTemplate = ({ document, download }) => (
 );
 
 export default class ViewLetterTemplates extends Component {
+  _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -19,11 +20,16 @@ export default class ViewLetterTemplates extends Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     api.getLetterTemplates().then(res => {
-      if (!res.hasErrors) {
+      if (this._isMounted && !res.hasErrors) {
         this.setState({ letterTemplates: res.result });
       }
     });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   componentWillReceiveProps({ letterTemplates }) {
@@ -34,6 +40,8 @@ export default class ViewLetterTemplates extends Component {
 
   download = (path, name) => {
     api.downloadLetterTemplate(path).then(res => {
+      console.log(res);
+
       var link = document.createElement("a");
       link.href = window.URL.createObjectURL(res.data);
       link.download = name;

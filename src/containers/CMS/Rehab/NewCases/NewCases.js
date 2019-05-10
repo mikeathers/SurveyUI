@@ -65,7 +65,9 @@ class NewCases extends Component {
   };
 
   createCaseIfDoesntExist = caseToCreate => {
+    console.log(caseToCreate);
     return api.openCase(caseToCreate).then(res => {
+      console.log(res);
       if (!this.checkForErrors(res, "modal")) {
         const caseId = res.data.result.caseId;
         this.props.updateMi3dCaseId(caseId);

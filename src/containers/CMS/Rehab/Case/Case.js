@@ -78,7 +78,13 @@ class Case extends Component {
             </Row>
             <Row>
               <Col sm={12}>
-                <CaseDocuments documents={this.props.mi3dCase.caseDocuments} />
+                <CaseDocuments
+                  documents={
+                    this.props.mi3dCase !== null
+                      ? this.props.mi3dCase.caseDocuments
+                      : null
+                  }
+                />
               </Col>
             </Row>
 

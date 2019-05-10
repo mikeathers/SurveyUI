@@ -44,7 +44,12 @@ class InitialSurvey extends Component {
 
       this.setState({ documentId });
 
-      api.getCompletedSurvey(completedSurveyId).then(res => {
+      const completedSurveyRequest = {
+        completedSurveyId,
+        actionedBy: this.props.user.name
+      };
+
+      api.getCompletedSurvey(completedSurveyRequest).then(res => {
         if (this._isMounted) {
           this.setState({ survey: res.result, update: true }, () => {
             this.setState({
@@ -151,8 +156,6 @@ class InitialSurvey extends Component {
         if (!res.data.hasErrors) {
           if (!this.state.update) {
             const documentPath = res.data.result;
-            // this.setState({ documentPath });
-            console.log(documentPath);
             api
               .addDocumentToCase(this.surveyDocumentForCase(documentPath))
               .then(res => {
@@ -161,8 +164,6 @@ class InitialSurvey extends Component {
             return documentPath;
           } else {
             const documentPath = res.data.result;
-            // this.setState({ documentPath });
-            console.log(documentPath);
             api
               .updateDocumentOnCase(
                 this.surveyDocumentForCase(documentPath, this.state.documentId)
@@ -175,11 +176,18 @@ class InitialSurvey extends Component {
               filename: "Initial Survey",
               bluedogCaseRef: this.props.bluedogCase.bluedogCaseRef
             };
-            api.addDocumentToBluedogCase(document).then(res => {
-              console.log(res);
-            });
+            api.addDocumentToBluedogCase(document).then(res => {});
             return documentPath;
           }
+        } else {
+          console.log(res);
+          const errors = {
+            errorMessages: res.data.errors.map(m => m.errorMessage),
+            serviceName: "DocumentBuilder",
+            functionName: "CreateSurveyDocument",
+            actionedBy: this.props.username
+          };
+          api.logErrors(errors);
         }
       });
   };
@@ -200,7 +208,6 @@ class InitialSurvey extends Component {
       const completedSurvey = this.completedSurvey("Initial");
       api.saveCompletedSurvey(completedSurvey);
       this.createSurveyDocument().then(documentPath => {
-        console.log(documentPath);
         api
           .sendEmail(this.emailToSend(documentPath))
           .then(res => console.log(res));

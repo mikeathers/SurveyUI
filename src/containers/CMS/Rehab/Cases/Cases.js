@@ -17,7 +17,8 @@ class Cases extends Component {
     super(props);
     this.state = {
       cases: [],
-      showErrorModal: false
+      showErrorModal: false,
+      errorMessage: null
     };
     this.checkForErrors = checkForErrors.bind(this);
   }
@@ -78,7 +79,10 @@ class Cases extends Component {
         </Row>
         <ErrorModal
           isModalOpen={this.state.showErrorModal}
-          closeModal={() => this.setState({ showErrorModal: false })}
+          closeModal={() =>
+            this.setState({ showErrorModal: false, errorMessage: null })
+          }
+          errorMessage={this.state.errorMessage}
         />
       </Container>
     );

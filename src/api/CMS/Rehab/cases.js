@@ -1,9 +1,9 @@
 import axios from "axios";
+import { getCasesEndpoint, getBluedogEndpoint, env } from "endpoints";
 
-const BD_URL = "http://bluedog-repo-microservice-dev/api/";
-// const DEV_URL = "http://premex.microservices.mi3d.cases.expedia.org/api/";
-// const BD_URL = "http://localhost:60864/api/";
-const DEV_URL = "http://localhost:50601/api/";
+const DEV_URL = getCasesEndpoint(env);
+let BD_URL = getBluedogEndpoint(env);
+
 export const getClinicianCases = async () => {
   try {
     const res = await axios({

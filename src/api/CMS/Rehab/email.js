@@ -1,12 +1,13 @@
 import axios from "axios";
+import { getEmailManagementEndpoint, env } from "endpoints";
 
-const DEV_URL = "http://premex.microservices.emailmanagement.expedia.org/api/";
+const EMAIL_URL = getEmailManagementEndpoint(env);
 
 export const sendEmail = async email => {
   try {
     const res = await axios({
       method: "POST",
-      url: DEV_URL + "email/sendemail",
+      url: EMAIL_URL + "email/sendemail",
       dataType: "json",
       data: email
     });

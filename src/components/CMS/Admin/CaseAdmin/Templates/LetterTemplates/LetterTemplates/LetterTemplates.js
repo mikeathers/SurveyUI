@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 
 import AddLetterTemplate from "../AddLetterTemplate/AddLetterTemplate";
 import ManageLetterTemplates from "../ManageLetterTemplates/ManageLetterTemplates";
@@ -6,7 +7,7 @@ import ViewLetterTemplates from "../ViewLetterTemplates/ViewLetterTemplates";
 import { Row, Col } from "components/Common";
 
 import "./LetterTemplates.scss";
-export default class LetterTemplates extends Component {
+class LetterTemplates extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -27,7 +28,10 @@ export default class LetterTemplates extends Component {
         <Col lg={6} md={6} sm={12}>
           <Row>
             <Col sm={12}>
-              <AddLetterTemplate getLetterTemplates={this.getLetterTemplates} />
+              <AddLetterTemplate
+                getLetterTemplates={this.getLetterTemplates}
+                username={this.props.username}
+              />
             </Col>
           </Row>
           <Row>
@@ -35,6 +39,7 @@ export default class LetterTemplates extends Component {
               <ManageLetterTemplates
                 letterTemplates={this.state.letterTemplates}
                 getLetterTemplates={this.getLetterTemplates}
+                username={this.props.username}
               />
             </Col>
           </Row>
@@ -44,6 +49,7 @@ export default class LetterTemplates extends Component {
             <Col sm={12}>
               <ViewLetterTemplates
                 letterTemplates={this.state.letterTemplates}
+                username={this.props.username}
               />
             </Col>
           </Row>
@@ -52,3 +58,8 @@ export default class LetterTemplates extends Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  username: state.auth.user.name
+});
+export default connect(mapStateToProps)(LetterTemplates);

@@ -1,8 +1,8 @@
 import axios from "axios";
+import { getCasesEndpoint, getDocumentBuilderEndpoint, env } from "endpoints";
 
-const DOC_URL = "http://premex.microservices.documentbuilder.expedia.org/api/";
-// const DEV_URL = "http://localhost:50601/api/";
-const DEV_URL = "http://premex.microservices.mi3d.cases.expedia.org/api/";
+const DOC_URL = getDocumentBuilderEndpoint(env);
+const DEV_URL = getCasesEndpoint(env);
 
 export const createLetterDocument = async letter => {
   try {
@@ -12,6 +12,7 @@ export const createLetterDocument = async letter => {
       dataType: "json",
       data: letter
     });
+
     return res;
   } catch (err) {}
 };
@@ -24,6 +25,7 @@ export const createSurveyDocument = async survey => {
       dataType: "json",
       data: survey
     });
+    console.log(res);
     return res;
   } catch (err) {}
 };

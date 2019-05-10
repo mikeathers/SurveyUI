@@ -39,7 +39,13 @@ export default class SurveyBuilder extends Component {
 
     if (survey !== undefined) {
       const completedSurveyId = survey.completedSurveyId;
-      api.getCompletedSurvey(completedSurveyId).then(res => {
+
+      const completedSurveyRequest = {
+        completedSurveyId,
+        actionedBy: this.props.username
+      };
+
+      api.getCompletedSurvey(completedSurveyRequest).then(res => {
         if (this._isMounted) {
           this.setState({ survey: res.result });
           if (res.result !== undefined) this.parsedQuestions();

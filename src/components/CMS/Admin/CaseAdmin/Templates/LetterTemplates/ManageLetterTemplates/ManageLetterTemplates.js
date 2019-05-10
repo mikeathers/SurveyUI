@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import * as api from "api";
-
 import {
   validateListOfStrings,
   validateItems,
@@ -82,7 +81,6 @@ export default class ManageLetterTemplates extends Component {
   listToValidate = () => {
     return [
       { selectedTemplateId: this.state.selectedTemplateId },
-      { templateName: this.state.templateName },
       { fileName: this.state.fileName },
       { selectedTemplateName: this.state.selectedTemplateName },
       { selectedTemplatePath: this.state.selectedTemplatePath }
@@ -136,7 +134,7 @@ export default class ManageLetterTemplates extends Component {
         this.state.file,
         this.state.selectedTemplateName,
         fileName,
-        true,
+        this.props.username,
         this.state.selectedTemplateId
       )
       .then(res => {
@@ -176,7 +174,8 @@ export default class ManageLetterTemplates extends Component {
   removeLetterTemplate = id => {
     const template = {
       letterTemplateId: id,
-      path: this.state.selectedTemplatePath
+      path: this.state.selectedTemplatePath,
+      actionedBy: this.props.username
     };
     api.removeLetterTemplate(template).then(res => {
       if (this._isMounted) {

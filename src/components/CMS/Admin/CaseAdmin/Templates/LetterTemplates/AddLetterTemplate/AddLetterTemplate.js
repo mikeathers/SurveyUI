@@ -85,7 +85,7 @@ export default class AddLetterTemplate extends Component {
         this.state.file,
         this.state.templateName,
         fileName,
-        false,
+        this.props.username,
         0
       )
       .then(res => {

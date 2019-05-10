@@ -22,8 +22,7 @@ class CaseDocuments extends Component {
   render() {
     return (
       <Card title="Case Documents">
-        {this.props.documents !== undefined &&
-        this.props.documents.length > 0 ? (
+        {this.props.documents !== null && this.props.documents.length > 0 ? (
           this.props.documents.map((document, key) => (
             <CaseDocument
               document={document}

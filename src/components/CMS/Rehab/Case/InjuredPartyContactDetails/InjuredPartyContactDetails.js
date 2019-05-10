@@ -19,6 +19,7 @@ class InjuredPartyContactDetails extends Component {
       selectedId: "",
       addNew: false,
       showMessage: false,
+      errorMessage: false,
       message: "",
       modalOpen: false,
       removeModalOpen: false,
@@ -69,20 +70,36 @@ class InjuredPartyContactDetails extends Component {
         this.props.updateMi3dCase(res.data.result);
       });
     } else {
-      this.setState({ showMessage: true, message: res.data });
+      this.setState({
+        showMessage: true,
+        message: res.data,
+        errorMessage: true
+      });
       this.closeModal();
     }
   };
 
   updateNumber = newContactDetails => {
     api.updateInjuredPartyContactDetails(newContactDetails).then(res => {
-      if (this._isMounted) this.logActivity(res, "Update");
+      if (this._isMounted) {
+        this.setState({
+          message: "Contact number updated successfully.",
+          errorMessage: false
+        });
+        this.logActivity(res, "Update");
+      }
     });
   };
 
   saveNumber = newContactDetails => {
     api.addInjuredPartyContactDetails(newContactDetails).then(res => {
-      if (this._isMounted) this.logActivity(res, "Add");
+      if (this._isMounted) {
+        this.setState({
+          message: "Contact number saved successfully.",
+          errorMessage: false
+        });
+        this.logActivity(res, "Add");
+      }
     });
   };
 
@@ -99,6 +116,10 @@ class InjuredPartyContactDetails extends Component {
           );
           this.setState({ contactInfoToUpdate: newDetails });
         }
+        this.setState({
+          message: "Contact number removed successfully.",
+          errorMessage: false
+        });
         this.logActivity(res, "Remove");
       }
     });
@@ -157,7 +178,7 @@ class InjuredPartyContactDetails extends Component {
           <ButtonContainer marginTop={5} justifyContent="flex-end">
             <Message
               show={this.state.showMessage}
-              error={this.state.message !== ""}
+              error={this.state.errorMessage}
               message={this.state.message}
               marginRight={45}
             />

@@ -13,7 +13,7 @@ export default class Menu extends Component {
         <div className="side-menu__secondary">
           <Heading heading="Case Management" />
           <Secondary />
-          <Footer footer={`Premex ${new Date().getFullYear()} \u00A9`} />
+          <Footer footer={`3D Rehab ${new Date().getFullYear()} \u00A9`} />
         </div>
       </div>
     );

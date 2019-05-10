@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "dependencies": {
     "axios": "^0.18.0",
+    "dotenv": "^7.0.0",
     "draft-js": "^0.10.5",
     "draftjs-to-html": "^0.8.4",
     "highcharts-react-official": "^2.1.2",
@@ -35,7 +36,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build-dev": "SET REACT_APP_ENV=DEVELOPMENT&&react-scripts build",
+    "build-qa": "SET REACT_APP_ENV=QA&&react-scripts build",
+    "build-prod": "SET REACT_APP_ENV=PRODUCTION&&react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

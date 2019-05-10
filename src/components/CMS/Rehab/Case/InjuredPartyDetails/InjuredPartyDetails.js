@@ -14,7 +14,8 @@ class InjuredPartyDetails extends Component {
     this.state = {
       updating: false,
       showMessage: false,
-      message: ""
+      message: "",
+      errorMessage: false
     };
   }
 
@@ -46,13 +47,21 @@ class InjuredPartyDetails extends Component {
       if (res.status === 200) {
         this.props.updateBluedogCase(res.data);
         if (this._isMounted) {
-          this.setState({ showMessage: true });
+          this.setState({
+            showMessage: true,
+            message: "Injured party details updated successfully.",
+            errorMessage: false
+          });
           setTimeout(() => this.setState({ showMessage: false }), 3000);
           this.switchForms();
         }
       } else {
         if (this._isMounted)
-          this.setState({ showMessage: true, message: res.data });
+          this.setState({
+            showMessage: true,
+            message: res.data,
+            errorMessage: true
+          });
       }
     });
   };
@@ -77,7 +86,7 @@ class InjuredPartyDetails extends Component {
 
           <Message
             show={this.state.showMessage}
-            error={this.state.message !== ""}
+            error={this.state.errorMessage}
             message={this.state.message}
             justifyContent="flex-end"
             marginTop={-25}

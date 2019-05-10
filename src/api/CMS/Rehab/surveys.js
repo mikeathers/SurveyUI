@@ -1,7 +1,8 @@
 import axios from "axios";
 
-// const DEV_URL = "http://localhost:50601/api/";
-const DEV_URL = "http://premex.microservices.mi3d.cases.expedia.org/api/";
+import { getCasesEndpoint, env } from "endpoints";
+
+const DEV_URL = getCasesEndpoint(env);
 
 export const saveCompletedSurvey = async completedSurvey => {
   try {
@@ -17,13 +18,13 @@ export const saveCompletedSurvey = async completedSurvey => {
   }
 };
 
-export const getCompletedSurvey = async completedSurveyId => {
+export const getCompletedSurvey = async completedSurveyRequest => {
   try {
     const res = await axios({
       method: "POST",
       url: DEV_URL + "survey/getcompletedsurvey",
       dataType: "json",
-      data: { completedSurveyId }
+      data: completedSurveyRequest
     });
     return res.data;
   } catch (err) {

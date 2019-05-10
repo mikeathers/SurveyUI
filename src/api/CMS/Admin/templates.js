@@ -1,20 +1,20 @@
 import axios from "axios";
+import { getCasesEndpoint, env } from "endpoints";
 
-// const DEV_URL = "http://localhost:50601/api/";
-const DEV_URL = "http://premex.microservices.mi3d.cases.expedia.org/api/";
+const DEV_URL = getCasesEndpoint(env);
 
 export const uploadDocumentTemplate = async (
   file,
   templateName,
   fileName,
-  update,
+  actionedBy,
   letterTemplateId
 ) => {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("templateName", templateName);
   formData.append("fileName", fileName);
-  formData.append("update", update);
+  formData.append("actionedBy", actionedBy);
   formData.append("letterTemplateId", letterTemplateId);
   try {
     const res = await axios({
@@ -68,13 +68,13 @@ export const saveEmailTemplate = async template => {
   } catch (err) {}
 };
 
-export const removeEmailTemplate = async emailTemplateId => {
+export const removeEmailTemplate = async emailTemplateRequest => {
   try {
     const res = await axios({
       method: "POST",
       url: DEV_URL + "template/removeemailtemplate",
       dataType: "json",
-      data: { emailTemplateId }
+      data: emailTemplateRequest
     });
     return res;
   } catch (err) {}
@@ -106,13 +106,13 @@ export const getLetterTemplates = async () => {
   }
 };
 
-export const getEmailTemplate = async emailTemplateId => {
+export const getEmailTemplate = async emailTemplateRequest => {
   try {
     const res = await axios({
       method: "POST",
       url: DEV_URL + "template/getemailtemplate",
       dataType: "json",
-      data: { emailTemplateId }
+      data: emailTemplateRequest
     });
     return res;
   } catch (err) {}
@@ -133,8 +133,8 @@ export const removeLetterTemplate = async template => {
 export const downloadLetterTemplate = async path => {
   try {
     const res = await axios({
-      method: "POST",
       url: DEV_URL + "template/downloadlettertemplate",
+      method: "POST",
       dataType: "json",
       data: { path },
       contentType: "application/json; charset=utf-8",

@@ -31,10 +31,12 @@ class CallBacks extends Component {
       selectedCallBack: {},
       message: "",
       showMessage: false,
+      errorMessage: false,
       addModalMessage: "",
       showAddModalMessage: false,
       updateModalMessage: "",
-      showUpdateModal: false
+      showUpdateModal: false,
+      uncompletedCallBacks: false
     };
   }
 
@@ -63,8 +65,9 @@ class CallBacks extends Component {
     } else {
       if (this._isMounted) {
         this.setState({
-          showModalMessage: true,
-          modalMessage: res.data.errors[0].errorMessage
+          showMessage: true,
+          errorMessage: true,
+          message: res.data.errors[0].errorMessage
         });
       }
     }
@@ -73,6 +76,10 @@ class CallBacks extends Component {
   addCallback = callback => {
     this.setState({ addModalOpen: false });
     api.createCallBack(callback).then(res => {
+      this.setState({
+        message: "Callback has been added successfully.",
+        errorMessage: false
+      });
       this.validateResult(res);
     });
   };
@@ -85,6 +92,10 @@ class CallBacks extends Component {
     };
     this.setState({ removeModalOpen: false });
     api.removeCallBack(callBackToRemove).then(res => {
+      this.setState({
+        message: "Callback has been removed successfully.",
+        errorMessage: false
+      });
       this.validateResult(res);
     });
   };
@@ -92,22 +103,42 @@ class CallBacks extends Component {
   completeCallBack = callback => {
     this.setState({ updateModalOpen: false });
     api.completeCallBack(callback).then(res => {
+      this.setState({
+        message: "Callback has been completed successfully.",
+        errorMessage: false
+      });
       this.validateResult(res);
     });
   };
 
   rescheduleCallBack = callback => {
     this.setState({ updateModalOpen: false });
-    api.rescheduleCallBack(callback).then(res => {
-      this.validateResult(res);
-    });
+    if (this.completedCalls() < 8) {
+      api.rescheduleCallBack(callback).then(res => {
+        this.setState({
+          message: "Callback has been rescheduled successfully.",
+          errorMessage: false
+        });
+        this.validateResult(res);
+      });
+    } else {
+      this.showCallbackLimitReachedMessage();
+    }
   };
 
   moveInitialCallBack = callback => {
     this.setState({ updateModalOpen: false });
-    api.rescheduleCallBack(callback).then(res => {
-      this.validateResult(res);
-    });
+    if (this.completedCalls() < 8) {
+      api.rescheduleCallBack(callback).then(res => {
+        this.setState({
+          message: "Callback has been rescheduled successfully.",
+          errorMessage: false
+        });
+        this.validateResult(res);
+      });
+    } else {
+      this.showCallbackLimitReachedMessage();
+    }
   };
 
   callbacks = () => {
@@ -120,6 +151,27 @@ class CallBacks extends Component {
 
   completedCalls = () => {
     return this.callbacks().filter(m => m.completed === true).length;
+  };
+
+  isCallbackAllowed = () => {
+    if (this.callbacks().length > 0) {
+      if (this.callbacks().length > 8) return true;
+      else {
+        const uncompletedCallBacks = this.callbacks().filter(
+          m => m.completed !== true
+        );
+        if (uncompletedCallBacks.length > 0) return true;
+        return false;
+      }
+    }
+  };
+
+  showCallbackLimitReachedMessage = () => {
+    this.setState({
+      showMessage: true,
+      errorMessage: true,
+      message: "Callback limit reached, no more callbacks can be scheduled."
+    });
   };
 
   render() {
@@ -154,7 +206,11 @@ class CallBacks extends Component {
                       key={key}
                       callback={callback}
                       showRemoveModal={() => this.showRemoveModal(callback)}
-                      showUpdateModal={() => this.showUpdateModal(callback)}
+                      showUpdateModal={
+                        !callback.completed
+                          ? () => this.showUpdateModal(callback)
+                          : null
+                      }
                     />
                   ))}
                 </tbody>
@@ -174,11 +230,12 @@ class CallBacks extends Component {
           <ButtonContainer marginTop={10} justifyContent="flex-end">
             <Message
               show={this.state.showMessage}
-              error={this.state.message !== ""}
+              error={this.state.errorMessage}
               message={this.state.message}
               marginRight={45}
             />
             <Button
+              disabled={this.isCallbackAllowed()}
               content="Add a call back"
               primary
               onClick={() => this.setState({ addModalOpen: true })}

@@ -13,7 +13,7 @@ const Message = props => {
   return show ? (
     <div style={style} className="message" id={props.id}>
       <p className={classStyle}>
-        {error ? message : "Task completed successfully."}
+        {message !== undefined ? message : "Task completed successfully."}
       </p>
     </div>
   ) : null;

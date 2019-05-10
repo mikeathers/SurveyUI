@@ -16,18 +16,20 @@ const ActivityRow = props => (
 
 class CaseActivities extends Component {
   orderedActivities = () => {
-    return _.orderBy(
-      this.props.mi3dCase.caseActivities,
-      ["actionedOn"],
-      ["desc"]
-    );
+    if (this.props.mi3dCase !== null)
+      return _.orderBy(
+        this.props.mi3dCase.caseActivities,
+        ["actionedOn"],
+        ["desc"]
+      );
   };
 
   render() {
     return (
       <Card title="Case Activity">
         <div className="case-activity">
-          {this.orderedActivities().length > 0 ? (
+          {this.orderedActivities() !== undefined &&
+          this.orderedActivities().length > 0 ? (
             <table className="case-activity__table">
               <thead>
                 <tr>

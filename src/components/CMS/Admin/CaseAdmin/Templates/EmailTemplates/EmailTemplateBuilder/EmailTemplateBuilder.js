@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
@@ -29,7 +28,7 @@ import {
 import "../../../../../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./EmailTemplateBuilder.scss";
 
-class EmailTemplateBuilder extends Component {
+export default class EmailTemplateBuilder extends Component {
   _isMounted = false;
   constructor(props) {
     super(props);
@@ -150,7 +149,6 @@ class EmailTemplateBuilder extends Component {
 
   listToValidate = () => {
     return [
-      { emailTemplateId: this.state.emailTemplateId },
       { templateName: this.state.templateName },
       { selectedLetterTemplateId: this.state.selectedLetterTemplateId },
       { selectedCorrespondent: this.state.selectedCorrespondent },
@@ -209,7 +207,8 @@ class EmailTemplateBuilder extends Component {
       subject: this.state.emailSubject,
       lastUpdatedBy: this.props.username,
       createdBy:
-        this.state.selectedTemplate === null ? this.props.username : null
+        this.state.selectedTemplate === null ? this.props.username : null,
+      actionedBy: this.props.username
     };
     api.saveEmailTemplate(template).then(res => {
       if (this._isMounted) {
@@ -334,10 +333,3 @@ class EmailTemplateBuilder extends Component {
     );
   }
 }
-
-const mapStateToProps = state => ({
-  bluedogCase: state.case.selectedCase,
-  username: state.auth.user.name
-});
-
-export default connect(mapStateToProps)(EmailTemplateBuilder);

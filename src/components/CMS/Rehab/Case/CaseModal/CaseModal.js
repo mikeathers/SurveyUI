@@ -107,7 +107,13 @@ class CaseModal extends Component {
 
   handleReasonChange = (e, { name, value }) => {
     this.setState({ [name]: value });
-    api.getEmailTemplate(value).then(res => {
+
+    const emailTemplateRequest = {
+      emailTemplateId: value,
+      actionedBy: this.props.username
+    };
+
+    api.getEmailTemplate(emailTemplateRequest).then(res => {
       if (!res.data.hasErrors) {
         const emailTemplate = res.data.result;
         const emailContent = this.createHtmlEmailTemplate(
@@ -133,15 +139,25 @@ class CaseModal extends Component {
     const documentToCreate = this.state.documentToCreate;
     this.setState({ showLoader: true });
     api.createLetterDocument(documentToCreate).then(res => {
-      const letterPath = res.data.result;
-      const emailToSend = {
-        ...this.state.emailToSend,
-        attachments: [letterPath]
-      };
-      this.props.closeModal();
-      api.sendEmail(emailToSend).then(res => {
-        this.setState({ showLoader: false, isModalOpen: false });
-      });
+      if (!res.data.hasErrors) {
+        const letterPath = res.data.result;
+        const emailToSend = {
+          ...this.state.emailToSend,
+          attachments: [letterPath]
+        };
+        this.props.closeModal();
+        api.sendEmail(emailToSend).then(res => {
+          this.setState({ showLoader: false, isModalOpen: false });
+        });
+      } else {
+        const errors = {
+          errorMessages: res.data.errors.map(m => m.errorMessage),
+          serviceName: "DocumentBuilder",
+          functionName: "CreateDocument",
+          actionedBy: this.props.user.name
+        };
+        api.logErrors(errors);
+      }
     });
   };
 

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import { connect } from "react-redux";
 import EmailTemplatesList from "../EmailTemplatesList/EmailTemplatesList";
 import EmailTemplateBuilder from "../EmailTemplateBuilder/EmailTemplateBuilder";
 
@@ -7,7 +7,7 @@ import { Row, Col } from "components/Common";
 
 import "./EmailTemplates.scss";
 
-export default class EmailTemplates extends Component {
+class EmailTemplates extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -50,6 +50,8 @@ export default class EmailTemplates extends Component {
                 clearSelectedTemplate={this.clearSelectedTemplate}
                 clearForm={this.state.clearForm}
                 letterTemplates={this.state.letterTemplates}
+                username={this.props.username}
+                bluedogCase={this.props.bluedogCase}
               />
             </Col>
           </Row>
@@ -63,6 +65,7 @@ export default class EmailTemplates extends Component {
                 clearSelectedTemplate={this.clearSelectedTemplate}
                 clearForm={this.state.clearForm}
                 formCleared={this.formCleared}
+                username={this.props.username}
               />
             </Col>
           </Row>
@@ -71,3 +74,10 @@ export default class EmailTemplates extends Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  bluedogCase: state.case.selectedCase,
+  username: state.auth.user.name
+});
+
+export default connect(mapStateToProps)(EmailTemplates);

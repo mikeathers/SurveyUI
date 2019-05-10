@@ -1,7 +1,7 @@
 import axios from "axios";
+import { getCasesEndpoint, env } from "endpoints";
 
-// const DEV_URL = "http://premex.microservices.mi3d.cases.expedia.org/api/";
-const DEV_URL = "http://localhost:50601/api/";
+const DEV_URL = getCasesEndpoint(env);
 
 export const createCallBack = async callback => {
   try {
