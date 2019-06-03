@@ -63,8 +63,8 @@ class CaseNotes extends Component {
       actionedBy: this.props.user.name
     };
     api.createCaseNote(caseNote).then(res => {
-      if (!res.data.hasErrors) {
-        this.props.updateMi3dCase(res.data.result);
+      if (res.status === 200) {
+        this.props.updateMi3dCase(res.data);
         if (this._isMounted) {
           this.setState({
             showMessage: true,
@@ -93,8 +93,8 @@ class CaseNotes extends Component {
       actionedBy: this.props.user.name
     };
     api.updateCaseNote(caseNote).then(res => {
-      if (!res.data.hasErrors) {
-        this.props.updateMi3dCase(res.data.result);
+      if (res.status === 200) {
+        this.props.updateMi3dCase(res.data);
         if (this._isMounted) {
           this.setState({ showMessage: true, addNoteModalOpen: false });
           setTimeout(() => this.setState({ showMessage: false }), 3000);
@@ -122,8 +122,8 @@ class CaseNotes extends Component {
       actionedBy: this.props.user.name
     };
     api.removeCaseNote(caseNote).then(res => {
-      if (!res.data.hasErrors) {
-        this.props.updateMi3dCase(res.data.result);
+      if (res.status === 200) {
+        this.props.updateMi3dCase(res.data);
         if (this._isMounted) {
           this.setState({
             showMessage: true,

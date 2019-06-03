@@ -18,7 +18,7 @@ export const createCallBack = async callback => {
 export const removeCallBack = async callback => {
   try {
     const res = await axios({
-      method: "POST",
+      method: "DELETE",
       url: DEV_URL + "callback/removecallback",
       dataType: "json",
       data: callback

@@ -10,7 +10,7 @@
   color: $color_button_text;
 
   &:hover {
-    background-color: lighten($color: $color_primary, $amount: 5) !important;
+    background-color: darken($color: $color_primary, $amount: 5) !important;
   }
 }
 
@@ -19,7 +19,7 @@
   background-color: $color_slate_primary !important;
   min-height: 35px;
   &:hover {
-    background-color: lighten(
+    background-color: darken(
       $color: $color_slate_primary,
       $amount: 5
     ) !important;

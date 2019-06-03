@@ -59,7 +59,8 @@ export class Question extends Component {
     switch (result.question.type) {
       case "yesno":
         if (result.answer === result.question.knockout) {
-          if (result.question.instantKnockout) this.props.stopSurvey();
+          if (result.question.instantKnockout)
+            this.props.stopSurvey(result.question);
           else this.props.returnKnockout(result);
         } else {
           this.props.removeKnockoutFromList(result);
@@ -67,17 +68,22 @@ export class Question extends Component {
         break;
       case "selection":
         if (result.answer.length >= 3) {
-          if (result.question.instantKnockout) this.props.stopSurvey();
-          else this.props.returnKnockout(result);
+          this.props.returnSelectionKnockout(true);
         } else {
-          this.props.removeKnockoutFromList(result);
+          this.props.returnSelectionKnockout(false);
         }
         result.question.knockout["knockoutSelection"].forEach(combo => {
           if (checkIfArrayExistsInAnother(combo, result.answer)) {
-            if (result.question.instantKnockout) this.props.stopSurvey();
-            else this.props.returnKnockout(result);
+            this.props.returnSelectionKnockout(true);
           }
         });
+        break;
+      case "scale":
+        if (result.answer <= 3) {
+          this.props.returnKnockout(result);
+        } else {
+          this.props.removeKnockoutFromList(result);
+        }
         break;
       default:
         return;

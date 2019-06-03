@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import _ from "lodash";
+import moment from "moment";
 import { connect } from "react-redux";
 import { updateMi3dCase } from "actions";
 import * as api from "api";
@@ -19,6 +20,7 @@ import {
 } from "components/Common";
 
 import "./CallBacks.scss";
+import CallBackItem from "./CallBackItem/CallBackItem";
 
 class CallBacks extends Component {
   _isMounted = false;
@@ -56,8 +58,8 @@ class CallBacks extends Component {
   closeUpdateModal = () => this.setState({ updateModalOpen: false });
 
   validateResult = res => {
-    if (!res.data.hasErrors) {
-      this.props.updateMi3dCase(res.data.result);
+    if (res.status === 200) {
+      this.props.updateMi3dCase(res.data);
       if (this._isMounted) {
         this.setState({ showMessage: true });
         setTimeout(() => this.setState({ showMessage: false }), 3000);
@@ -94,7 +96,8 @@ class CallBacks extends Component {
     api.removeCallBack(callBackToRemove).then(res => {
       this.setState({
         message: "Callback has been removed successfully.",
-        errorMessage: false
+        errorMessage: false,
+        updateModalOpen: false
       });
       this.validateResult(res);
     });
@@ -215,6 +218,23 @@ class CallBacks extends Component {
                   ))}
                 </tbody>
               </table>
+
+              <div>
+                <div className="callback-list">
+                  {this.callbacks().map((callback, key) => (
+                    <CallBackItem
+                      key={key}
+                      callback={callback}
+                      showRemoveModal={() => this.showRemoveModal(callback)}
+                      showUpdateModal={
+                        !callback.completed
+                          ? () => this.showUpdateModal(callback)
+                          : null
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           ) : (
             <p className="light">No callbacks have been scheduled..</p>
@@ -264,12 +284,17 @@ class CallBacks extends Component {
           completeCallBack={this.completeCallBack}
           rescheduleCallBack={this.rescheduleCallBack}
           moveInitialCallBack={this.moveInitialCallBack}
+          showRemoveModal={() =>
+            this.showRemoveModal(this.state.selectedCallBack)
+          }
         />
         <Modal
           isModalOpen={this.state.removeModalOpen}
           title="Remove Call Back"
           message="Are you sure you want to remove this call back?"
-          item={this.state.selectedCallBack.timeToCall}
+          item={moment(this.state.selectedCallBack.timeToCall).format(
+            "DD/MM/YYYY hh:mm A"
+          )}
         >
           <ButtonContainer justifyContent="flex-end">
             <Button

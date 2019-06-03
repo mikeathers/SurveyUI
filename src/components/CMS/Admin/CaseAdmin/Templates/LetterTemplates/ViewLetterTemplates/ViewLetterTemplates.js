@@ -22,8 +22,8 @@ export default class ViewLetterTemplates extends Component {
   componentDidMount() {
     this._isMounted = true;
     api.getLetterTemplates().then(res => {
-      if (this._isMounted && !res.hasErrors) {
-        this.setState({ letterTemplates: res.result });
+      if (this._isMounted && res.status === 200) {
+        this.setState({ letterTemplates: res.data });
       }
     });
   }
@@ -41,7 +41,7 @@ export default class ViewLetterTemplates extends Component {
   download = (path, name) => {
     api.downloadLetterTemplate(path).then(res => {
       console.log(res);
-
+      console.log(path, name);
       var link = document.createElement("a");
       link.href = window.URL.createObjectURL(res.data);
       link.download = name;

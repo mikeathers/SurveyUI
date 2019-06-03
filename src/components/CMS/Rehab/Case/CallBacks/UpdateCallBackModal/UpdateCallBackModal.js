@@ -94,7 +94,6 @@ export default class UpdateCallBackModal extends Component {
       completedBy: this.props.user.name,
       caseId: this.props.mi3dCase.caseId,
       callBackId: this.props.callback.callBackId,
-      bluedogCaseRef: this.props.mi3dCase.bluedogCaseRef,
       actionedBy: this.props.user.name,
       callbackType
     };
@@ -200,13 +199,22 @@ export default class UpdateCallBackModal extends Component {
         </div>
         <hr />
         <div className="update-callback-modal__footer">
-          <ButtonContainer justifyContent="flex-end">
-            <Button content="Close" secondary onClick={this.closeModal} />
-            <Button
-              content={buttonContent}
-              primary
-              onClick={this.updateCallBack}
-            />
+          <ButtonContainer justifyContent="space-between">
+            <div>
+              <Button
+                content="Remove"
+                type="danger"
+                onClick={this.props.showRemoveModal}
+              />
+            </div>
+            <div>
+              <Button content="Close" secondary onClick={this.closeModal} />
+              <Button
+                content={buttonContent}
+                primary
+                onClick={this.updateCallBack}
+              />
+            </div>
           </ButtonContainer>
         </div>
       </Modal>

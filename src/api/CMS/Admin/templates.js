@@ -50,7 +50,7 @@ export const getTemplateStrings = async () => {
       url: DEV_URL + "template/gettemplatestrings",
       dataType: "json"
     });
-    return res.data;
+    return res;
   } catch (err) {
     return err;
   }
@@ -71,7 +71,7 @@ export const saveEmailTemplate = async template => {
 export const removeEmailTemplate = async emailTemplateRequest => {
   try {
     const res = await axios({
-      method: "POST",
+      method: "DELETE",
       url: DEV_URL + "template/removeemailtemplate",
       dataType: "json",
       data: emailTemplateRequest
@@ -87,7 +87,7 @@ export const getEmailTemplates = async () => {
       url: DEV_URL + "template/getemailtemplates",
       dataType: "json"
     });
-    return res.data;
+    return res;
   } catch (err) {
     return err;
   }
@@ -100,7 +100,7 @@ export const getLetterTemplates = async () => {
       url: DEV_URL + "template/getlettertemplates",
       dataType: "json"
     });
-    return res.data;
+    return res;
   } catch (err) {
     return err;
   }
@@ -121,7 +121,7 @@ export const getEmailTemplate = async emailTemplateRequest => {
 export const removeLetterTemplate = async template => {
   try {
     const res = await axios({
-      method: "POST",
+      method: "DELETE",
       url: DEV_URL + "template/removelettertemplate",
       dataType: "json",
       data: template

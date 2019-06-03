@@ -90,10 +90,10 @@ export default class AddLetterTemplate extends Component {
       )
       .then(res => {
         if (this._isMounted) {
-          if (!res.data.hasErrors) {
+          if (res.status === 200) {
             this.setState({ showMessage: true });
             this.clearForm();
-            this.props.getLetterTemplates(res.data.result);
+            this.props.getLetterTemplates(res.data);
             setTimeout(() => this.setState({ showMessage: false }), 3000);
           } else {
             this.setState({

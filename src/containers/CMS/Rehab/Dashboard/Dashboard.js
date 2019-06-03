@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { Container, Row, Col, Statistic } from "components/Common";

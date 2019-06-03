@@ -35,8 +35,8 @@ export default class EmailTemplatesList extends Component {
     this._isMounted = true;
     api.getEmailTemplates().then(res => {
       if (this._isMounted) {
-        this.setState({ emailTemplates: res.result }, () =>
-          this.emailTemplatesForDropdown(res.result)
+        this.setState({ emailTemplates: res.data }, () =>
+          this.emailTemplatesForDropdown(res.data)
         );
       }
     });
@@ -49,8 +49,8 @@ export default class EmailTemplatesList extends Component {
     }
     api.getEmailTemplates().then(res => {
       if (this._isMounted) {
-        this.setState({ emailTemplates: res.result }, () =>
-          this.emailTemplatesForDropdown(res.result)
+        this.setState({ emailTemplates: res.data }, () =>
+          this.emailTemplatesForDropdown(res.data)
         );
       }
     });
@@ -89,13 +89,13 @@ export default class EmailTemplatesList extends Component {
     };
     api.removeEmailTemplate(removeEmailTemplateRequest).then(res => {
       if (this._isMounted) {
-        if (!res.data.hasErrors) {
+        if (res.status === 200) {
           this.setState({
-            emailTemplates: res.data.result,
+            emailTemplates: res.data.data,
             removeModalOpen: false,
             selectedTemplate: null
           });
-          this.emailTemplatesForDropdown(res.data.result);
+          this.emailTemplatesForDropdown(res.data.data);
           this.clearSelectedTemplate();
 
           this.setState({ showMessage: true });

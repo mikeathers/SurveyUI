@@ -36,7 +36,7 @@ class Cases extends Component {
     api.getAllCases().then(res => {
       if (this._isMounted) {
         if (!this.checkForErrors(res, "modal")) {
-          this.setState({ cases: res.data.result });
+          this.setState({ cases: res.data });
         }
       }
     });
@@ -45,7 +45,7 @@ class Cases extends Component {
   getCase = caseId => {
     api.getCase(caseId).then(res => {
       if (!this.checkForErrors(res, "modal")) {
-        this.props.updateMi3dCase(res.data.result);
+        this.props.updateMi3dCase(res.data);
       }
     });
   };

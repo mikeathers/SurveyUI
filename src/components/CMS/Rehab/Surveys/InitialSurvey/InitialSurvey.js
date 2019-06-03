@@ -1,15 +1,15 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import _ from "lodash";
-import { updateMi3dCase, selectSecondaryItem } from "actions";
+import { connect } from "react-redux";
 import * as api from "api";
-import { Card, ButtonContainer, Button } from "components/Common";
+import { updateMi3dCase, selectSecondaryItem } from "actions";
+import { injuredPartyDetailsForDocument } from "helpers/util";
+import { initialKnockoutGiven } from "emailTemplates";
 import QuestionGroup from "components/CMS/Rehab/Surveys/QuestionGroup/QuestionGroup";
 import questions from "questions/initialSurveyQuestions";
 import KnockoutModal from "../KnockoutModal/KnockoutModal";
-import { injuredPartyDetailsForDocument } from "helpers/util";
-
-import { initialKnockoutGiven } from "emailTemplates";
+import SurveyBuilder from "components/CMS/Rehab/Surveys/SurveyBuilder/SurveyBuilder";
+import { Card, ButtonContainer, Button, Row, Col } from "components/Common";
 
 import "./InitialSurvey.scss";
 
@@ -18,14 +18,15 @@ class InitialSurvey extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      completed: false,
       completedQuestions: [],
       survey: {},
       parsedQuestions: null,
       knockouts: [],
       knockoutModalOpen: false,
-      update: false,
       documentId: "",
-      documentPath: ""
+      documentPath: "",
+      selectionKnockout: false
     };
   }
 
@@ -42,7 +43,7 @@ class InitialSurvey extends Component {
         m => m.name === "Initial Survey"
       ).caseDocumentId;
 
-      this.setState({ documentId });
+      this.setState({ documentId, completed: true });
 
       const completedSurveyRequest = {
         completedSurveyId,
@@ -51,7 +52,7 @@ class InitialSurvey extends Component {
 
       api.getCompletedSurvey(completedSurveyRequest).then(res => {
         if (this._isMounted) {
-          this.setState({ survey: res.result, update: true }, () => {
+          this.setState({ survey: res.data, update: true }, () => {
             this.setState({
               completedQuestions: this.parsedCompletedQuestions()
             });
@@ -149,49 +150,6 @@ class InitialSurvey extends Component {
     };
   };
 
-  createSurveyDocument = () => {
-    return api
-      .createSurveyDocument(this.surveyForDocumentBuilder())
-      .then(res => {
-        if (!res.data.hasErrors) {
-          if (!this.state.update) {
-            const documentPath = res.data.result;
-            api
-              .addDocumentToCase(this.surveyDocumentForCase(documentPath))
-              .then(res => {
-                this.props.updateMi3dCase(res.data.result);
-              });
-            return documentPath;
-          } else {
-            const documentPath = res.data.result;
-            api
-              .updateDocumentOnCase(
-                this.surveyDocumentForCase(documentPath, this.state.documentId)
-              )
-              .then(res => {
-                this.props.updateMi3dCase(res.data.result);
-              });
-            const document = {
-              path: documentPath,
-              filename: "Initial Survey",
-              bluedogCaseRef: this.props.bluedogCase.bluedogCaseRef
-            };
-            api.addDocumentToBluedogCase(document).then(res => {});
-            return documentPath;
-          }
-        } else {
-          console.log(res);
-          const errors = {
-            errorMessages: res.data.errors.map(m => m.errorMessage),
-            serviceName: "DocumentBuilder",
-            functionName: "CreateSurveyDocument",
-            actionedBy: this.props.username
-          };
-          api.logErrors(errors);
-        }
-      });
-  };
-
   emailToSend = documentPath => {
     return {
       attachments: [documentPath],
@@ -202,22 +160,53 @@ class InitialSurvey extends Component {
     };
   };
 
+  createSurveyDocument = () => {
+    return api
+      .createSurveyDocument(this.surveyForDocumentBuilder())
+      .then(res => {
+        if (res.status === 200) {
+          const documentPath = res.data;
+          api
+            .addDocumentToCase(this.surveyDocumentForCase(documentPath))
+            .then(res => {
+              this.props.updateMi3dCase(res.data);
+            });
+          const document = {
+            path: documentPath,
+            filename: "Initial Survey",
+            bluedogCaseRef: this.props.bluedogCase.bluedogCaseRef
+          };
+          api.addDocumentToBluedogCase(document).then(res => {});
+          return documentPath;
+        } else {
+          const errors = {
+            errorMessages: res.data,
+            serviceName: "DocumentBuilder",
+            functionName: "CreateSurveyDocument",
+            actionedBy: this.props.username
+          };
+          api.logErrors(errors);
+        }
+      });
+  };
+
   submitSurvey = () => {
-    if (this.state.knockouts.length > 0) {
+    if (this.state.knockouts.length === 4) {
       this.setState({ knockoutModalOpen: true });
       const completedSurvey = this.completedSurvey("Initial");
       api.saveCompletedSurvey(completedSurvey);
-      this.createSurveyDocument().then(documentPath => {
-        api
-          .sendEmail(this.emailToSend(documentPath))
-          .then(res => console.log(res));
-      });
+      this.createSurveyDocument();
+      // this.createSurveyDocument().then(documentPath => {
+      //   api
+      //     .sendEmail(this.emailToSend(documentPath))
+      //     .then(res => console.log(res));
+      // });
     } else {
       const completedSurvey = this.completedSurvey("Initial");
       api.saveCompletedSurvey(completedSurvey).then(res => {
-        this.props.updateMi3dCase(res.result);
+        this.props.updateMi3dCase(res.data);
         this.props.selectSecondaryItem("Cases");
-        this.props.history.push(`/cms/rehab/case/${res.result.bluedogCaseRef}`);
+        this.props.history.push(`/cms/rehab/case/${res.data.bluedogCaseRef}`);
       });
       this.createSurveyDocument();
     }
@@ -260,6 +249,10 @@ class InitialSurvey extends Component {
     }
   };
 
+  returnSelectionKnockout = result => {
+    this.setState({ selectionKnockout: result });
+  };
+
   returnKnockout = result => {
     const updatedKnockouts = this.state.knockouts
       .filter(m => m.id !== result.id)
@@ -279,32 +272,64 @@ class InitialSurvey extends Component {
 
   render() {
     return (
-      <Card
-        title="General Questions"
-        collapse={true}
-        isOpenByDefault={true}
-        disabled={!this.props.mi3dCase.dpaAccepted}
-      >
-        <QuestionGroup
-          questions={questions}
-          returnQuestions={this.returnQuestions}
-          completedQuestions={this.parsedCompletedQuestions()}
-          returnKnockout={this.returnKnockout}
-          removeKnockoutFromList={this.removeKnockoutFromList}
-        />
-        <ButtonContainer
-          marginTop="25"
-          marginBottom="5"
-          justifyContent="flex-end"
-        >
-          <Button content="Submit Survey" primary onClick={this.submitSurvey} />
-        </ButtonContainer>
-        <KnockoutModal
-          isModalOpen={this.state.knockoutModalOpen}
-          closeModal={() => this.setState({ knockoutModalOpen: false })}
-          knockouts={this.state.knockouts}
-        />
-      </Card>
+      <Row>
+        {/* LEFT SIDE  */}
+        <Col lg={6} sm={12}>
+          <Row>
+            <Col sm={12}>
+              <Card
+                title="Triage Questions"
+                disabled={
+                  !this.props.mi3dCase.dpaAccepted || this.state.completed
+                }
+              >
+                <QuestionGroup
+                  questions={questions}
+                  returnQuestions={this.returnQuestions}
+                  completedQuestions={this.parsedCompletedQuestions()}
+                  returnSelectionKnockout={this.returnSelectionKnockout}
+                  returnKnockout={this.returnKnockout}
+                  removeKnockoutFromList={this.removeKnockoutFromList}
+                />
+
+                <ButtonContainer
+                  marginTop="25"
+                  marginBottom="5"
+                  justifyContent="flex-end"
+                >
+                  <Button
+                    content="Submit Survey"
+                    primary
+                    onClick={this.submitSurvey}
+                  />
+                </ButtonContainer>
+
+                <KnockoutModal
+                  isModalOpen={this.state.knockoutModalOpen}
+                  closeModal={() => this.setState({ knockoutModalOpen: false })}
+                  knockouts={this.state.knockouts}
+                />
+              </Card>
+            </Col>
+          </Row>
+        </Col>
+        {/* END OF LEFT SIDE  */}
+
+        {/* RIGHT SIDE */}
+        <Col lg={6} sm={12}>
+          <Row>
+            <Col sm={12}>
+              <SurveyBuilder
+                completedQuestions={this.state.completedQuestions}
+                mi3dCase={this.props.mi3dCase}
+                bdCase={this.props.bluedogCase}
+                username={this.props.username}
+              />
+            </Col>
+          </Row>
+        </Col>
+        {/* END OF RIGHT SIDE */}
+      </Row>
     );
   }
 }

@@ -25,7 +25,6 @@ export const createSurveyDocument = async survey => {
       dataType: "json",
       data: survey
     });
-    console.log(res);
     return res;
   } catch (err) {}
 };

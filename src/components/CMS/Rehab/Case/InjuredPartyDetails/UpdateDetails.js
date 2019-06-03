@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import DatePicker from "react-datepicker";
 import moment from "moment";
 import {
   FormGroup,
@@ -17,6 +18,8 @@ import {
   setItemToValidate
 } from "helpers/validation";
 
+import "./InjuredPartyDetails.scss";
+
 export default class UpdateDetails extends Component {
   constructor(props) {
     super(props);
@@ -26,13 +29,13 @@ export default class UpdateDetails extends Component {
       firstName: props.case.firstName,
       lastName: props.case.lastName,
       email: props.case.email,
-      dateOfBirth: props.case.dateOfBirth,
       address1: props.case.address1,
       address2: props.case.address2,
       address3: props.case.address3,
       address4: props.case.address4,
       houseNo: props.case.houseNo,
-      postCode: props.case.postCode
+      postCode: props.case.postCode,
+      dateOfBirth: new Date(props.case.dateOfBirth)
     };
 
     this.setItemToValidate = setItemToValidate.bind(this);
@@ -87,21 +90,23 @@ export default class UpdateDetails extends Component {
     this.props.switchForms();
   };
 
+  handleDateChange = date => this.setState({ dateOfBirth: date });
+
   render() {
     const {
       firstName,
       lastName,
       email,
-      dateOfBirth,
       address1,
       address2,
       address3,
       address4,
       houseNo,
-      postCode
+      postCode,
+      dateOfBirth
     } = this.state;
     return (
-      <div>
+      <div className="update-injured-party-details">
         <FormRow>
           <FormGroup inline>
             <Label text="First Name:" />
@@ -187,11 +192,18 @@ export default class UpdateDetails extends Component {
           </FormGroup>
           <FormGroup inline>
             <Label text="Date of Birth" />
-            <Input
+            {/* <Input
               value={moment(dateOfBirth).format("DD/MM/YYYY")}
               name="dateOfBirth"
               onChange={this.handleChange}
               valid={this.validateItem("dateOfBirth").toString()}
+            /> */}
+            <DatePicker
+              selected={dateOfBirth}
+              onChange={this.handleDateChange}
+              timeIntervals={15}
+              dateFormat="dd/MM/yyyy"
+              timeCaption="time"
             />
           </FormGroup>
         </FormRow>

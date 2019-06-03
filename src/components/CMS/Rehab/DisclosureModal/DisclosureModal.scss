@@ -1,0 +1,42 @@
+.disclosure-modal {
+  position: relative;
+  background: #fff;
+  border: #9999 1px solid;
+  display: block;
+  padding: 20px;
+  overflow: visible;
+
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-40%, -50%);
+  width: 60%;
+  z-index: 2 !important;
+
+  -webkit-box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
+  box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
+
+  &__title {
+    margin: 0 0 10px 0;
+    font-weight: 300;
+    height: 30px;
+  }
+
+  &__body {
+    font-size: 16px;
+    font-weight: 300;
+    padding-left: 10px;
+    word-break: break-word;
+  }
+
+  &__footer {
+    padding: 0 10px;
+  }
+
+  &__bold {
+    font-weight: 500;
+    font-style: italic;
+  }
+}

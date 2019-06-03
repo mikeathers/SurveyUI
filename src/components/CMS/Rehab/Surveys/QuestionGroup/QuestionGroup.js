@@ -11,7 +11,8 @@ export default class QuestionGroup extends Component {
       completedQuestions: [],
       caseModalOpen: false,
       updatedQuestions: [],
-      receivedProps: false
+      receivedProps: false,
+      knockoutQuestion: {}
     };
   }
 
@@ -48,8 +49,8 @@ export default class QuestionGroup extends Component {
     });
   };
 
-  stopSurvey = () => {
-    this.setState({ caseModalOpen: true });
+  stopSurvey = knockoutQuestion => {
+    this.setState({ caseModalOpen: true, knockoutQuestion });
   };
 
   submitSurvey = () => {
@@ -77,6 +78,7 @@ export default class QuestionGroup extends Component {
               returnCompletedQuestion={this.returnCompletedQuestion}
               removeQuestionFromList={this.removeQuestionFromList}
               stopSurvey={this.stopSurvey}
+              returnSelectionKnockout={this.props.returnSelectionKnockout}
               returnKnockout={this.props.returnKnockout}
               removeKnockoutFromList={this.props.removeKnockoutFromList}
               answer={this.returnAnswer(key)}
@@ -90,7 +92,7 @@ export default class QuestionGroup extends Component {
           closeModal={() => this.setState({ caseModalOpen: false })}
           reasonText="Reason for closing the case:"
           modalHeight="450"
-          text={text}
+          text={this.state.knockoutQuestion.knockoutText}
         />
       </div>
     );

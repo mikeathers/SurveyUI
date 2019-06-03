@@ -12,7 +12,7 @@ export const saveCompletedSurvey = async completedSurvey => {
       dataType: "json",
       data: completedSurvey
     });
-    return res.data;
+    return res;
   } catch (err) {
     return err;
   }
@@ -26,7 +26,7 @@ export const getCompletedSurvey = async completedSurveyRequest => {
       dataType: "json",
       data: completedSurveyRequest
     });
-    return res.data;
+    return res;
   } catch (err) {
     return err;
   }

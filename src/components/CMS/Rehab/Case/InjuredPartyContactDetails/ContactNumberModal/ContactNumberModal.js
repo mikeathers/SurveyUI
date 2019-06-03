@@ -23,8 +23,6 @@ import {
 
 import "./ContactNumberModal.scss";
 
-// Modal.setAppElement("#root");
-
 class ContactNumberModal extends Component {
   constructor(props) {
     super(props);
@@ -151,6 +149,7 @@ class ContactNumberModal extends Component {
                 name="contactNumber"
                 onChange={this.handleChange}
                 valid={this.validateItem("contactNumber").toString()}
+                type="number"
               />
             </FormGroup>
           </FormRow>
@@ -169,13 +168,22 @@ class ContactNumberModal extends Component {
         </div>
         <hr />
         <div className="contact-modal__footer">
-          <ButtonContainer justifyContent="flex-end" marginTop={15}>
-            <Button content="Close" secondary onClick={this.closeModal} />
-            <Button
-              content={this.props.addNew ? "Add" : "Update"}
-              primary
-              onClick={this.saveNumber}
-            />
+          <ButtonContainer justifyContent="space-between" marginTop={15}>
+            <div>
+              <Button
+                content="Remove"
+                type="danger"
+                onClick={this.props.showRemoveModal}
+              />
+            </div>
+            <div>
+              <Button content="Close" secondary onClick={this.closeModal} />
+              <Button
+                content={this.props.addNew ? "Add" : "Update"}
+                primary
+                onClick={this.saveNumber}
+              />
+            </div>
           </ButtonContainer>
         </div>
       </Modal>

@@ -39,7 +39,8 @@ export default class ManageLetterTemplates extends Component {
       letterTemplates: [],
       removeModalOpen: false,
       showMessage: false,
-      message: ""
+      message: "",
+      errorMessage: false
     };
 
     this.setItemToValidate = setItemToValidate.bind(this);
@@ -52,9 +53,9 @@ export default class ManageLetterTemplates extends Component {
     this._isMounted = true;
     api.getLetterTemplates().then(res => {
       if (this._isMounted) {
-        this.setState({ letterTemplates: res.result }, () =>
-          this.letterTemplatesForDropdown(res.result)
-        );
+        this.setState({ letterTemplates: res.data }, () => {
+          this.letterTemplatesForDropdown(res.data);
+        });
       }
     });
   }
@@ -66,9 +67,9 @@ export default class ManageLetterTemplates extends Component {
   componentWillReceiveProps() {
     api.getLetterTemplates().then(res => {
       if (this._isMounted) {
-        this.setState({ letterTemplates: res.result }, () =>
-          this.letterTemplatesForDropdown(res.result)
-        );
+        this.setState({ letterTemplates: res.data }, () => {
+          this.letterTemplatesForDropdown(res.data);
+        });
       }
     });
   }
@@ -139,24 +140,25 @@ export default class ManageLetterTemplates extends Component {
       )
       .then(res => {
         if (this._isMounted) {
-          if (!res.data.hasErrors) {
+          if (res.status === 200) {
             this.setState(
               {
-                letterTemplates: res.data.result,
+                letterTemplates: res.data,
                 showMessage: true,
-                removeModalOpen: false
+                removeModalOpen: false,
+                message: "Template updated successfully"
               },
-              () => this.letterTemplatesForDropdown(res.data.result)
+              () => this.letterTemplatesForDropdown(res.data)
             );
             this.clearForm();
-            this.props.getLetterTemplates(res.data.result);
-            setTimeout(() => this.setState({ showMessage: false }), 3000);
+            this.props.getLetterTemplates(res.data);
           } else {
             this.setState({
               showMessage: true,
-              message: res.data.errors[0].message
+              errorMessage: true,
+              message: res.data[0].message
             });
-            setTimeout(() => this.setState({ showMessage: false }), 3000);
+            this.hideMessage();
           }
         }
       });
@@ -179,25 +181,26 @@ export default class ManageLetterTemplates extends Component {
     };
     api.removeLetterTemplate(template).then(res => {
       if (this._isMounted) {
-        if (!res.data.hasErrors) {
+        if (res.status === 200) {
           this.setState(
             {
-              letterTemplates: res.data.result,
+              letterTemplates: res.data,
               showMessage: true,
-              removeModalOpen: false
+              removeModalOpen: false,
+              message: "Template removed successfully."
             },
-            () => this.letterTemplatesForDropdown(res.data.result)
+            () => this.letterTemplatesForDropdown(res.data)
           );
           this.clearForm();
-          this.props.getLetterTemplates(res.data.result);
-          setTimeout(() => this.setState({ showMessage: false }), 3000);
+          this.props.getLetterTemplates(res.data);
         } else {
           this.setState({
             removeModalOpen: false,
             showMessage: true,
-            message: res.data.errors[0].errorMessage
+            message: res.data[0].errorMessage,
+            errorMessage: true
           });
-          setTimeout(() => this.setState({ showMessage: false }), 6000);
+          this.hideMessage(6000);
         }
       }
     });
@@ -214,15 +217,26 @@ export default class ManageLetterTemplates extends Component {
   };
 
   clearForm = () => {
-    this.setState({
-      file: null,
-      templateName: "",
-      fileName: "",
-      selectedTemplate: null,
-      selectedTemplateName: "",
-      selectedTemplatePath: "",
-      selectedTemplateId: ""
-    });
+    if (this._isMounted) {
+      this.setState({
+        file: null,
+        templateName: "",
+        fileName: "",
+        selectedTemplate: null,
+        selectedTemplateName: "",
+        selectedTemplatePath: "",
+        selectedTemplateId: ""
+      });
+      setTimeout(() => this.setState({ showMessage: false }), 3000);
+    }
+  };
+
+  hideErrorMessage = () => {
+    if (this._isMounted)
+      setTimeout(
+        () => this.setState({ showMessage: false, errorMessage: false }),
+        6000
+      );
   };
 
   render() {
@@ -286,12 +300,12 @@ export default class ManageLetterTemplates extends Component {
               />
             </div>
           </ButtonContainer>
-          <FlexBox>
+          <FlexBox justifyContent="flex-end">
             <Message
               show={this.state.showMessage}
-              error={this.state.message !== ""}
               message={this.state.message}
               marginTop="25"
+              error={this.state.errorMessage}
             />
           </FlexBox>
         </div>

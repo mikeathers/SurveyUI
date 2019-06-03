@@ -22,8 +22,8 @@ class DPAScript extends Component {
       actionedBy: this.props.username
     };
     api.agreeToDpa(dpa).then(res => {
-      if (!res.data.hasErrors) {
-        this.props.updateMi3dCase(res.data.result);
+      if (res.status === 200) {
+        this.props.updateMi3dCase(res.data);
       }
     });
   };
@@ -35,8 +35,8 @@ class DPAScript extends Component {
       actionedBy: this.props.username
     };
     api.agreeToDpa(dpa).then(res => {
-      if (!res.data.hasErrors) {
-        this.props.updateMi3dCase(res.data.result);
+      if (res.status === 200) {
+        this.props.updateMi3dCase(res.data);
       }
     });
   };

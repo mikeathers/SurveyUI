@@ -1,0 +1,22 @@
+.clinician-survey-actions {
+  position: fixed;
+  transition: all 0.3s ease;
+  &__container {
+    margin-bottom: 20px;
+  }
+  &__followup {
+    display: flex;
+    margin-left: 10px;
+
+    & p {
+      margin-bottom: 10px;
+    }
+  }
+  &__followup2 {
+    margin-left: 30px;
+  }
+
+  &__strong {
+    font-weight: 800;
+  }
+}

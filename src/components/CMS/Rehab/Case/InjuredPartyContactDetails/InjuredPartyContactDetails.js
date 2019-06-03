@@ -6,7 +6,7 @@ import * as api from "api";
 import { Card, Button, ButtonContainer, Message } from "components/Common";
 import ContactNumberModal from "./ContactNumberModal/ContactNumberModal";
 import RemoveNumberModal from "./RemoveNumberModal/RemoveNumberModal";
-import ContactRow from "./ContactRow/ContactRow";
+import ContactItem from "./ContactItem/ContactItem";
 
 import "./InjuredPartyContactDetails.scss";
 
@@ -67,7 +67,7 @@ class InjuredPartyContactDetails extends Component {
         actionedBy: this.props.user.name
       };
       api.logUpdateToContactDetailsActivity(activity).then(res => {
-        this.props.updateMi3dCase(res.data.result);
+        this.props.updateMi3dCase(res.data);
       });
     } else {
       this.setState({
@@ -111,10 +111,10 @@ class InjuredPartyContactDetails extends Component {
     api.removeInjuredPartyContactDetails(contactInfo).then(res => {
       if (this._isMounted) {
         if (res.status === 200) {
-          const newDetails = res.data.telephoneInfo.find(
-            m => m.contactNumberId === this.state.selectedId
-          );
-          this.setState({ contactInfoToUpdate: newDetails });
+          // const newDetails = res.data.telephoneInfo.find(
+          //   m => m.contactNumberId === this.state.selectedId
+          // );
+          this.setState({ contactInfoToUpdate: {} });
         }
         this.setState({
           message: "Contact number removed successfully.",
@@ -140,7 +140,7 @@ class InjuredPartyContactDetails extends Component {
     return (
       <Card title="Contact Details" collapse={false}>
         <div>
-          <table className="contact-details-table">
+          {/* <table className="contact-details-table">
             <thead>
               <tr>
                 <td>
@@ -174,7 +174,19 @@ class InjuredPartyContactDetails extends Component {
                 );
               })}
             </tbody>
-          </table>
+          </table> */}
+          {this.props.case.telephoneInfo.map((info, key) => {
+            return (
+              <ContactItem
+                info={info}
+                key={key}
+                updateContactInfo={() => this.updateContactInfo(info)}
+                showRemoveModal={() =>
+                  this.showRemoveModal(info.contactNumberId, info.contactNumber)
+                }
+              />
+            );
+          })}
           <ButtonContainer marginTop={5} justifyContent="flex-end">
             <Message
               show={this.state.showMessage}
@@ -202,6 +214,12 @@ class InjuredPartyContactDetails extends Component {
             bluedogCaseRef={this.props.case.bluedogCaseRef}
             partyId={this.props.case.partyId}
             addNew={this.state.addNew}
+            showRemoveModal={() =>
+              this.showRemoveModal(
+                this.state.contactInfoToUpdate.contactNumberId,
+                this.state.contactInfoToUpdate.contactNumber
+              )
+            }
           />
           <RemoveNumberModal
             isModalOpen={this.state.removeModalOpen}

@@ -54,8 +54,9 @@ export default class EmailTemplateBuilder extends Component {
   componentDidMount() {
     this._isMounted = true;
     api.getTemplateStrings().then(res => {
+      console.log(res);
       if (this._isMounted) {
-        const templateStrings = res.result.map((string, key) => ({
+        const templateStrings = res.data.map((string, key) => ({
           text: `{${string}}}`,
           value: `{${string}}}`
         }));
@@ -64,9 +65,10 @@ export default class EmailTemplateBuilder extends Component {
     });
 
     api.getLetterTemplates().then(res => {
+      console.log(res);
       if (this._isMounted) {
-        if (!res.hasErrors) {
-          this.letterTemplatesForDropdown(res.result);
+        if (res.status === 200) {
+          this.letterTemplatesForDropdown(res.data);
         }
       }
     });
@@ -128,9 +130,9 @@ export default class EmailTemplateBuilder extends Component {
     }
 
     api.getLetterTemplates().then(res => {
-      if (!res.hasErrors) {
+      if (res.status === 200) {
         if (this._isMounted) {
-          this.letterTemplatesForDropdown(res.result);
+          this.letterTemplatesForDropdown(res.data);
         }
       }
     });
@@ -168,7 +170,7 @@ export default class EmailTemplateBuilder extends Component {
   //   new Promise((resolve, reject) => {
   //     api.uploadEmailTemplateImage(file).then(res => {
   //       if (this._isMounted) {
-  //         if (!res.data.hasErrors) {
+  //         if (res.status === 200) {
   //           const img = resolve({
   //             data: {
   //               link: img
@@ -212,12 +214,12 @@ export default class EmailTemplateBuilder extends Component {
     };
     api.saveEmailTemplate(template).then(res => {
       if (this._isMounted) {
-        if (!res.hasErrors) {
+        if (res.status === 200) {
           this.setState({ showMessage: true });
           setTimeout(() => this.setState({ showMessage: false }), 3000);
 
-          this.setState({ emailTemplates: res.data.result });
-          this.props.getEmailTemplates(res.data.result);
+          this.setState({ emailTemplates: res.data.data });
+          this.props.getEmailTemplates(res.data.data);
           this.props.clearSelectedTemplate();
         }
       }

@@ -30,7 +30,7 @@ class CallBacks extends Component {
     api.getCallBacks().then(res => {
       if (this._isMounted) {
         if (!this.checkForErrors(res, "modal")) {
-          this.setState({ callbacks: res.data.result });
+          this.setState({ callbacks: res.data });
         } else {
           this.setState({ showErrorModal: true });
         }
@@ -45,7 +45,7 @@ class CallBacks extends Component {
   getCase = caseId => {
     return api.getCase(caseId).then(res => {
       if (!this.checkForErrors(res, "modal")) {
-        this.props.updateMi3dCase(res.data.result);
+        this.props.updateMi3dCase(res.data);
       } else {
         this.setState({ showErrorModal: true });
       }

@@ -19,23 +19,15 @@ export default class KnockoutModal extends Component {
   };
 
   render() {
-    const height = 210 + this.props.knockouts.length * 68;
-
-    const customStyles = {
-      content: {
-        height: `${height}px`
-      }
-    };
     return (
       <Modal
         ariaHideApp={false}
         isOpen={this.props.isModalOpen}
         contentLabel="Knockout Modal"
         className="knockout-modal"
-        style={customStyles}
       >
         <div className="knockout-modal__title">
-          <h3>Case not eligible for Mi3D</h3>
+          <h3>Injured Party does not need treatment</h3>
         </div>
         <hr />
         <div className="knockout-modal__body">

@@ -10,9 +10,8 @@
   left: 50%;
   right: auto;
   bottom: auto;
-  transform: translate(-50%, -50%);
-  height: 380px;
-  width: 610px;
+  transform: translate(-40%, -50%);
+  width: 45%;
   z-index: 2 !important;
 
   -webkit-box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
@@ -22,22 +21,15 @@
   &__title {
     margin: 0 0 10px 0;
     font-weight: 300;
-    height: 20px;
+    height: 24px;
   }
 
   &__text {
-    display: flex;
-    flex-wrap: wrap;
     font-weight: 700;
-    word-wrap: wrap;
-    word-break: break-all;
+    font-style: italic;
   }
 
   &__body {
-    font-size: 16px;
-    font-weight: 300;
-    margin: 0 0 15px 0;
-    word-break: break-all;
-    height: 230px;
+    padding: 0 10px;
   }
 }

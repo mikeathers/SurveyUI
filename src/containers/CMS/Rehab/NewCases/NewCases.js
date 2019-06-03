@@ -48,28 +48,25 @@ class NewCases extends Component {
   };
 
   getInjuredPartyDetails = openedCase => {
-    return api
-      .getInjuredPartyDetails(openedCase.bluedogCaseRef)
-      .then(returnedCase => {
-        this.props.selectBluedogCase(returnedCase);
-        if (!this.checkForErrors(returnedCase, "modal")) {
-          const caseToCreate = {
-            ...openedCase,
-            firstName: returnedCase.firstName,
-            lastName: returnedCase.lastName,
-            instructingPartyName: returnedCase.instructingPartyName
-          };
-          return caseToCreate;
-        }
-      });
+    return api.getInjuredPartyDetails(openedCase.bluedogCaseRef).then(res => {
+      console.log(res);
+      this.props.selectBluedogCase(res);
+      if (!this.checkForErrors(res, "modal")) {
+        const caseToCreate = {
+          ...openedCase,
+          firstName: res.firstName,
+          lastName: res.lastName,
+          instructingPartyName: res.instructingPartyName
+        };
+        return caseToCreate;
+      }
+    });
   };
 
   createCaseIfDoesntExist = caseToCreate => {
-    console.log(caseToCreate);
     return api.openCase(caseToCreate).then(res => {
-      console.log(res);
       if (!this.checkForErrors(res, "modal")) {
-        const caseId = res.data.result.caseId;
+        const caseId = res.data.caseId;
         this.props.updateMi3dCaseId(caseId);
         return caseId;
       }
@@ -78,9 +75,8 @@ class NewCases extends Component {
 
   getCase = caseId => {
     api.getCase(caseId).then(res => {
-      console.log(res);
       if (!this.checkForErrors(res, "modal")) {
-        this.props.updateMi3dCase(res.data.result);
+        this.props.updateMi3dCase(res.data);
       }
     });
   };
@@ -91,7 +87,6 @@ class NewCases extends Component {
 
   selectCase = openedCase => {
     this.getInjuredPartyDetails(openedCase).then(caseToCreate => {
-      console.log(caseToCreate);
       if (!isObjectValid(caseToCreate))
         this.setState({
           showErrorModal: true,

@@ -15,25 +15,28 @@ const questions = [
     questionId: 1,
     type: "yesno",
     text: "Did you suffer any injury as a result of the accident?",
-    followupUsed: false,
     knockout: "No",
-    instantKnockout: true
+    instantKnockout: true,
+    knockoutText:
+      "You have indicated that you did not experience any symptoms which require physiotherapy. We will not be referring you to a physiotherapist."
   },
   {
     questionId: 2,
     type: "yesno",
     text: "Do you have any symptoms now?",
-    followupUsed: false,
     knockout: "No",
-    instantKnockout: true
+    instantKnockout: true,
+    knockoutText:
+      "You have indicated that you are currently not experiencing any symptoms which require physiotherapy. We will not be referring you to a physiotherapist."
   },
   {
     questionId: 3,
     type: "yesno",
     text: "Are you having any treatment, for example Physiotherapy?",
-    followupUsed: false,
     knockout: "Yes",
-    instantKnockout: true
+    instantKnockout: true,
+    knockoutText:
+      "You have indicated that you are currently receiving treatment from a physiotherapist therefore we will not be referring you for rehabiliation, however we will send you an information pack containing advice which may be of some assistance."
   },
   {
     questionId: 4,
@@ -68,52 +71,41 @@ const questions = [
   {
     questionId: 6,
     type: "yesno",
-    text: "Has there been loss of movement in the affected area(s)?",
-    followupUsed: false,
-    knockout: "Yes"
+    text: "Has there been loss of movement in the affected area(s)?"
   },
   {
     questionId: 7,
     type: "yesno",
-    text: "Does pain disturb sleep?",
-    followupUsed: false,
-    knockout: "Yes"
+    text: "Does pain disturb sleep?"
   },
   {
     questionId: 8,
     type: "yesno",
     text: "Have you developed any headaches following the accident?",
-    followupUsed: false,
-    knockout: "Yes"
+    knockout: "No"
   },
   {
     questionId: 9,
     type: "yesno",
     text:
-      "Have you developed any tingling sensations as a result of the accident?",
-    followupUsed: false,
-    knockout: "Yes"
+      "Have you developed any tingling sensations as a result of the accident?"
   },
   {
     questionId: 10,
     type: "yesno",
     text: "Have you returned to work/school?",
-    followupUsed: false,
     knockout: "Yes"
   },
   {
     questionId: 11,
     type: "yesno",
     text: "Are you participating in your normal hobbies?",
-    followupUsed: false,
     knockout: "Yes"
   },
   {
     questionId: 12,
     type: "yesno",
-    text: "Are you taking pain killers?",
-    followupUsed: false,
-    knockout: "Yes"
+    text: "Are you taking pain killers?"
   }
 ];
 export default questions;

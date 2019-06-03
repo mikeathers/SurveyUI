@@ -47,8 +47,8 @@ export default class SurveyBuilder extends Component {
 
       api.getCompletedSurvey(completedSurveyRequest).then(res => {
         if (this._isMounted) {
-          this.setState({ survey: res.result });
-          if (res.result !== undefined) this.parsedQuestions();
+          this.setState({ survey: res.data });
+          if (res.data !== undefined) this.parsedQuestions();
         }
       });
     }

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Container, Row, Col, PageHeader, PageAction } from "components/Common";
+import { Container, Row, Col } from "components/Common";
 import InjuredPartyDetails from "components/CMS/Rehab/Case/InjuredPartyDetails/InjuredPartyDetails";
 import InjuredPartyContactDetails from "components/CMS/Rehab/Case/InjuredPartyContactDetails/InjuredPartyContactDetails";
 import CaseDocuments from "components/CMS/Rehab/Case/CaseDocuments/CaseDocuments";
@@ -11,6 +11,8 @@ import Chases from "components/CMS/Rehab/Case/Chases/Chases";
 import CaseModal from "components/CMS/Rehab/Case/CaseModal/CaseModal";
 import CaseDetails from "components/CMS/Rehab/Case/CaseDetails/CaseDetails";
 import CaseActivities from "components/CMS/Rehab/Case/CaseActivities/CaseActivities";
+import PageTopBar from "components/CMS/Rehab/PageTopBar/PageTopBar";
+import DisclosureModal from "components/CMS/Rehab/DisclosureModal/DisclosureModal";
 
 class Case extends Component {
   constructor(props) {
@@ -19,7 +21,8 @@ class Case extends Component {
       caseModalOpen: false,
       caseModalButtonContent: "",
       caseModalTitle: "",
-      caseModalReasonText: ""
+      caseModalReasonText: "",
+      disclosureModalOpen: false
     };
   }
 
@@ -48,16 +51,14 @@ class Case extends Component {
   render() {
     return this.props.case.bluedogCaseRef !== undefined ? (
       <Container fluid>
-        <PageHeader title={`Case Ref - ${this.props.case.bluedogCaseRef}`}>
-          <PageAction
-            actionName="Hold Case"
-            triggerAction={this.openHoldModal}
-          />
-          <PageAction
-            actionName="Close Case"
-            triggerAction={this.openCloseModal}
-          />
-        </PageHeader>
+        <PageTopBar
+          title={`Case Ref - ${this.props.case.bluedogCaseRef}`}
+          openCloseModal={this.openCloseModal}
+          openHoldModal={this.openHoldModal}
+          openDisclosureModal={() =>
+            this.setState({ disclosureModalOpen: true })
+          }
+        />
         <Row />
         <Row>
           <Col lg={6} md={12} sm={12}>
@@ -80,7 +81,8 @@ class Case extends Component {
               <Col sm={12}>
                 <CaseDocuments
                   documents={
-                    this.props.mi3dCase !== null
+                    this.props.mi3dCase !== null ||
+                    this.props.mi3dCase !== undefined
                       ? this.props.mi3dCase.caseDocuments
                       : null
                   }
@@ -134,6 +136,11 @@ class Case extends Component {
           title={this.state.caseModalTitle}
           closeModal={() => this.setState({ caseModalOpen: false })}
           reasonText={this.state.caseModalReasonText}
+        />
+
+        <DisclosureModal
+          isModalOpen={this.state.disclosureModalOpen}
+          closeModal={() => this.setState({ disclosureModalOpen: false })}
         />
       </Container>
     ) : (

@@ -1,5 +1,6 @@
 @import "../../../../../styles/abstracts/variables.scss";
 .callback-table {
+  display: none;
   margin-top: -10px;
   & thead {
     & tr {
@@ -27,5 +28,10 @@
   & td {
     padding: 10px;
     min-width: 100px;
+  }
+}
+
+.callback-list {
+  &__row {
   }
 }

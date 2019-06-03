@@ -48,8 +48,8 @@ export default class AddStopCaseReason extends Component {
     this._isMounted = true;
     api.getEmailTemplates().then(res => {
       if (this._isMounted) {
-        this.setState({ emailTemplates: res.result }, () =>
-          this.emailTemplatesForDropdown(res.result)
+        this.setState({ emailTemplates: res.data }, () =>
+          this.emailTemplatesForDropdown(res.data)
         );
       }
     });
@@ -84,7 +84,7 @@ export default class AddStopCaseReason extends Component {
   addStopCaseReason = reason => {
     api.saveStopCaseReason(reason).then(res => {
       if (this._isMounted) {
-        if (!res.data.hasErrors) {
+        if (res.status === 200) {
           this.setState({
             showMessage: true,
             selectedEmailTemplateId: "",

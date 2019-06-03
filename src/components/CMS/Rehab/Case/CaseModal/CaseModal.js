@@ -39,10 +39,10 @@ class CaseModal extends Component {
     this.setState({ bluedogCaseValues });
 
     api.getStopCaseReasons().then(res => {
-      if (!res.data.hasErrors) {
+      if (res.status === 200) {
         if (this._isMounted) {
-          this.setState({ stopCaseReasons: res.data.result });
-          this.stopCaseReasonsForDropdown(res.data.result);
+          this.setState({ stopCaseReasons: res.data });
+          this.stopCaseReasonsForDropdown(res.data);
         }
       }
     });
@@ -114,8 +114,8 @@ class CaseModal extends Component {
     };
 
     api.getEmailTemplate(emailTemplateRequest).then(res => {
-      if (!res.data.hasErrors) {
-        const emailTemplate = res.data.result;
+      if (res.status === 200) {
+        const emailTemplate = res.data;
         const emailContent = this.createHtmlEmailTemplate(
           emailTemplate.content
         );
@@ -139,8 +139,8 @@ class CaseModal extends Component {
     const documentToCreate = this.state.documentToCreate;
     this.setState({ showLoader: true });
     api.createLetterDocument(documentToCreate).then(res => {
-      if (!res.data.hasErrors) {
-        const letterPath = res.data.result;
+      if (res.status === 200) {
+        const letterPath = res.data;
         const emailToSend = {
           ...this.state.emailToSend,
           attachments: [letterPath]
@@ -188,7 +188,7 @@ class CaseModal extends Component {
               <p className="case-modal__text">{this.props.text}</p>
             </FormRow>
           )}
-          <FormRow marginBottom="25">
+          <FormRow marginBottom="15">
             <FormGroup flexBasis="100">
               <Label width="100" text={this.props.reasonText} />
               <Dropdown
@@ -216,7 +216,6 @@ class CaseModal extends Component {
             justifyContent={
               this.state.showLoader ? "space-between" : "flex-end"
             }
-            marginTop="15"
           >
             {this.state.showLoader && (
               <FlexBox alignItems="center" justifyContent="center">

@@ -33,7 +33,7 @@ export const getAllCases = async () => {
 export const updateCase = async details => {
   try {
     const res = await axios({
-      method: "POST",
+      method: "PUT",
       url: DEV_URL + "case/updatecase",
       dataType: "json",
       data: details
@@ -47,7 +47,7 @@ export const updateCase = async details => {
 export const logUpdateToContactDetailsActivity = async activity => {
   try {
     const res = await axios({
-      method: "POST",
+      method: "PUT",
       url: DEV_URL + "case/updatecontactdetails",
       data: activity,
       dataType: "json"
@@ -61,7 +61,7 @@ export const logUpdateToContactDetailsActivity = async activity => {
 export const updateBluedogCaseStatus = async bluedogCaseRef => {
   try {
     const res = await axios({
-      method: "POST",
+      method: "PUT",
       url: BD_URL + "case/updatecasestatus",
       dataType: "json",
       data: { bluedogCaseRef }
@@ -103,7 +103,7 @@ export const getCase = async caseId => {
 export const agreeToDpa = async dpa => {
   try {
     const res = await axios({
-      method: "POST",
+      method: "PUT",
       url: DEV_URL + "case/acceptdpa",
       dataType: "json",
       data: dpa
@@ -131,7 +131,7 @@ export const createCaseNote = async caseNote => {
 export const updateCaseNote = async caseNote => {
   try {
     const res = await axios({
-      method: "POST",
+      method: "PUT",
       url: DEV_URL + "case/updatecasenote",
       dataType: "json",
       data: caseNote
@@ -145,7 +145,7 @@ export const updateCaseNote = async caseNote => {
 export const removeCaseNote = async caseNote => {
   try {
     const res = await axios({
-      method: "POST",
+      method: "DELETE",
       url: DEV_URL + "case/removecasenote",
       dataType: "json",
       data: caseNote

@@ -50,16 +50,16 @@ export default class ManageStopCaseReasons extends Component {
     this._isMounted = true;
     api.getStopCaseReasons().then(res => {
       if (this._isMounted) {
-        if (!res.data.hasErrors) {
-          this.setState({ stopCaseReasons: res.data.result });
-          this.stopCaseReasonsForDropdown(res.data.result);
+        if (res.status === 200) {
+          this.setState({ stopCaseReasons: res.data });
+          this.stopCaseReasonsForDropdown(res.data);
         }
       }
     });
     api.getEmailTemplates().then(res => {
       if (this._isMounted) {
-        this.setState({ emailTemplates: res.result }, () =>
-          this.emailTemplatesForDropdown(res.result)
+        this.setState({ emailTemplates: res.data }, () =>
+          this.emailTemplatesForDropdown(res.data)
         );
       }
     });
@@ -67,10 +67,10 @@ export default class ManageStopCaseReasons extends Component {
 
   componentWillReceiveProps() {
     api.getStopCaseReasons().then(res => {
-      if (!res.data.hasErrors) {
+      if (res.status === 200) {
         if (this._isMounted) {
-          this.setState({ stopCaseReasons: res.data.result });
-          this.stopCaseReasonsForDropdown(res.data.result);
+          this.setState({ stopCaseReasons: res.data });
+          this.stopCaseReasonsForDropdown(res.data);
         }
       }
     });
@@ -132,11 +132,11 @@ export default class ManageStopCaseReasons extends Component {
   updateStopCaseReason = reason => {
     api.saveStopCaseReason(reason).then(res => {
       if (this._isMounted) {
-        if (!res.data.hasErrors) {
+        if (res.status === 200) {
           this.setState({ showMessage: true });
           setTimeout(() => this.setState({ showMessage: false }), 3000);
-          this.setState({ stopCaseReasons: res.data.result });
-          this.stopCaseReasonsForDropdown(res.data.result);
+          this.setState({ stopCaseReasons: res.data });
+          this.stopCaseReasonsForDropdown(res.data);
         } else {
           this.setState({
             showMessage: true,
@@ -170,7 +170,7 @@ export default class ManageStopCaseReasons extends Component {
   removeStopCaseReason = stopCaseReasonId => {
     api.removeStopCaseReason(stopCaseReasonId).then(res => {
       if (this._isMounted) {
-        if (!res.data.hasErrors) {
+        if (res.status === 200) {
           this.setState({
             showMessage: true,
             removeModalOpen: false,
@@ -180,8 +180,8 @@ export default class ManageStopCaseReasons extends Component {
             selectedStopCaseReasonId: ""
           });
           setTimeout(() => this.setState({ showMessage: false }), 3000);
-          this.setState({ stopCaseReasons: res.data.result });
-          this.stopCaseReasonsForDropdown(res.data.result);
+          this.setState({ stopCaseReasons: res.data });
+          this.stopCaseReasonsForDropdown(res.data);
         }
       }
     });

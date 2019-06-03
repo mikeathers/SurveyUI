@@ -39,12 +39,13 @@ class InjuredPartyDetails extends Component {
       actionedBy: this.props.user.name
     };
     api.updateCase(defaultDetailsAndUpdatedDetails).then(res => {
-      if (!res.data.hasErrors) {
-        this.props.updateMi3dCase(res.data.result);
+      if (res.status === 200) {
+        this.props.updateMi3dCase(res.data);
       }
     });
     api.updateInjuredPartyDetails(defaultDetailsAndUpdatedDetails).then(res => {
       if (res.status === 200) {
+        console.log(res);
         this.props.updateBluedogCase(res.data);
         if (this._isMounted) {
           this.setState({

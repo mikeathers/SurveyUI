@@ -4,15 +4,14 @@
   border: #9999 1px solid;
   display: block;
   padding: 20px;
-  overflow: visible;
-
+  overflow: auto;
   top: 50%;
   left: 50%;
   right: auto;
   bottom: auto;
-  transform: translate(-50%, -50%);
-  height: 200px;
-  width: 610px;
+  transform: translate(-40%, -50%);
+
+  width: 40%;
   z-index: 2 !important;
 
   -webkit-box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
@@ -22,23 +21,15 @@
   &__title {
     margin: 0 0 10px 0;
     font-weight: 300;
-    height: 20px;
   }
 
   &__text {
-    display: flex;
-    flex-wrap: wrap;
     font-weight: 700;
-    word-wrap: wrap;
-    word-break: break-all;
   }
 
   &__body {
-    font-size: 16px;
     font-weight: 300;
-    margin: 0 0 15px 0;
-    word-break: break-all;
-    min-height: 50px;
+    padding: 0 10px;
   }
 
   &__knockout {
@@ -46,9 +37,5 @@
   }
   &__question {
     font-weight: 500;
-  }
-
-  &__selection {
-    margin-right: 5px;
   }
 }

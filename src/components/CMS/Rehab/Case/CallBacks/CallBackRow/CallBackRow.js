@@ -31,15 +31,13 @@ class CallBackRow extends Component {
       completedBy,
       callBackType
     } = this.props.callback;
-
     const style = {
       backgroundColor: this.renderBackgroundColour()
     };
-
     return (
       <tr className="callback-row">
         <td onClick={this.props.showUpdateModal} style={style}>
-          <p>{moment(timeToCall).format("DD/MM/YYYY hh:ss A")}</p>
+          <p>{moment(timeToCall).format("DD/MM/YYYY hh:mm A")}</p>
         </td>
         <td onClick={this.props.showUpdateModal} style={style}>
           <p>{callBackType}</p>
@@ -51,7 +49,7 @@ class CallBackRow extends Component {
           <p>
             {completedDate.includes("01/01/0001")
               ? "N/A"
-              : moment(completedDate).format("DD/MM/YYYY hh:ss A")}
+              : moment(completedDate).format("DD/MM/YYYY hh:mm A")}
           </p>
         </td>
         <td style={style}>
