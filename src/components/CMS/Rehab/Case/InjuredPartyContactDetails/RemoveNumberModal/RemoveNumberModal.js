@@ -22,11 +22,17 @@ const RemoveNumberModal = props => {
       <hr />
       <div className="remove-num-modal__footer">
         <ButtonContainer justifyContent="flex-end" marginTop="15">
-          <Button content="Close" secondary onClick={props.closeModal} />
+          <Button
+            content="Close"
+            secondary
+            onClick={props.closeModal}
+            disabled={props.removeContactDetailsSubmitted}
+          />
           <Button
             content="Remove"
             type="danger"
             onClick={props.removeContactDetail}
+            disabled={props.removeContactDetailsSubmitted}
           />
         </ButtonContainer>
       </div>

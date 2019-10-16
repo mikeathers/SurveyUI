@@ -1,0 +1,74 @@
+@import "../../../../../styles/abstracts/variables.scss";
+@import "../../../../../styles/abstracts/mixins.scss";
+
+.chase-item {
+  padding: 15px;
+  border: 1px solid #eee;
+  margin-bottom: 5px;
+  transition: all 0.3s ease;
+  display: flex;
+
+  &__content {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    &--incomplete {
+      justify-content: space-between;
+    }
+
+    & p {
+      margin-bottom: 0 !important;
+    }
+
+    & p:first-of-type {
+      font-weight: 500;
+      flex-direction: column;
+    }
+
+    @include respond(tab-land) {
+      flex-direction: column;
+    }
+  }
+
+  &__icon {
+    font-size: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+  }
+
+  &__description {
+    @include respond(tab-land) {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  }
+
+  &__info {
+    width: 18%;
+
+    & div {
+      margin-right: 10px;
+    }
+
+    @include respond(tab-land) {
+      width: 100%;
+      & div {
+        margin-right: 10px;
+      }
+    }
+  }
+
+  &__completed {
+    display: flex;
+    justify-content: space-between;
+    width: 55%;
+  }
+
+  &--incomplete:hover {
+    background-color: $color_hover !important;
+    cursor: pointer;
+  }
+}

@@ -1,13 +1,12 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
-
 import AddLetterTemplate from "../AddLetterTemplate/AddLetterTemplate";
 import ManageLetterTemplates from "../ManageLetterTemplates/ManageLetterTemplates";
 import ViewLetterTemplates from "../ViewLetterTemplates/ViewLetterTemplates";
 import { Row, Col } from "components/Common";
 
 import "./LetterTemplates.scss";
-class LetterTemplates extends Component {
+
+export default class LetterTemplates extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -58,8 +57,3 @@ class LetterTemplates extends Component {
     );
   }
 }
-
-const mapStateToProps = state => ({
-  username: state.auth.user.name
-});
-export default connect(mapStateToProps)(LetterTemplates);

@@ -1,73 +1,91 @@
 import React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import Root from "Root";
 import AddCallBackModal from "./AddCallBackModal";
 
-const setup = (props = {}, state = null) => {
-  const wrapper = mount(<AddCallBackModal {...props} />);
-  if (state) wrapper.setState(state);
-  return wrapper;
+const addCallback = jest.fn();
+const closeModal = jest.fn();
+
+const props = {
+  isModalOpen: true,
+  addCallback,
+  user: { name: "Test User" },
+  mi3dCase: { caseId: 0, bluedogCaseRef: "200080315/2" },
+  closeModal
 };
 
+const wrapper = mount(<AddCallBackModal {...props} />);
+
 describe("AddCallBackModal", () => {
-  const addCallback = jest.fn();
-  const closeModal = jest.fn();
-  const wrapper = setup({
-    isModalOpen: true,
-    addCallback,
-    user: { name: "Test User" },
-    mi3dCase: { caseId: 0, bluedogCaseRef: "200080315/2" },
-    closeModal
+  beforeEach(() => {
+    wrapper.setState({
+      startDate: new Date(),
+      rescheduleSelected: false,
+      callbackType: ""
+    });
   });
 
   it("should render without crashing", () => {
+    // Arrange
     expect(wrapper.length).toBe(1);
   });
 
   it("should add a validation class to the callBackType dropdown when add button is clicked and callBackType = ''", () => {
-    const callbackTypeDropdown = wrapper.find("#callback-type-dropdown").at(2);
-    const submitButton = wrapper.find("#add-callback-button").first();
+    // Arrange
+    expect(
+      wrapper
+        .find("#callback-type-dropdown")
+        .first()
+        .find("div")
+        .first()
+        .hasClass("validate")
+    ).toBe(false);
 
-    expect(callbackTypeDropdown.hasClass("validate")).toBe(false);
-    expect(wrapper.state("callbackType")).toBe("");
-
-    submitButton.props().onClick();
+    // Act
+    wrapper
+      .find("#add-callback-button")
+      .first()
+      .props()
+      .onClick();
     wrapper.update();
 
-    const callbackTypeDropdownAfterUpdate = wrapper
-      .find("#callback-type-dropdown")
-      .at(2);
-
-    expect(callbackTypeDropdownAfterUpdate.hasClass("validate")).toBe(true);
+    // Assert
+    expect(
+      wrapper
+        .find("#callback-type-dropdown")
+        .first()
+        .find("div")
+        .first()
+        .hasClass("validate")
+    ).toBe(true);
   });
 
   it("should call addCallback when callbackType is Initial and Add button gets clicked", () => {
-    const callbackTypeDropdown = wrapper.find("#callback-type-dropdown").at(1);
-
-    callbackTypeDropdown
-      .instance()
-      .handleChange({ target: { value: "Initial", name: "callbackType" } });
+    // Act
+    wrapper
+      .find("#callback-type-dropdown")
+      .first()
+      .simulate("change", {
+        target: { value: "Initial", name: "callbackType" }
+      });
 
     wrapper.update();
-    expect(wrapper.state("callbackType")).toBe("Initial");
+    wrapper
+      .find("#add-callback-button")
+      .first()
+      .props()
+      .onClick();
 
-    const submitButton = wrapper.find("#add-callback-button").first();
-    submitButton.props().onClick();
-
+    // Assert
     expect(addCallback).toHaveBeenCalled();
   });
 
-  it("should show the datepicker when callbackType is Rescheduled", () => {
-    const callbackTypeDropdown = wrapper.find("#callback-type-dropdown").at(1);
-
-    callbackTypeDropdown
-      .instance()
-      .handleChange({ target: { value: "Reschedule", name: "callbackType" } });
-
+  it("should show the datepicker when rescheduleSelected is true", () => {
+    // Act
+    wrapper.setState({ rescheduleSelected: true });
     wrapper.update();
-    expect(wrapper.state("callbackType")).toBe("Reschedule");
 
-    const callbackDatePicker = wrapper.find("#callback-date-picker").first();
-    expect(callbackDatePicker.length).toBe(1);
+    // Assert
+    expect(wrapper.find("#callback-date-picker").first().length).toBe(1);
   });
 });

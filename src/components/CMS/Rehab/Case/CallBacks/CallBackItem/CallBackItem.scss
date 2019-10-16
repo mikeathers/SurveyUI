@@ -8,16 +8,39 @@
   display: flex;
   position: relative;
   flex-direction: row;
-  flex-wrap: wrap;
   transition: all 0.3s ease;
+
+  &__content {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  &__icon {
+    font-size: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+
+    @include respond(tab-land) {
+      font-size: 32px;
+    }
+  }
 
   @include respond(mobile) {
     flex-direction: column;
   }
 
-  &:hover {
-    background-color: $color_hover !important;
-    cursor: pointer;
+  @include respond(tab-land) {
+    flex-direction: row;
+  }
+
+  &__outstanding {
+    &:hover {
+      background-color: $color_hover !important;
+      cursor: pointer;
+    }
   }
 
   &:hover &__close {
@@ -57,6 +80,6 @@
   }
 
   &__date {
-    width: 150px;
+    width: 125px;
   }
 }

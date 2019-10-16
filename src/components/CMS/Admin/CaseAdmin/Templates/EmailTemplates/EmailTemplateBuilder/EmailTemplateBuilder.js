@@ -3,8 +3,8 @@ import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
-import * as api from "api";
 import { correspondent } from "helpers/dropdowns";
+
 import {
   validateListOfStrings,
   validateItems,
@@ -28,22 +28,34 @@ import {
 import "../../../../../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./EmailTemplateBuilder.scss";
 
+const DEFAULT_HTML =
+  "<p>Select an existing template to begin or create a new template 😀</p>";
+
 export default class EmailTemplateBuilder extends Component {
   _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
       editorState: EditorState.createEmpty(),
-      templateStrings: [],
       templateName: "",
       emailSubject: "",
       emailTemplateId: 0,
       selectedLetterTemplateId: "",
       selectedTemplate: null,
       selectedCorrespondent: "",
-      letterTemplatesForDropdown: [],
       message: "",
-      showMessage: false
+      errorMessage: false,
+      showMessage: false,
+      templateStrings:
+        props.templateStrings !== undefined ? props.templateStrings : [],
+      letterTemplatesForDropdown:
+        props.letterTemplatesForDropdown !== undefined
+          ? props.letterTemplatesForDropdown
+          : [],
+      emailTemplatesForDropdown:
+        props.emailTemplatesForDropdown !== undefined
+          ? props.emailTemplatesForDropdown
+          : []
     };
     this.setItemToValidate = setItemToValidate.bind(this);
     this.validateItems = validateItems.bind(this);
@@ -53,96 +65,32 @@ export default class EmailTemplateBuilder extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-    api.getTemplateStrings().then(res => {
-      console.log(res);
-      if (this._isMounted) {
-        const templateStrings = res.data.map((string, key) => ({
-          text: `{${string}}}`,
-          value: `{${string}}}`
-        }));
-        this.setState({ templateStrings });
-      }
-    });
-
-    api.getLetterTemplates().then(res => {
-      console.log(res);
-      if (this._isMounted) {
-        if (res.status === 200) {
-          this.letterTemplatesForDropdown(res.data);
-        }
-      }
-    });
-
-    const html =
-      "<p>Select an existing template to begin or create a new template 😀</p>";
-
-    const contentBlock = htmlToDraft(html);
-    if (contentBlock) {
-      const contentState = ContentState.createFromBlockArray(
-        contentBlock.contentBlocks
-      );
-      const editorState = EditorState.createWithContent(contentState);
-      this.setState({ editorState });
-    }
-  }
-
-  componentWillReceiveProps({ selectedTemplate }) {
-    if (selectedTemplate !== null) {
-      this.setState({
-        selectedTemplate,
-        templateName: selectedTemplate.name,
-        emailTemplateId: selectedTemplate.emailTemplateId,
-        selectedLetterTemplateId:
-          selectedTemplate.letterTemplate.letterTemplateId,
-        selectedCorrespondent: selectedTemplate.sendTo,
-        emailSubject: selectedTemplate.subject
-      });
-
-      const contentBlock = htmlToDraft(selectedTemplate.content);
-      if (contentBlock) {
-        const contentState = ContentState.createFromBlockArray(
-          contentBlock.contentBlocks
-        );
-        const editorState = EditorState.createWithContent(contentState);
-        this.setState({ editorState });
-      }
-    } else {
-      this.setState({
-        selectedTemplate: null,
-        templateName: "",
-        emailTemplateId: "",
-        selectedLetterTemplateId: "",
-        selectedCorrespondent: "",
-        emailSubject: ""
-      });
-
-      const html =
-        "<p>Select an existing template to begin or create a new template 😀</p>";
-
-      const contentBlock = htmlToDraft(html);
-      if (contentBlock) {
-        const contentState = ContentState.createFromBlockArray(
-          contentBlock.contentBlocks
-        );
-        const editorState = EditorState.createWithContent(contentState);
-        this.setState({ editorState });
-      }
-    }
-
-    api.getLetterTemplates().then(res => {
-      if (res.status === 200) {
-        if (this._isMounted) {
-          this.letterTemplatesForDropdown(res.data);
-        }
-      }
-    });
+    this.setEditorContent(DEFAULT_HTML);
   }
 
   componentWillUnmount() {
     this._isMounted = false;
   }
 
-  onEditorStateChange = editorState => this.setState({ editorState });
+  componentWillReceiveProps({
+    selectedTemplate,
+    letterTemplatesForDropdown,
+    templateStrings
+  }) {
+    this.hideValidationMessage();
+    if (letterTemplatesForDropdown !== undefined)
+      this.setState({ letterTemplatesForDropdown });
+    if (templateStrings !== undefined) this.setState({ templateStrings });
+    if (selectedTemplate !== null) {
+      this.setSelectedTemplate(selectedTemplate);
+      this.setEditorContent(selectedTemplate.content);
+    } else {
+      this.removeSelectedTemplate();
+      this.setEditorContent(DEFAULT_HTML);
+    }
+  }
+
+  handleEditorStateChange = editorState => this.setState({ editorState });
 
   handleChange = (e, { name, value }) => {
     this.setItemToValidate(name);
@@ -158,81 +106,130 @@ export default class EmailTemplateBuilder extends Component {
     ];
   };
 
-  letterTemplatesForDropdown = letterTemplates => {
-    const letterTemplatesForDropdown = letterTemplates.map(template => ({
-      text: template.name,
-      value: template.letterTemplateId
-    }));
-    this.setState({ letterTemplatesForDropdown });
+  setSelectedTemplate = selectedTemplate => {
+    this.setState({
+      selectedTemplate,
+      templateName: selectedTemplate.name,
+      emailTemplateId: selectedTemplate.emailTemplateId,
+      selectedLetterTemplateId:
+        selectedTemplate.letterTemplate.letterTemplateId,
+      selectedCorrespondent: selectedTemplate.sendTo,
+      emailSubject: selectedTemplate.subject
+    });
   };
 
-  // imageUploadCallback = file =>
-  //   new Promise((resolve, reject) => {
-  //     api.uploadEmailTemplateImage(file).then(res => {
-  //       if (this._isMounted) {
-  //         if (res.status === 200) {
-  //           const img = resolve({
-  //             data: {
-  //               link: img
-  //             }
-  //           });
-  //         } else {
-  //           reject(this.setState({ emailTemplateMessage: res }));
-  //         }
-  //       }
-  //     });
-  //   });
+  removeSelectedTemplate = () => {
+    this.setState({
+      selectedTemplate: null,
+      templateName: "",
+      emailTemplateId: 0,
+      selectedLetterTemplateId: "",
+      selectedCorrespondent: "",
+      emailSubject: ""
+    });
+  };
 
-  saveTemplate = () => {
-    let html = draftToHtml(
+  setEditorContent = content => {
+    this.setState({ editorContent: content });
+    const contentBlock = htmlToDraft(content);
+    if (contentBlock) {
+      const contentState = ContentState.createFromBlockArray(
+        contentBlock.contentBlocks
+      );
+      const editorState = EditorState.createWithContent(contentState);
+      this.setState({ editorState });
+    }
+  };
+
+  emailTemplateToSave = html => ({
+    content: html,
+    name: this.state.templateName,
+    emailTemplateId: this.state.emailTemplateId,
+    letterTemplateId: this.state.selectedLetterTemplateId,
+    sendTo: this.state.selectedCorrespondent,
+    subject: this.state.emailSubject,
+    lastUpdatedBy: this.props.username,
+    createdBy:
+      this.state.selectedTemplate === null ? this.props.username : null,
+    actionedBy: this.props.username
+  });
+
+  getHtmlForEmailTemplate = () => {
+    return draftToHtml(
       convertToRaw(this.state.editorState.getCurrentContent())
     );
+  };
 
-    this.setState({ editorContent: html }, () => {
-      const content = this.state.editorContent;
-      const contentBlock = htmlToDraft(content);
-      if (contentBlock) {
-        const contentState = ContentState.createFromBlockArray(
-          contentBlock.contentBlocks
-        );
-        const editorState = EditorState.createWithContent(contentState);
-        this.setState({ editorState });
-      }
+  showSuccessMessage = message => {
+    this.setState({
+      message,
+      showMessage: true,
+      errorMessage: false
     });
+    setTimeout(() => this.setState({ showMessage: false }), 3000);
+  };
 
-    const template = {
-      content: html,
-      name: this.state.templateName,
-      emailTemplateId: this.state.emailTemplateId,
-      letterTemplateId: this.state.selectedLetterTemplateId,
-      sendTo: this.state.selectedCorrespondent,
-      subject: this.state.emailSubject,
-      lastUpdatedBy: this.props.username,
-      createdBy:
-        this.state.selectedTemplate === null ? this.props.username : null,
-      actionedBy: this.props.username
-    };
-    api.saveEmailTemplate(template).then(res => {
-      if (this._isMounted) {
-        if (res.status === 200) {
-          this.setState({ showMessage: true });
-          setTimeout(() => this.setState({ showMessage: false }), 3000);
-
-          this.setState({ emailTemplates: res.data.data });
-          this.props.getEmailTemplates(res.data.data);
-          this.props.clearSelectedTemplate();
-        }
-      }
+  showErrorMessage = message => {
+    this.setState({
+      message,
+      showMessage: true,
+      errorMessage: true
     });
+    setTimeout(() => this.setState({ showMessage: false }), 3000);
+  };
+
+  saveEmailTemplate = async () => {
+    let html = this.getHtmlForEmailTemplate();
+    const emailTemplate = this.emailTemplateToSave(html);
+    this.setEditorContent(html);
+
+    const response = await this.props.saveEmailTemplate(emailTemplate);
+
+    if (response.status === 200) {
+      this.showSuccessMessage("Email template saved successfully");
+    } else this.showErrorMessage(response.data[0].errorMessage);
   };
 
   validateTemplate = () => {
     var list = validateListOfStrings(this.listToValidate());
-    if (list[list.length - 1].isValid) {
-      this.saveTemplate();
-    } else {
+    if (list[list.length - 1].isValid) this.saveEmailTemplate();
+    else {
       this.validateItems(list);
+      this.showValidationMessage();
     }
+  };
+
+  showValidationMessage = () => {
+    this._isMounted &&
+      this.setState({
+        message: "Please fill in all the fields before submitting",
+        errorMessage: true,
+        showMessage: true
+      });
+  };
+
+  hideValidationMessage = () => {
+    this.removeValidationErrors(this.listToValidate());
+    this._isMounted &&
+      this.setState({
+        message: "",
+        errorMessage: false,
+        showMessage: false
+      });
+  };
+
+  clearForm = () => {
+    this.props.clearSelectedTemplate();
+    this.hideValidationMessage();
+    this._isMounted &&
+      this.setState({
+        templateName: "",
+        emailSubject: "",
+        emailTemplateId: 0,
+        selectedLetterTemplateId: "",
+        selectedTemplate: null,
+        selectedCorrespondent: ""
+      });
   };
 
   render() {
@@ -240,11 +237,13 @@ export default class EmailTemplateBuilder extends Component {
       this.editorReferece = ref;
     };
     return (
-      <Card title="Email Template Builder">
+      <Card title="Email Template Builder" id="emailTemplateBuilder">
         <FormRow>
           <FormGroup>
-            <Label text="Template Name" width="100" />
+            <Label text="Template Name" />
             <Input
+              id="emailTemplateBuilderEmailTemplateNameTextBox"
+              fullWidth
               value={this.state.templateName}
               onChange={this.handleChange}
               name="templateName"
@@ -253,8 +252,10 @@ export default class EmailTemplateBuilder extends Component {
             />
           </FormGroup>
           <FormGroup>
-            <Label text="Email Subject" width="100" />
+            <Label text="Email Subject" />
             <Input
+              id="emailTemplateBuilderEmailTemplateSubjectTextBox"
+              fullWidth
               value={this.state.emailSubject}
               onChange={this.handleChange}
               name="emailSubject"
@@ -265,8 +266,10 @@ export default class EmailTemplateBuilder extends Component {
         </FormRow>
         <FormRow>
           <FormGroup>
-            <Label text="Associated Letter" width="100" />
+            <Label text="Associated Letter" />
             <Dropdown
+              id="emailTemplateBuilderEmailTemplateLetterDropdown"
+              fullWidth
               selection
               options={this.state.letterTemplatesForDropdown}
               placeholder="Select a letter.."
@@ -277,8 +280,10 @@ export default class EmailTemplateBuilder extends Component {
             />
           </FormGroup>
           <FormGroup>
-            <Label text="Send to" width="100" />
+            <Label text="Send to" />
             <Dropdown
+              id="emailTemplateBuilderEmailTemplateCorrespondentDropdown"
+              fullWidth
               selection
               options={correspondent}
               placeholder="Select a correspondent.."
@@ -296,16 +301,8 @@ export default class EmailTemplateBuilder extends Component {
           <Editor
             editorRef={setEditorReference}
             editorState={this.state.editorState}
-            onEditorStateChange={this.onEditorStateChange}
+            onEditorStateChange={this.handleEditorStateChange}
             editorClassName="email-template-builder__editor"
-            // toolbar={{
-            //   image: {
-            //     uploadEnabled: true,
-            //     uploadCallback: this.imageUploadCallback,
-            //     previewImage: true,
-            //     alt: { present: true, mandatory: true }
-            //   }
-            // }}
             mention={{
               separator: " ",
               trigger: "{",
@@ -315,17 +312,20 @@ export default class EmailTemplateBuilder extends Component {
         </div>
         <ButtonContainer justifyContent="flex-end">
           <Message
+            id="emailBuilderMessage"
             show={this.state.showMessage}
-            error={this.state.message !== ""}
+            error={this.state.errorMessage}
             message={this.state.message}
             marginRight={45}
           />
           <Button
+            id="emailTemplateBuilderCancelBtn"
             content="Cancel"
             secondary
-            onClick={this.props.clearSelectedTemplate}
+            onClick={this.clearForm}
           />
           <Button
+            id="emailTemplateBuilderSaveTemplateBtn"
             content="Save Template"
             primary
             onClick={this.validateTemplate}

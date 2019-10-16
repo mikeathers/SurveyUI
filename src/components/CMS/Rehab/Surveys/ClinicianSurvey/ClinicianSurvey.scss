@@ -1,0 +1,59 @@
+@import "../../../../../styles/abstracts/variables.scss";
+
+.clinician-survey {
+  margin-bottom: 40px;
+}
+
+.clinician-question {
+  margin-bottom: 1rem;
+  transition: box-shadow 0.1s ease;
+  border: 1px solid #fff;
+  padding: 1rem;
+
+  &:hover {
+    border: 1px solid #eee;
+    box-shadow: $box_shadow_primary;
+  }
+
+  &__first {
+    display: flex;
+
+    & span {
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 19px;
+      width: 19px;
+      background-color: rgb(212, 212, 212);
+      color: #000;
+      background-color: $color_primary;
+      color: #fff;
+      margin-right: 6px;
+      border-radius: 3px;
+    }
+  }
+
+  &__followup {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  &__followup-container {
+    margin-bottom: 20px !important;
+  }
+
+  &__yesNoButtons {
+    margin-bottom: 20px;
+    margin-top: 10px;
+
+    display: flex;
+    & label {
+      margin-right: 20px;
+    }
+  }
+
+  &__dropdown {
+    margin-bottom: 20px;
+  }
+}

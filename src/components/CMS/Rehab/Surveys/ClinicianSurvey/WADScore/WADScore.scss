@@ -1,0 +1,15 @@
+.wadscore {
+  &__matrix {
+    margin: 20px 0;
+  }
+
+  &__row {
+    display: flex;
+    margin-bottom: 10px;
+  }
+
+  &__option {
+    margin-right: 10px;
+    font-weight: 700;
+  }
+}

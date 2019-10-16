@@ -1,6 +1,29 @@
+@import "../../../../../../styles/abstracts/mixins.scss";
 .clinician-survey-actions {
-  position: fixed;
+  @include respond(desktop) {
+    position: fixed;
+    width: 40%;
+  }
+
+  @include respond(tab-land) {
+    position: fixed;
+    width: 45%;
+  }
+
+  @include respond(tab-port) {
+    position: relative;
+    width: 100%;
+  }
+
+  position: absolute;
+
   transition: all 0.3s ease;
+
+  &__content {
+    overflow: scroll;
+    overflow-x: hidden;
+    margin-bottom: 20px;
+  }
   &__container {
     margin-bottom: 20px;
   }

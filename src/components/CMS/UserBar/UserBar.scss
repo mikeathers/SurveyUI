@@ -12,6 +12,15 @@
   padding-left: 3rem;
   box-shadow: $box_shadow_primary;
 
+  @include respond(tab-land) {
+    margin-top: -5px;
+  }
+
+  // position: -webkit-sticky;
+  // position: sticky;
+  // top: 0;
+  // z-index: 10000;
+
   &__useritems {
     display: flex;
     align-items: center;

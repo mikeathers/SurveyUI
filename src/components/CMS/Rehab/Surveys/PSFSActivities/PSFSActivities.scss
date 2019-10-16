@@ -1,0 +1,15 @@
+.soap-survey-psfs {
+  &__header {
+    display: flex;
+    & p {
+      width: 140px;
+    }
+  }
+  &__content {
+    margin-bottom: 5px;
+    display: flex;
+    & p {
+      width: 140px;
+    }
+  }
+}

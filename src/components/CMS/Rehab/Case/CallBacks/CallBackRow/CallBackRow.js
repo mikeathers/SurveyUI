@@ -5,22 +5,12 @@ import "./CallBackRow.scss";
 class CallBackRow extends Component {
   renderBackgroundColour = () => {
     const callback = this.props.callback;
-    let backgroundColor;
     const timeToCall = moment(callback.timeToCall);
     const tomorrow = moment(new Date()).add(1, "days");
     const now = moment(new Date()).add(4, "hours");
-    if (callback.completed) {
-      backgroundColor = "rgba(27, 170, 87, .2)";
-      return backgroundColor;
-    }
-    if (timeToCall <= now) {
-      backgroundColor = "rgba(234, 90, 90, .2)";
-      return backgroundColor;
-    }
-    if (timeToCall < tomorrow) {
-      backgroundColor = "rgba(255, 204, 0, .2)";
-      return backgroundColor;
-    }
+    if (callback.completed) return "rgba(27, 170, 87, .2)";
+    if (timeToCall <= now) return "rgba(234, 90, 90, .2)";
+    if (timeToCall < tomorrow) return "rgba(255, 204, 0, .2)";
   };
 
   render() {

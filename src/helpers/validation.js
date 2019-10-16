@@ -1,7 +1,5 @@
 export const objEmpty = obj => {
-  for (var key in obj) {
-    if (obj.hasOwnProperty(key)) return false;
-  }
+  for (var key in obj) if (obj.hasOwnProperty(key)) return false;
   return true;
 };
 
@@ -28,6 +26,7 @@ export const areArrysEqual = (arr1, arr2) => {
 //     }).length == arr2.length
 //   );
 // };
+
 export const checkIfArrayExistsInAnother = (arr1, arr2) => {
   return arr1.every(elem => arr2.indexOf(elem) > -1);
 };
@@ -39,22 +38,15 @@ export const validateListOfStrings = array => {
     var objKey = Object.keys(x)[0];
     var objValue = x[Object.keys(x)[0]];
     if (typeof objKey === "string" || typeof objKey === "number") {
-      if (objValue !== "") {
-        validation.push({ value: objKey, isValid: true });
-      } else {
-        validation.push({ value: objKey, isValid: false });
-      }
-    } else {
-      return validation;
-    }
+      if (objValue !== "") validation.push({ value: objKey, isValid: true });
+      else validation.push({ value: objKey, isValid: false });
+    } else return validation;
   });
 
   validation.forEach(x => {
     var objKey = Object.keys(x)[1];
     var objValue = x[Object.keys(x)[1]];
-    if (objKey === "isValid" && objValue === true) {
-      validObjects++;
-    }
+    if (objKey === "isValid" && objValue === true) validObjects++;
   });
 
   if (validObjects === array.length) {
@@ -69,9 +61,7 @@ export const validateListOfStrings = array => {
 };
 
 export const isObjectValid = obj => {
-  for (var key in obj) {
-    if (obj[key] === null && obj[key] === "") return false;
-  }
+  for (var key in obj) if (obj[key] === null && obj[key] === "") return false;
   return true;
 };
 
@@ -86,9 +76,11 @@ export const isObjectValid = obj => {
 
 export function validateItems(validatedList) {
   validatedList.forEach(item => {
-    if (!item.isValid) {
-      const itemToValidate = `${item.value}IsValid`;
-      this.setState({ [itemToValidate]: false });
+    if (item.value !== undefined) {
+      if (!item.isValid) {
+        const itemToValidate = `${item.value}IsValid`;
+        this.setState({ [itemToValidate]: false });
+      }
     }
   });
 }
@@ -110,13 +102,19 @@ export function setItemToValidate(item) {
   this.setState({ [itemToValidate]: true });
 }
 
-export function checkForErrors(itemToCheck, displayFormat) {
+export function hasErrors(itemToCheck, displayFormat) {
   let error;
   switch (displayFormat) {
     case "modal":
       if (itemToCheck instanceof Error) {
         this.setState({ showErrorModal: true, hasErrors: true });
         error = true;
+        return;
+      }
+      if (itemToCheck === undefined) {
+        this.setState({ showErrorModal: true, hasErrors: true });
+        error = true;
+        return;
       }
       break;
     case "message":

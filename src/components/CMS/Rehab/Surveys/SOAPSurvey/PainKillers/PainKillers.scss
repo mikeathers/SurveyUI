@@ -1,0 +1,9 @@
+.soap-survey-pain-killers {
+  &__item {
+    display: flex;
+
+    & p {
+      margin-right: 5px;
+    }
+  }
+}

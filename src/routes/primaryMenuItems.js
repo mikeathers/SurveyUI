@@ -12,7 +12,7 @@ const primaryMenuItems = [
   {
     title: "Rehab",
     icon: "fa fa-heart-o",
-    path: "/cms/rehab/dashboard"
+    path: "/cms/rehab/newcases"
   },
   {
     title: "Admin",

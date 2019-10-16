@@ -1,14 +1,28 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import * as api from "api";
+
 import {
   selectBluedogCase,
   updateMi3dCase,
-  selectSecondaryItem
+  selectSecondaryItem,
+  clearSelectedCases
 } from "actions";
-import { checkForErrors } from "helpers/validation";
-import * as api from "api";
-import { Container, Row, Col, PageHeader, ErrorModal } from "components/Common";
+
+import { selectCase } from "helpers/case";
+import { withErrorHandling } from "HOCs";
+
 import CaseList from "components/CMS/Rehab/Cases/CaseList/CaseList";
+
+import {
+  Container,
+  Row,
+  Col,
+  PageHeader,
+  ErrorModal,
+  LoadingModal
+} from "components/Common";
+
 import "./Cases.scss";
 
 class Cases extends Component {
@@ -17,54 +31,32 @@ class Cases extends Component {
     super(props);
     this.state = {
       cases: [],
+      errorMessage: null,
       showErrorModal: false,
-      errorMessage: null
+      showLoadingModal: false
     };
-    this.checkForErrors = checkForErrors.bind(this);
+    this.selectCase = selectCase.bind(this);
   }
 
   componentDidMount() {
     this._isMounted = true;
     this.getAllCases();
+    this.props.clearSelectedCases();
   }
 
   componentWillUnmount() {
     this._isMounted = false;
   }
 
-  getAllCases = () => {
-    api.getAllCases().then(res => {
-      if (this._isMounted) {
-        if (!this.checkForErrors(res, "modal")) {
-          this.setState({ cases: res.data });
-        }
-      }
-    });
+  getAllCases = async () => {
+    const response = await api.getAllCases();
+    if (response !== undefined && this._isMounted)
+      this.setState({ cases: response.data });
+    else this.props.showErrorModal();
   };
 
-  getCase = caseId => {
-    api.getCase(caseId).then(res => {
-      if (!this.checkForErrors(res, "modal")) {
-        this.props.updateMi3dCase(res.data);
-      }
-    });
-  };
-
-  getInjuredPartyDetails = bluedogCaseRef => {
-    api.getInjuredPartyDetails(bluedogCaseRef).then(returnedCase => {
-      if (!this.checkForErrors(returnedCase, "modal")) {
-        this.props.selectBluedogCase(returnedCase);
-        this.props.selectSecondaryItem("Cases");
-        this.props.history.push(
-          `/cms/rehab/case/${returnedCase.bluedogCaseRef}`
-        );
-      }
-    });
-  };
-
-  selectCase = openedCase => {
-    this.getCase(openedCase.caseId);
-    this.getInjuredPartyDetails(openedCase.bluedogCaseRef);
+  closeModal = () => {
+    this.setState({ showErrorModal: false, errorMessage: null });
   };
 
   render() {
@@ -74,27 +66,32 @@ class Cases extends Component {
         <PageHeader title="Current Cases" />
         <Row>
           <Col lg={12} md={12}>
-            <CaseList cases={cases} selectCase={this.selectCase} />
+            {cases !== undefined && (
+              <CaseList cases={cases} selectCase={this.selectCase} />
+            )}
           </Col>
         </Row>
         <ErrorModal
           isModalOpen={this.state.showErrorModal}
-          closeModal={() =>
-            this.setState({ showErrorModal: false, errorMessage: null })
-          }
           errorMessage={this.state.errorMessage}
+          closeModal={this.closeModal}
         />
+        <LoadingModal isModalOpen={this.state.showLoadingModal} />
       </Container>
     );
   }
 }
 
 const mapDispatchToProps = dispatch => ({
-  selectBluedogCase: selectedCase => dispatch(selectBluedogCase(selectedCase)),
+  updateMi3dCase: selectedCase => dispatch(updateMi3dCase(selectedCase)),
   selectSecondaryItem: menuItem => dispatch(selectSecondaryItem(menuItem)),
-  updateMi3dCase: selectedCase => dispatch(updateMi3dCase(selectedCase))
+  selectBluedogCase: selectedCase => dispatch(selectBluedogCase(selectedCase)),
+  clearSelectedCases: () => dispatch(clearSelectedCases())
 });
-export default connect(
-  null,
-  mapDispatchToProps
-)(Cases);
+
+export default withErrorHandling(
+  connect(
+    null,
+    mapDispatchToProps
+  )(Cases)
+);

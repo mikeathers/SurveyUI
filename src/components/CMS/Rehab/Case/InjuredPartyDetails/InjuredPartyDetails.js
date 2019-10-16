@@ -1,21 +1,22 @@
 import React, { Component } from "react";
+import * as api from "api";
 import { connect } from "react-redux";
 import { updateBluedogCase, updateMi3dCase } from "actions";
-import * as api from "api";
-
-import { Card, Message } from "components/Common";
+import {withErrorHandling} from "HOCs";
 import DefaultDetails from "./DefaultDetails";
 import UpdateDetails from "./UpdateDetails";
+import { Card, Message, ErrorModal } from "components/Common";
 
 class InjuredPartyDetails extends Component {
   _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
+      message: "",
       updating: false,
       showMessage: false,
-      message: "",
-      errorMessage: false
+      errorMessage: false,
+      showErrorModal: false
     };
   }
 
@@ -31,40 +32,43 @@ class InjuredPartyDetails extends Component {
     this.setState({ updating: !this.state.updating });
   };
 
-  updateDetails = details => {
-    const defaultDetailsAndUpdatedDetails = {
-      ...this.props.case,
-      ...details,
-      caseId: this.props.mi3dCase.caseId,
-      actionedBy: this.props.user.name
-    };
-    api.updateCase(defaultDetailsAndUpdatedDetails).then(res => {
-      if (res.status === 200) {
-        this.props.updateMi3dCase(res.data);
-      }
+  defaultDetailsAndUpdatedDetails = details => ({
+    ...this.props.case,
+    ...details,
+    caseId: this.props.mi3dCase.caseId,
+    actionedBy: this.props.user.name
+  });
+
+  updateDetails = async details => {
+    const response = await api.updateCase(
+      this.defaultDetailsAndUpdatedDetails(details)
+    );
+    if (response !== undefined) {
+      if (response.status === 200) {
+        this.props.updateMi3dCase(response.data.mi3DCase);
+        this.props.updateBluedogCase(response.data.bluedogCase);
+        this.showSuccessMessage("Injured party details updated successfully");
+        this.switchForms();
+      } else this.showErrorMessage(response.data[0].errorMessage);
+    } else this.props.showErrorModal();
+  };
+
+  showSuccessMessage = message => {
+    this.setState({
+      message,
+      showMessage: true,
+      errorMessage: false
     });
-    api.updateInjuredPartyDetails(defaultDetailsAndUpdatedDetails).then(res => {
-      if (res.status === 200) {
-        console.log(res);
-        this.props.updateBluedogCase(res.data);
-        if (this._isMounted) {
-          this.setState({
-            showMessage: true,
-            message: "Injured party details updated successfully.",
-            errorMessage: false
-          });
-          setTimeout(() => this.setState({ showMessage: false }), 3000);
-          this.switchForms();
-        }
-      } else {
-        if (this._isMounted)
-          this.setState({
-            showMessage: true,
-            message: res.data,
-            errorMessage: true
-          });
-      }
+    setTimeout(() => this.setState({ showMessage: false }), 3000);
+  };
+
+  showErrorMessage = message => {
+    this.setState({
+      message,
+      showMessage: true,
+      errorMessage: true
     });
+    setTimeout(() => this.setState({ showMessage: false }), 3000);
   };
 
   render() {
@@ -89,15 +93,22 @@ class InjuredPartyDetails extends Component {
             show={this.state.showMessage}
             error={this.state.errorMessage}
             message={this.state.message}
-            justifyContent="flex-end"
+            justifyContent="flex-start"
             marginTop={-25}
-            marginRight={110}
           />
         </Card>
+        <ErrorModal
+          isModalOpen={this.state.showErrorModal}
+          closeModal={() =>
+            this.setState({ showErrorModal: false, errorMessage: null })
+          }
+          errorMessage={"Please try again later"}
+        />
       </div>
     );
   }
 }
+
 const mapStateToProps = state => ({
   case: state.case.selectedCase,
   mi3dCase: state.case.mi3dCase,
@@ -108,7 +119,9 @@ const mapDispatchToProps = dispatch => ({
   updateMi3dCase: updatedCase => dispatch(updateMi3dCase(updatedCase))
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(InjuredPartyDetails);
+export default withErrorHandling(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(InjuredPartyDetails)
+);

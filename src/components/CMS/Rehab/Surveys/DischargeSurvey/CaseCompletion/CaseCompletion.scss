@@ -1,0 +1,32 @@
+.case-completion {
+  &__buttons {
+    display: flex;
+
+    & label {
+      margin-right: 20px;
+    }
+  }
+  &__closing-statement {
+    margin: 15px 0;
+  }
+
+  &__closing-summary {
+    margin: 15px 0;
+  }
+
+  &__resume-daily-hobbies {
+    margin-top: 15px;
+  }
+
+  &__returned-to-work {
+    margin-top: 15px;
+  }
+
+  &__completed-treatment-plan {
+    margin-top: 15px;
+  }
+
+  &__clinician-hphc {
+    margin-bottom: 15px;
+  }
+}

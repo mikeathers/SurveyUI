@@ -1,0 +1,57 @@
+@import "../../../../../../styles/abstracts/variables.scss";
+
+.psfsScore {
+  display: flex;
+
+  &__form {
+    display: flex;
+  }
+
+  &__table {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  &__table-header {
+    display: flex;
+    width: 100%;
+    & p:nth-child(1) {
+      width: 53%;
+    }
+    & p:nth-child(2) {
+      width: 15%;
+    }
+    & p:nth-child(3) {
+      width: 20%;
+    }
+  }
+
+  &__activity {
+    display: flex;
+    border: 1px solid #eee;
+    padding: 10px;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+    &:hover {
+      cursor: pointer;
+      background-color: $color_hover;
+    }
+
+    & p:nth-child(1) {
+      width: 53% !important;
+    }
+
+    & p:nth-child(2) {
+      width: 16%;
+    }
+  }
+
+  &__logged-activities {
+    margin: 30px 0;
+  }
+
+  &__date-picker {
+    min-width: 20px !important;
+    width: 120px !important;
+  }
+}

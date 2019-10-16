@@ -1,8 +1,6 @@
 import React, { Component } from "react";
-
 import ManageStopCaseReasons from "../ManageStopCaseReasons/ManageStopCaseReasons";
 import AddStopCaseReason from "../AddStopCaseReason/AddStopCaseReason";
-
 import { Row, Col } from "components/Common";
 
 export default class StopCaseReasons extends Component {
@@ -12,9 +10,11 @@ export default class StopCaseReasons extends Component {
       stopCaseReasonsAdded: false
     };
   }
+
   stopCaseReasonsAdded = () => {
     this.setState({ stopCaseReasonsAdded: true });
   };
+
   render() {
     return (
       <Row>
@@ -23,6 +23,7 @@ export default class StopCaseReasons extends Component {
             <Col sm={12}>
               <AddStopCaseReason
                 stopCaseReasonsAdded={this.stopCaseReasonsAdded}
+                username={this.props.username}
               />
             </Col>
           </Row>
@@ -32,6 +33,7 @@ export default class StopCaseReasons extends Component {
             <Col sm={12}>
               <ManageStopCaseReasons
                 stopCaseReasonsAdded={this.state.stopCaseReasonsAdded}
+                username={this.props.username}
               />
             </Col>
           </Row>

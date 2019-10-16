@@ -1,0 +1,30 @@
+@import "../../../../../styles/abstracts/variables.scss";
+
+.question-text {
+  display: flex;
+  padding-bottom: 5px;
+
+  &__number {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 17px;
+    width: 17px;
+    background-color: rgb(212, 212, 212);
+    color: grey;
+    margin-right: 6px;
+    border-radius: 3px;
+    font-size: 14px !important;
+
+    &--answered {
+      background-color: $color_primary;
+      color: #fff;
+      transition: all 0.2s ease-in-out;
+    }
+  }
+
+  p {
+    font-weight: 500;
+  }
+}

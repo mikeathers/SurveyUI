@@ -2,9 +2,9 @@ import React from "react";
 import "./PageAction.scss";
 
 const PageAction = props => {
-  const style = {};
+  const className = props.disabled ? "pageaction-disabled" : "pageaction";
   return (
-    <div style={style} className="pageaction" onClick={props.triggerAction}>
+    <div className={className} onClick={props.triggerAction}>
       <p>{props.actionName}</p>
     </div>
   );

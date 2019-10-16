@@ -1,13 +1,24 @@
 import React, { Component } from "react";
 import moment from "moment";
 import {
-  FormGroup,
-  FormRow,
+  Label,
   Button,
-  ButtonContainer,
-  Label
+  FormRow,
+  FormGroup,
+  ButtonContainer
 } from "components/Common";
+
 export default class DefaultDetails extends Component {
+  calculateAge = dateOfBirth => {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    const m = today.getMonth() - birthDate.getMonth();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
   render() {
     const {
       firstName,
@@ -19,73 +30,71 @@ export default class DefaultDetails extends Component {
       address3,
       address4,
       houseNo,
-      postCode
+      postCode,
+      title
     } = this.props.case;
 
-    var today = new Date();
-    var birthDate = new Date(dateOfBirth);
-    var age = today.getFullYear() - birthDate.getFullYear();
-    var m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-
+    const age = this.calculateAge(dateOfBirth);
     return (
       <div>
         <FormRow>
-          <FormGroup inline>
-            <Label text="First Name:" />
+          <FormGroup flexBasis="46" inline>
+            <Label width="100" text="Title:" />
+            <p>{title}</p>
+          </FormGroup>
+          <FormGroup flexBasis="46" inline>
+            <Label width="100" text="First Name:" />
             <p>{firstName}</p>
           </FormGroup>
-          <FormGroup inline>
-            <Label text="Last Name:" />
+        </FormRow>
+        <FormRow>
+          <FormGroup flexBasis="46" inline>
+            <Label width="100" text="Last Name:" />
             <p>{lastName}</p>
           </FormGroup>
-        </FormRow>
-        <FormRow>
-          <FormGroup inline>
-            <Label text="House No:" />
+          <FormGroup flexBasis="46" inline>
+            <Label width="100" text="House No:" />
             <p>{houseNo}</p>
           </FormGroup>
-          <FormGroup inline>
-            <Label text="Address 1:" />
+        </FormRow>
+        <FormRow>
+          <FormGroup flexBasis="46" inline>
+            <Label width="100" text="Address 1:" />
             <p>{address1}</p>
           </FormGroup>
-        </FormRow>
-        <FormRow>
-          <FormGroup inline>
-            <Label text="Address 2" />
+          <FormGroup flexBasis="46" inline>
+            <Label width="100" text="Address 2" />
             <p>{address2}</p>
           </FormGroup>
-          <FormGroup inline>
-            <Label text="Address 3:" />
+        </FormRow>
+        <FormRow>
+          <FormGroup flexBasis="46" inline>
+            <Label width="100" text="Address 3:" />
             <p>{address3}</p>
           </FormGroup>
-        </FormRow>
-        <FormRow>
-          <FormGroup inline>
-            <Label text="Address 4:" />
+          <FormGroup flexBasis="46" inline>
+            <Label width="100" text="Address 4:" />
             <p>{address4}</p>
           </FormGroup>
-          <FormGroup inline>
-            <Label text="Postcode: " />
+        </FormRow>
+        <FormRow>
+          <FormGroup flexBasis="46" inline>
+            <Label width="100" text="Postcode: " />
             <p>{postCode}</p>
           </FormGroup>
-        </FormRow>
-        <FormRow>
-          <FormGroup inline>
-            <Label text="Email:" />
+          <FormGroup flexBasis="46" inline>
+            <Label width="100" text="Email:" />
             <p>{email}</p>
           </FormGroup>
-          <FormGroup inline>
-            <Label text="Date of Birth:" />
-            <p>{moment(dateOfBirth).format("DD/MM/YYYY")}</p>
-          </FormGroup>
         </FormRow>
         <FormRow>
-          <FormGroup inline>
-            <Label text="Age:" />
-            <p>{age}</p>
+          <FormGroup flexBasis="46" inline>
+            <Label width="100" text="Date of Birth:" />
+            <p>{moment(dateOfBirth).format("DD/MM/YYYY")}</p>
+          </FormGroup>
+          <FormGroup flexBasis="46" inline>
+            <Label width="100" text="Age:" />
+            <p>{age.toString()}</p>
           </FormGroup>
         </FormRow>
 

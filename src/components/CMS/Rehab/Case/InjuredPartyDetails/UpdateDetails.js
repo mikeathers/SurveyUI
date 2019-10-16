@@ -1,21 +1,21 @@
 import React, { Component } from "react";
 import DatePicker from "react-datepicker";
-import moment from "moment";
+
 import {
-  FormGroup,
-  FormRow,
-  Button,
-  ButtonContainer,
+  Label,
   Input,
-  Label
+  Button,
+  FormRow,
+  FormGroup,
+  ButtonContainer
 } from "components/Common";
 
 import {
-  validateListOfStrings,
-  validateItems,
-  removeValidationErrors,
   validateItem,
-  setItemToValidate
+  validateItems,
+  setItemToValidate,
+  validateListOfStrings,
+  removeValidationErrors
 } from "helpers/validation";
 
 import "./InjuredPartyDetails.scss";
@@ -25,24 +25,28 @@ export default class UpdateDetails extends Component {
     super(props);
     this.state = {
       updating: false,
-      bluedogCaseRef: props.case.bluedogCaseRef,
-      firstName: props.case.firstName,
-      lastName: props.case.lastName,
+      detailsSubmitted: false,
       email: props.case.email,
+      title: props.case.title,
+      houseNo: props.case.houseNo,
       address1: props.case.address1,
       address2: props.case.address2,
       address3: props.case.address3,
       address4: props.case.address4,
-      houseNo: props.case.houseNo,
       postCode: props.case.postCode,
+      lastName: props.case.lastName,
+      firstName: props.case.firstName,
+      bluedogCaseRef: props.case.bluedogCaseRef,
       dateOfBirth: new Date(props.case.dateOfBirth)
     };
 
-    this.setItemToValidate = setItemToValidate.bind(this);
-    this.validateItems = validateItems.bind(this);
     this.validateItem = validateItem.bind(this);
+    this.validateItems = validateItems.bind(this);
+    this.setItemToValidate = setItemToValidate.bind(this);
     this.removeValidationErrors = removeValidationErrors.bind(this);
   }
+
+  handleDateChange = date => this.setState({ dateOfBirth: date });
 
   handleChange = (e, { name, value }) => {
     this.setItemToValidate(name);
@@ -51,37 +55,41 @@ export default class UpdateDetails extends Component {
 
   listToValidate = () => {
     return [
-      { bluedogCaseRef: this.state.bluedogCaseRef },
-      { firstName: this.state.firstName },
+      { title: this.state.title },
       { lastName: this.state.lastName },
-      { dateOfBirth: this.state.dateOfBirth },
       { address1: this.state.address1 },
       { address2: this.state.address2 },
       { address3: this.state.address3 },
-      { postCode: this.state.postCode }
+      { postCode: this.state.postCode },
+      { firstName: this.state.firstName },
+      { dateOfBirth: this.state.dateOfBirth },
+      { bluedogCaseRef: this.state.bluedogCaseRef }
     ];
   };
 
-  updateDetails = () => {
-    const updatedDetails = {
-      bluedogCaseRef: this.state.bluedogCaseRef,
-      firstName: this.state.firstName,
-      lastName: this.state.lastName,
-      email: this.state.email,
-      dateOfBirth: this.state.dateOfBirth,
-      address1: this.state.address1,
-      address2: this.state.address2,
-      address3: this.state.address3,
-      address4: this.state.address4,
-      houseNo: this.state.houseNo,
-      postCode: this.state.postCode
-    };
+  updatedDetails = () => ({
+    title: this.state.title,
+    email: this.state.email,
+    houseNo: this.state.houseNo,
+    address1: this.state.address1,
+    address2: this.state.address2,
+    address3: this.state.address3,
+    address4: this.state.address4,
+    postCode: this.state.postCode,
+    lastName: this.state.lastName,
+    firstName: this.state.firstName,
+    dateOfBirth: this.state.dateOfBirth,
+    bluedogCaseRef: this.state.bluedogCaseRef
+  });
 
+  updateDetails = () => {
     var list = validateListOfStrings(this.listToValidate());
     if (list[list.length - 1].isValid) {
-      this.props.updateDetails(updatedDetails);
+      this.props.updateDetails(this.updatedDetails());
+      this.setState({ detailsSubmitted: true });
     } else {
       this.validateItems(list);
+      this.setState({ detailsSubmitted: false });
     }
   };
 
@@ -90,126 +98,143 @@ export default class UpdateDetails extends Component {
     this.props.switchForms();
   };
 
-  handleDateChange = date => this.setState({ dateOfBirth: date });
-
   render() {
     const {
-      firstName,
-      lastName,
+      title,
       email,
+      houseNo,
       address1,
       address2,
       address3,
       address4,
-      houseNo,
       postCode,
+      lastName,
+      firstName,
       dateOfBirth
     } = this.state;
     return (
       <div className="update-injured-party-details">
         <FormRow>
-          <FormGroup inline>
+          <FormGroup inline flexBasis="30">
+            <Label text="Title:" />
+            <Input
+              name="title"
+              value={title}
+              onChange={this.handleChange}
+              valid={this.validateItem("title").toString()}
+            />
+          </FormGroup>
+          <FormGroup inline flexBasis="30">
             <Label text="First Name:" />
             <Input
-              value={firstName}
               name="firstName"
+              value={firstName}
               onChange={this.handleChange}
               valid={this.validateItem("firstName").toString()}
             />
           </FormGroup>
-          <FormGroup inline>
+        </FormRow>
+        <FormRow>
+          <FormGroup inline flexBasis="30">
             <Label text="Last Name:" />
             <Input
-              value={lastName}
               name="lastName"
+              value={lastName}
               onChange={this.handleChange}
               valid={this.validateItem("lastName").toString()}
             />
           </FormGroup>
-        </FormRow>
-        <FormRow>
-          <FormGroup inline>
+          <FormGroup inline flexBasis="30">
             <Label text="House No" />
             <Input
-              value={houseNo}
               name="houseNo"
               onChange={this.handleChange}
+              value={houseNo != null ? houseNo : ""}
             />
           </FormGroup>
-          <FormGroup inline>
+        </FormRow>
+        <FormRow>
+          <FormGroup inline flexBasis="30">
             <Label text="Address 1" />
             <Input
-              value={address1}
               name="address1"
+              value={address1}
               onChange={this.handleChange}
               valid={this.validateItem("address1").toString()}
             />
           </FormGroup>
-        </FormRow>
-        <FormRow>
-          <FormGroup inline>
+          <FormGroup inline flexBasis="30">
             <Label text="Address 2" />
             <Input
-              value={address2}
               name="address2"
+              value={address2}
               onChange={this.handleChange}
               valid={this.validateItem("address2").toString()}
             />
           </FormGroup>
-          <FormGroup inline>
+        </FormRow>
+        <FormRow>
+          <FormGroup inline flexBasis="30">
             <Label text="Address 3" />
             <Input
-              value={address3}
               name="address3"
+              value={address3}
               onChange={this.handleChange}
               valid={this.validateItem("address3").toString()}
             />
           </FormGroup>
-        </FormRow>
-        <FormRow>
-          <FormGroup inline>
+          <FormGroup inline flexBasis="30">
             <Label text="Address 4" />
             <Input
-              value={address4}
               name="address4"
               onChange={this.handleChange}
+              value={address4 != null ? address4 : ""}
             />
           </FormGroup>
-          <FormGroup inline>
+        </FormRow>
+        <FormRow>
+          <FormGroup inline flexBasis="30">
             <Label text="Postcode" />
             <Input
-              value={postCode}
               name="postCode"
+              value={postCode}
               onChange={this.handleChange}
               valid={this.validateItem("postCode").toString()}
             />
           </FormGroup>
-        </FormRow>
-        <FormRow>
-          <FormGroup inline>
+          <FormGroup inline flexBasis="30">
             <Label text="Email" />
-            <Input value={email} name="email" onChange={this.handleChange} />
-          </FormGroup>
-          <FormGroup inline>
-            <Label text="Date of Birth" />
-            {/* <Input
-              value={moment(dateOfBirth).format("DD/MM/YYYY")}
-              name="dateOfBirth"
+            <Input
+              name="email"
               onChange={this.handleChange}
-              valid={this.validateItem("dateOfBirth").toString()}
-            /> */}
+              value={email != null ? email : ""}
+            />
+          </FormGroup>
+          <FormGroup inline flexBasis="30">
+            <Label text="Date of Birth" />
             <DatePicker
-              selected={dateOfBirth}
-              onChange={this.handleDateChange}
               timeIntervals={15}
-              dateFormat="dd/MM/yyyy"
               timeCaption="time"
+              selected={dateOfBirth}
+              dateFormat="dd/MM/yyyy"
+              onChange={this.handleDateChange}
             />
           </FormGroup>
         </FormRow>
         <ButtonContainer marginTop={40} justifyContent="flex-end">
-          <Button content="Cancel" secondary onClick={this.cancel} />
-          <Button content="Save" primary onClick={this.updateDetails} />
+          <Button
+            secondary
+            content="Cancel"
+            onClick={this.cancel}
+            disabled={this.state.detailsSubmitted}
+          />
+          <Button
+            primary
+            content="Save"
+            onClick={this.updateDetails}
+            disabled={this.state.detailsSubmitted}
+            loading={this.state.detailsSubmitted}
+          />
         </ButtonContainer>
       </div>
     );

@@ -11,7 +11,7 @@ const FollowUpOne = () => (
           <div>
             <p>
               <span className="follow-up-one__strong">{followUp.answer}</span>:{" "}
-              {followUp.text}
+              {followUp.questionText}
             </p>
             <div>
               {followUp.followUp.map((followUp, key) => (
@@ -20,7 +20,7 @@ const FollowUpOne = () => (
                     <span className="follow-up-one__strong">
                       {followUp.answer}
                     </span>
-                    : {followUp.text}
+                    : {followUp.questionText}
                   </p>
                 </div>
               ))}
@@ -30,7 +30,7 @@ const FollowUpOne = () => (
           <div>
             <p>
               <span className="follow-up-one__strong">{followUp.answer}</span>:{" "}
-              {followUp.text}
+              {followUp.questionText}
             </p>
           </div>
         )}

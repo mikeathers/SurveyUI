@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "dependencies": {
     "axios": "^0.18.0",
+    "axios-mock-adapter": "^1.16.0",
     "dotenv": "^7.0.0",
     "draft-js": "^0.10.5",
     "draftjs-to-html": "^0.8.4",
@@ -11,6 +12,7 @@
     "html-to-draftjs": "^1.4.0",
     "moment": "^2.24.0",
     "node-sass": "^4.11.0",
+    "oidc-client": "^1.6.1",
     "rc-slider": "^8.6.6",
     "rc-time-picker": "^3.6.2",
     "react": "^16.8.2",
@@ -20,6 +22,7 @@
     "react-dom": "^16.8.2",
     "react-draft-wysiwyg": "^1.13.2",
     "react-highcharts": "^16.0.2",
+    "react-loader-spinner": "^2.3.0",
     "react-modal": "^3.8.1",
     "react-motion": "^0.5.2",
     "react-redux": "^6.0.0",
@@ -27,13 +30,13 @@
     "react-router-dom": "^4.3.1",
     "react-router-redux": "^4.0.8",
     "react-scripts": "2.1.5",
+    "react-spring": "^7.2.10",
     "react-sticky": "^6.0.3",
     "redux": "^4.0.1",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
     "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.85.0",
-    "react-spring": "^7.2.10"
+    "semantic-ui-react": "^0.85.0"
   },
   "scripts": {
     "start": "react-scripts start",

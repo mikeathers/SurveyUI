@@ -8,13 +8,17 @@
   display: flex;
   position: relative;
   flex-direction: row;
-  flex-wrap: wrap;
+
   transition: all 0.3s ease;
 
   @include respond(mobile) {
     flex-direction: column;
   }
 
+  &__content {
+    display: flex;
+    margin-top: 10px;
+  }
   &:hover {
     background-color: $color_hover !important;
     cursor: pointer;
@@ -61,5 +65,27 @@
 
   &__fixed {
     width: 100px;
+  }
+
+  &__type {
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & i {
+      font-size: 26px;
+      color: $color_primary;
+    }
+  }
+
+  &__notes {
+    -ms-word-break: break-all;
+    word-break: break-all;
+    word-break: break-word;
+
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
   }
 }

@@ -1,12 +1,12 @@
 import React, { Component } from "react";
+import * as api from "api";
 import { connect } from "react-redux";
 import { updateBluedogCase, updateMi3dCase } from "actions";
-import * as api from "api";
-
-import { Card, Button, ButtonContainer, Message } from "components/Common";
+import {withErrorHandling} from "HOCs";
 import ContactNumberModal from "./ContactNumberModal/ContactNumberModal";
 import RemoveNumberModal from "./RemoveNumberModal/RemoveNumberModal";
 import ContactItem from "./ContactItem/ContactItem";
+import { Card, Button, ButtonContainer, Message } from "components/Common";
 
 import "./InjuredPartyContactDetails.scss";
 
@@ -15,15 +15,17 @@ class InjuredPartyContactDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      contactInfoToUpdate: {},
-      selectedId: "",
-      addNew: false,
-      showMessage: false,
-      errorMessage: false,
       message: "",
+      addNew: false,
+      selectedId: "",
       modalOpen: false,
+      showMessage: false,
+      numberToRemove: "",
+      errorMessage: false,
       removeModalOpen: false,
-      numberToRemove: ""
+      contactInfoToUpdate: {},
+      removeContactDetailSubmitted: false,
+      bluedogCase: props.bluedogCase !== undefined ? props.bluedogCase : {}
     };
   }
 
@@ -33,6 +35,10 @@ class InjuredPartyContactDetails extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
+  }
+
+  componentWillReceiveProps({ bluedogCase }) {
+    this.setState({ bluedogCase });
   }
 
   closeModal = () => {
@@ -52,198 +58,167 @@ class InjuredPartyContactDetails extends Component {
     );
   };
 
-  logActivity = (res, action) => {
-    if (res.status === 200) {
-      this.setState({
-        showMessage: true,
-        modalOpen: false,
-        removeModalOpen: false
-      });
-      setTimeout(() => this.setState({ showMessage: false }), 3000);
-      this.props.updateBluedogCase(res.data);
-      const activity = {
-        action,
-        caseId: this.props.mi3dCase.caseId,
-        actionedBy: this.props.user.name
-      };
-      api.logUpdateToContactDetailsActivity(activity).then(res => {
-        this.props.updateMi3dCase(res.data);
-      });
+  activity = action => ({
+    action,
+    actionedBy: this.props.username,
+    caseId: this.props.mi3dCase.caseId
+  });
+
+  contactInfoId = () => ({
+    contactNumberId: this.state.selectedId,
+    bluedogCaseRef: this.state.bluedogCase.bluedogCaseRef
+  });
+
+  logActivity = async action => {
+    const response = await api.logUpdateToContactDetailsActivity(
+      this.activity(action)
+    );
+    if (response !== undefined) {
+      this.props.updateMi3dCase(response.data);
+    } else this.props.showErrorModal();
+  };
+
+  updateNumber = async contactDetails => {
+    const response = await api.updateInjuredPartyContactDetails(contactDetails);
+    if (response !== undefined) {
+      this.logActivity("Update");
+      this.props.updateBluedogCase(response.data);
+      this.showSuccessMessage("Contact number has been updated successfully");
+    } else this.props.showErrorModal();
+  };
+
+  saveNumber = async contactDetails => {
+    const response = await api.addInjuredPartyContactDetails(contactDetails);
+    if (response !== undefined) {
+      if (response.status === 200) {
+        this.logActivity("Add");
+        this.props.updateBluedogCase(response.data);
+        this.showSuccessMessage("Contact number has been saved successfully");
+      } else this.showErrorMessage(response.data[0].errorMessage);
+    } else this.props.showErrorModal();
+  };
+
+  removeNumber = async () => {
+    this.setState({ removeContactDetailSubmitted: true });
+    const response = await api.removeInjuredPartyContactDetails(
+      this.contactInfoId()
+    );
+    if (response !== undefined) {
+      this.logActivity("Remove");
+      this.showSuccessMessage("Contact number has been removed successfully");
+      this.props.updateBluedogCase(response.data);
     } else {
-      this.setState({
-        showMessage: true,
-        message: res.data,
-        errorMessage: true
-      });
-      this.closeModal();
+      this.setState({ removeContactDetailSubmitted: false });
+      this.props.showErrorModal();
     }
   };
 
-  updateNumber = newContactDetails => {
-    api.updateInjuredPartyContactDetails(newContactDetails).then(res => {
-      if (this._isMounted) {
-        this.setState({
-          message: "Contact number updated successfully.",
-          errorMessage: false
-        });
-        this.logActivity(res, "Update");
-      }
+  showSuccessMessage = message => {
+    this.setState({
+      message,
+      modalOpen: false,
+      showMessage: true,
+      errorMessage: false,
+      removeModalOpen: false,
+      contactInfoToUpdate: {}
     });
+    setTimeout(() => this.setState({ showMessage: false }), 3000);
   };
 
-  saveNumber = newContactDetails => {
-    api.addInjuredPartyContactDetails(newContactDetails).then(res => {
-      if (this._isMounted) {
-        this.setState({
-          message: "Contact number saved successfully.",
-          errorMessage: false
-        });
-        this.logActivity(res, "Add");
-      }
+  showErrorMessage = message => {
+    this.setState({
+      message,
+      modalOpen: false,
+      showMessage: true,
+      errorMessage: true,
+      removeModalOpen: false,
+      contactInfoToUpdate: {}
     });
+    setTimeout(() => this.setState({ showMessage: false }), 3000);
   };
 
-  removeNumber = () => {
-    const contactInfo = {
-      contactNumberId: this.state.selectedId,
-      bluedogCaseRef: this.props.case.bluedogCaseRef
-    };
-    api.removeInjuredPartyContactDetails(contactInfo).then(res => {
-      if (this._isMounted) {
-        if (res.status === 200) {
-          // const newDetails = res.data.telephoneInfo.find(
-          //   m => m.contactNumberId === this.state.selectedId
-          // );
-          this.setState({ contactInfoToUpdate: {} });
-        }
-        this.setState({
-          message: "Contact number removed successfully.",
-          errorMessage: false
-        });
-        this.logActivity(res, "Remove");
-      }
-    });
-  };
-
-  showRemoveModal = (id, number) =>
+  showRemoveModal = (id, number) => {
     this.setState({
       removeModalOpen: true,
       selectedId: id,
       numberToRemove: number
     });
+  };
 
   closeRemoveModal = () => {
     this.setState({ removeModalOpen: false });
   };
 
   render() {
+    const { bluedogCase } = this.state;
     return (
       <Card title="Contact Details" collapse={false}>
-        <div>
-          {/* <table className="contact-details-table">
-            <thead>
-              <tr>
-                <td>
-                  <p>Type</p>
-                </td>
-                <td>
-                  <p>Number</p>
-                </td>
-                <td>
-                  <p>Preferred</p>
-                </td>
-                <td>
-                  <p>Notes</p>
-                </td>
-              </tr>
-            </thead>
-            <tbody>
-              {this.props.case.telephoneInfo.map((info, key) => {
-                return (
-                  <ContactRow
-                    info={info}
-                    key={key}
-                    updateContactInfo={() => this.updateContactInfo(info)}
-                    showRemoveModal={() =>
-                      this.showRemoveModal(
-                        info.contactNumberId,
-                        info.contactNumber
-                      )
-                    }
-                  />
-                );
-              })}
-            </tbody>
-          </table> */}
-          {this.props.case.telephoneInfo.map((info, key) => {
-            return (
-              <ContactItem
-                info={info}
-                key={key}
-                updateContactInfo={() => this.updateContactInfo(info)}
-                showRemoveModal={() =>
-                  this.showRemoveModal(info.contactNumberId, info.contactNumber)
-                }
-              />
-            );
-          })}
-          <ButtonContainer marginTop={5} justifyContent="flex-end">
-            <Message
-              show={this.state.showMessage}
-              error={this.state.errorMessage}
-              message={this.state.message}
-              marginRight={45}
-            />
-            <Button
-              content="Add a number"
-              primary
-              onClick={() =>
-                this.setState({
-                  modalOpen: true,
-                  addNew: true
-                })
-              }
-            />
-          </ButtonContainer>
-          <ContactNumberModal
-            isModalOpen={this.state.modalOpen}
-            closeModal={this.closeModal}
-            telephoneInfo={this.state.contactInfoToUpdate}
-            updateNumber={this.updateNumber}
-            saveNumber={this.saveNumber}
-            bluedogCaseRef={this.props.case.bluedogCaseRef}
-            partyId={this.props.case.partyId}
-            addNew={this.state.addNew}
-            showRemoveModal={() =>
-              this.showRemoveModal(
-                this.state.contactInfoToUpdate.contactNumberId,
-                this.state.contactInfoToUpdate.contactNumber
-              )
+        <div className="scrollable-card">
+          {bluedogCase !== undefined &&
+            bluedogCase.telephoneInfo !== undefined &&
+            bluedogCase.telephoneInfo.map((info, key) => {
+              return (
+                <ContactItem
+                  info={info}
+                  key={key}
+                  updateContactInfo={() => this.updateContactInfo(info)}
+                  showRemoveModal={() =>
+                    this.showRemoveModal(
+                      info.contactNumberId,
+                      info.contactNumber
+                    )
+                  }
+                />
+              );
+            })}
+        </div>
+        <ButtonContainer marginTop="15" justifyContent="flex-end">
+          <Message
+            marginRight={45}
+            message={this.state.message}
+            show={this.state.showMessage}
+            error={this.state.errorMessage}
+          />
+          <Button
+            content="Add a number"
+            primary
+            onClick={() =>
+              this.setState({
+                modalOpen: true,
+                addNew: true
+              })
             }
           />
-          <RemoveNumberModal
-            isModalOpen={this.state.removeModalOpen}
-            closeModal={this.closeRemoveModal}
-            removeContactDetail={this.removeNumber}
-            numberToRemove={this.state.numberToRemove}
-          />
-        </div>
+        </ButtonContainer>
+        <ContactNumberModal
+          addNew={this.state.addNew}
+          closeModal={this.closeModal}
+          saveNumber={this.saveNumber}
+          updateNumber={this.updateNumber}
+          isModalOpen={this.state.modalOpen}
+          telephoneInfo={this.state.contactInfoToUpdate}
+          bluedogCaseRef={this.state.bluedogCase.bluedogCaseRef}
+          partyId={
+            this.state.bluedogCase !== undefined &&
+            this.state.bluedogCase.partyId
+          }
+          showRemoveModal={() =>
+            this.showRemoveModal(
+              this.state.contactInfoToUpdate.contactNumberId,
+              this.state.contactInfoToUpdate.contactNumber
+            )
+          }
+        />
+        <RemoveNumberModal
+          closeModal={this.closeRemoveModal}
+          removeContactDetail={this.removeNumber}
+          isModalOpen={this.state.removeModalOpen}
+          numberToRemove={this.state.numberToRemove}
+          removeContactDetailSubmitted={this.removeContactDetailSubmitted}
+        />
       </Card>
     );
   }
 }
-const mapStateToProps = state => ({
-  case: state.case.selectedCase,
-  mi3dCase: state.case.mi3dCase,
-  user: state.auth.user
-});
 
-const mapDispatchToProps = dispatch => ({
-  updateBluedogCase: updatedCase => dispatch(updateBluedogCase(updatedCase)),
-  updateMi3dCase: updatedCase => dispatch(updateMi3dCase(updatedCase))
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(InjuredPartyContactDetails);
+export default withErrorHandling(InjuredPartyContactDetails);

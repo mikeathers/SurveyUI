@@ -1,6 +1,10 @@
 import React, { Component } from "react";
+import _ from "lodash";
 import * as api from "api";
-import { stopCaseReasonTypes } from "helpers/dropdowns";
+import {withErrorHandling} from "HOCs";
+
+import { yesNo, bluedogWatchLists } from "helpers/dropdowns";
+
 import {
   validateListOfStrings,
   validateItems,
@@ -23,22 +27,26 @@ import {
 } from "components/Common";
 
 import "./ManageStopCaseReasons.scss";
-export default class ManageStopCaseReasons extends Component {
+
+class ManageStopCaseReasons extends Component {
   _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
-      selectedStopCaseReasonId: "",
-      selectedStopCaseReasonType: "",
-      stopCaseReasonText: "",
-      selectedEmailTemplateId: "",
-      stopCaseReasons: [],
-      stopCaseReasonsForDropdown: [],
-      emailTemplatesForDropdown: [],
-      selectedReason: null,
-      showMessage: false,
       message: "",
-      removeModalOpen: false
+      updatesBluedog: "",
+      showMessage: false,
+      stopCaseReasons: [],
+      selectedReason: null,
+      removeModalOpen: false,
+      stopCaseReasonText: "",
+      sendsCorrespondence: "",
+      selectedEmailTemplates: [],
+      selectedBluedogWatchList: "",
+      selectedStopCaseReasonId: "",
+      emailTemplatesForDropdown: [],
+      stopCaseReasonsForDropdown: [],
+      selectedStopCaseReasonType: ""
     };
     this.setItemToValidate = setItemToValidate.bind(this);
     this.validateItems = validateItems.bind(this);
@@ -48,32 +56,12 @@ export default class ManageStopCaseReasons extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-    api.getStopCaseReasons().then(res => {
-      if (this._isMounted) {
-        if (res.status === 200) {
-          this.setState({ stopCaseReasons: res.data });
-          this.stopCaseReasonsForDropdown(res.data);
-        }
-      }
-    });
-    api.getEmailTemplates().then(res => {
-      if (this._isMounted) {
-        this.setState({ emailTemplates: res.data }, () =>
-          this.emailTemplatesForDropdown(res.data)
-        );
-      }
-    });
+    this.getEmailTemplates();
+    this.getStopCaseReasons();
   }
 
   componentWillReceiveProps() {
-    api.getStopCaseReasons().then(res => {
-      if (res.status === 200) {
-        if (this._isMounted) {
-          this.setState({ stopCaseReasons: res.data });
-          this.stopCaseReasonsForDropdown(res.data);
-        }
-      }
-    });
+    this.getStopCaseReasons();
   }
 
   componentWillUnmount() {
@@ -82,41 +70,18 @@ export default class ManageStopCaseReasons extends Component {
 
   handleChange = (e, { name, value }) => {
     this.setItemToValidate(name);
-    this.setState({ [name]: value });
-  };
-
-  listToValidate = () => {
-    return [
-      { selectedStopCaseReasonId: this.state.selectedStopCaseReasonId },
-      { selectedStopCaseReasonType: this.state.selectedStopCaseReasonType },
-      { stopCaseReasonText: this.state.stopCaseReasonText },
-      { selectedEmailTemplateId: this.state.selectedEmailTemplateId }
-    ];
-  };
-
-  stopCaseReasonsForDropdown = reasons => {
-    const stopCaseReasonsForDropdown = reasons.map((reason, key) => ({
-      text: reason.text,
-      value: reason.stopCaseReasonId,
-      key
-    }));
-    this.setState({ stopCaseReasonsForDropdown });
-  };
-
-  emailTemplatesForDropdown = templates => {
-    const emailTemplatesForDropdown = templates.map((template, key) => ({
-      text: template.name,
-      value: template.emailTemplateId,
-      key
-    }));
-    this.setState({ emailTemplatesForDropdown });
+    this.hideValidationError();
+    this.setState({ [name]: value }, () => {
+      if (name === "sendsCorrespondence" && value === false)
+        this.setState({ selectedEmailTemplates: [] });
+      if (name === "updatesBluedog" && value === false)
+        this.setState({ selectedBluedogWatchList: "" });
+    });
   };
 
   handleReasonChange = (e, { name, value }) => {
     this.setItemToValidate(name);
     this.setItemToValidate("stopCaseReasonText");
-    this.setItemToValidate("selectedStopCaseReasonType");
-    this.setItemToValidate("selectedEmailTemplateId");
     const selectedReason = this.state.stopCaseReasons.find(
       m => m.stopCaseReasonId === value
     );
@@ -125,84 +90,196 @@ export default class ManageStopCaseReasons extends Component {
       selectedReason,
       stopCaseReasonText: selectedReason.text,
       selectedStopCaseReasonType: selectedReason.type,
-      selectedEmailTemplateId: selectedReason.emailTemplate.emailTemplateId
+      updatesBluedog: selectedReason.updatesBluedog,
+      sendsCorrespondence: selectedReason.sendsCorrespondence,
+      selectedBluedogWatchList: selectedReason.bluedogWatchList,
+      selectedEmailTemplates: this.mapPreSelectedEmailTemplates(
+        selectedReason.emailTemplates
+      )
     });
   };
 
-  updateStopCaseReason = reason => {
-    api.saveStopCaseReason(reason).then(res => {
-      if (this._isMounted) {
-        if (res.status === 200) {
-          this.setState({ showMessage: true });
-          setTimeout(() => this.setState({ showMessage: false }), 3000);
-          this.setState({ stopCaseReasons: res.data });
-          this.stopCaseReasonsForDropdown(res.data);
-        } else {
-          this.setState({
-            showMessage: true,
-            message: res.data.errors[0].message
-          });
-          setTimeout(() => this.setState({ showMessage: false }), 3000);
-        }
+  listToValidate = () => {
+    const listToValidate = [
+      { selectedStopCaseReasonId: this.state.selectedStopCaseReasonId },
+      { stopCaseReasonText: this.state.stopCaseReasonText },
+      {
+        sendsCorrespondence: this.state.sendsCorrespondence !== "" ? "true" : ""
+      },
+      {
+        updatesBluedog: this.state.updatesBluedog !== "" ? "true" : ""
       }
+    ];
+
+    this.state.sendsCorrespondence &&
+      listToValidate.push({
+        selectedEmailTemplates:
+          this.state.selectedEmailTemplates.length > 0 ? "true" : ""
+      });
+
+    this.state.updatesBluedog &&
+      listToValidate.push({
+        selectedBluedogWatchList: this.state.selectedBluedogWatchList
+      });
+
+    return listToValidate;
+  };
+
+  getStopCaseReasons = async () => {
+    const response = await api.getStopCaseReasons();
+    if (response !== undefined) {
+      if (response.status === 200 && this._isMounted) {
+        const stopCaseReasons = _.orderBy(response.data, "name");
+        this.setState({ stopCaseReasons });
+        this.mapStopCaseReasonsForDropdown(stopCaseReasons);
+      }
+    } else this.props.showErrorModal();
+  };
+
+  getEmailTemplates = async () => {
+    const response = await api.getEmailTemplates();
+    if (response !== undefined) {
+      if (response.status === 200 && this._isMounted) {
+        const emailTemplates = _.orderBy(response.data, "name");
+        this.setState({ emailTemplates }, () =>
+          this.mapEmailTemplatesForDropdown(emailTemplates)
+        );
+      }
+    } else this.props.showErrorModal();
+  };
+
+  mapStopCaseReasonsForDropdown = reasons => {
+    const stopCaseReasonsForDropdown = reasons.map((reason, key) => ({
+      text: reason.text,
+      value: reason.stopCaseReasonId,
+      key
+    }));
+    this.setState({
+      stopCaseReasonsForDropdown: _.orderBy(stopCaseReasonsForDropdown, "text")
     });
+  };
+
+  mapEmailTemplatesForDropdown = templates => {
+    const emailTemplatesForDropdown = templates.map((template, key) => ({
+      text: template.name,
+      value: template.emailTemplateId,
+      key
+    }));
+    this.setState({ emailTemplatesForDropdown });
+  };
+
+  mapPreSelectedEmailTemplates = templates => {
+    return templates.map(template => template.emailTemplateId);
+  };
+
+  stopCaseReason = () => ({
+    actionedBy: this.props.username,
+    text: this.state.stopCaseReasonText,
+    updatesBluedog: this.state.updatesBluedog,
+    type: this.state.selectedStopCaseReasonType,
+    emailTemplates: this.mapSelectedEmailTemplates(),
+    sendsCorrespondence: this.state.sendsCorrespondence,
+    bluedogWatchList: this.state.selectedBluedogWatchList,
+    stopCaseReasonId:
+      this.state.selectedReason !== null
+        ? this.state.selectedReason.stopCaseReasonId
+        : 0
+  });
+
+  mapSelectedEmailTemplates = () => {
+    const { selectedEmailTemplates } = this.state;
+    return selectedEmailTemplates.map(emailTemplateId => ({
+      emailTemplateId
+    }));
   };
 
   validateStopCaseReason = () => {
-    const reason = {
-      text: this.state.stopCaseReasonText,
-      type: this.state.selectedStopCaseReasonType,
-      emailTemplateId: this.state.selectedEmailTemplateId,
-      stopCaseReasonId:
-        this.state.selectedReason !== null
-          ? this.state.selectedReason.stopCaseReasonId
-          : 0
-    };
-
     var list = validateListOfStrings(this.listToValidate());
     if (list[list.length - 1].isValid) {
-      this.updateStopCaseReason(reason);
+      this.updateStopCaseReason();
     } else {
       this.validateItems(list);
+      this.showValidationError(list);
     }
   };
 
-  removeStopCaseReason = stopCaseReasonId => {
-    api.removeStopCaseReason(stopCaseReasonId).then(res => {
-      if (this._isMounted) {
-        if (res.status === 200) {
-          this.setState({
-            showMessage: true,
-            removeModalOpen: false,
-            stopCaseReasonText: "",
-            selectedStopCaseReasonType: "",
-            selectedEmailTemplateId: "",
-            selectedStopCaseReasonId: ""
-          });
-          setTimeout(() => this.setState({ showMessage: false }), 3000);
-          this.setState({ stopCaseReasons: res.data });
-          this.stopCaseReasonsForDropdown(res.data);
-        }
-      }
-    });
+  updateStopCaseReason = async () => {
+    const response = await api.saveStopCaseReason(this.stopCaseReason());
+    if (response !== undefined) {
+      if (response.status === 200 && this._isMounted) {
+        this.setState({ stopCaseReasons: response.data });
+        this.clearForm();
+        this.showSuccessMessage("Stop Case Reason updated successfully");
+        this.mapStopCaseReasonsForDropdown(response.data);
+      } else this.showErrorMessage(response.data[0].errorMessage);
+    } else this.props.showErrorModal();
   };
 
-  validateRemoveStopCaseReason = stopCaseReasonId => {
-    var list = validateListOfStrings(this.listToValidate());
-    if (list[list.length - 1].isValid) {
-      this.removeStopCaseReason(stopCaseReasonId);
-    } else {
-      this.setState({ removeModalOpen: false });
-      this.validateItems(list);
+  removeStopCaseReason = async stopCaseReasonId => {
+    const removeStopCaseReason = {
+      stopCaseReasonId,
+      actionedBy: this.props.username
+    };
+    const response = await api.removeStopCaseReason(removeStopCaseReason);
+    if (response !== undefined) {
+      if (response.status === 200 && this._isMounted) {
+        this.setState({ stopCaseReasons: response.data });
+        this.clearForm();
+        this.showSuccessMessage("Stop Case Reason removed successfully");
+        this.mapStopCaseReasonsForDropdown(response.data);
+      } else this.showErrorMessage(response.data[0].errorMessage);
     }
   };
 
   clearForm = () => {
+    this.hideValidationError();
+    this.removeValidationErrors(this.listToValidate());
     this.setState({
-      selectedStopCaseReasonId: "",
-      selectedStopCaseReasonType: "",
+      updatesBluedog: "",
       stopCaseReasonText: "",
-      selectedEmailTemplateId: ""
+      sendsCorrespondence: "",
+      selectedEmailTemplates: [],
+      selectedBluedogWatchList: "",
+      selectedStopCaseReasonId: ""
+    });
+  };
+
+  showSuccessMessage = message => {
+    this.setState({
+      showMessage: true,
+      message,
+      errorMessage: false,
+      removeModalOpen: false,
+      stopCaseReasonText: "",
+      selectedEmailTemplateId: "",
+      selectedStopCaseReasonId: ""
+    });
+    setTimeout(() => this.setState({ showMessage: false }), 3000);
+  };
+
+  showErrorMessage = message => {
+    this.setState({
+      showMessage: true,
+      message,
+      errorMessage: true
+    });
+    setTimeout(() => this.setState({ showMessage: false }), 3000);
+  };
+
+  showValidationError = list => {
+    this.validateItems(list);
+    this.setState({
+      message: "Please fill in all fields before submitting",
+      errorMessage: true,
+      showMessage: true
+    });
+  };
+
+  hideValidationError = () => {
+    this.setState({
+      showMessage: false,
+      errorMessage: false,
+      message: ""
     });
   };
 
@@ -211,8 +288,9 @@ export default class ManageStopCaseReasons extends Component {
       <Card title="Manage Stop Case Reasons">
         <FormRow>
           <FormGroup>
-            <Label text="Stop Case Reason:" width="100" />
+            <Label text="Stop Case Reason:" />
             <Dropdown
+              fullWidth
               selection
               placeholder="Select Stop Case Reason..."
               name="selectedStopCaseReasonId"
@@ -225,8 +303,9 @@ export default class ManageStopCaseReasons extends Component {
         </FormRow>
         <FormRow>
           <FormGroup>
-            <Label text="Reason Text:" width="100" />
+            <Label text="Reason Text:" />
             <Input
+              fullWidth
               name="stopCaseReasonText"
               value={this.state.stopCaseReasonText}
               onChange={this.handleChange}
@@ -234,48 +313,80 @@ export default class ManageStopCaseReasons extends Component {
               valid={this.validateItem("stopCaseReasonText").toString()}
             />
           </FormGroup>
-
-          <FormGroup>
-            <Label text="Email Template:" width="100" />
-            <Dropdown
-              selection
-              options={this.state.emailTemplatesForDropdown}
-              placeholder="Select Reason..."
-              value={this.state.selectedEmailTemplateId}
-              name="selectedEmailTemplateId"
-              onChange={this.handleChange}
-              valid={this.validateItem("selectedEmailTemplateId").toString()}
-            />
-          </FormGroup>
         </FormRow>
         <FormRow>
           <FormGroup>
-            <Label text="Type:" width="100" />
+            <Label text="Sends Correspondence?" />
             <Dropdown
+              fullWidth
               selection
-              options={stopCaseReasonTypes}
-              value={this.state.selectedStopCaseReasonType}
-              name="selectedStopCaseReasonType"
-              placeholder="Select Type..."
+              options={yesNo}
+              placeholder="Select Value..."
+              value={this.state.sendsCorrespondence}
+              name="sendsCorrespondence"
               onChange={this.handleChange}
-              width="100"
-              valid={this.validateItem("selectedStopCaseReasonType").toString()}
+              valid={this.validateItem("sendsCorrespondence").toString()}
             />
           </FormGroup>
         </FormRow>
+        {this.state.sendsCorrespondence && (
+          <FormRow>
+            <FormGroup>
+              <Label text="Email Template:" />
+              <Dropdown
+                fullWidth
+                selection
+                multiple
+                options={this.state.emailTemplatesForDropdown}
+                placeholder="Select Reason..."
+                value={this.state.selectedEmailTemplates}
+                name="selectedEmailTemplates"
+                onChange={this.handleChange}
+                valid={this.validateItem("selectedEmailTemplates").toString()}
+              />
+            </FormGroup>
+          </FormRow>
+        )}
+        <FormRow>
+          <FormGroup>
+            <Label text="Updates Bluedog:" />
+            <Dropdown
+              fullWidth
+              selection
+              options={yesNo}
+              placeholder="Select Value..."
+              value={this.state.updatesBluedog}
+              name="updatesBluedog"
+              onChange={this.handleChange}
+              valid={this.validateItem("updatesBluedog").toString()}
+            />
+          </FormGroup>
+        </FormRow>
+        {this.state.updatesBluedog && (
+          <FormRow>
+            <FormGroup>
+              <Label text="Bluedog Watch List:" />
+              <Dropdown
+                fullWidth
+                selection
+                options={bluedogWatchLists}
+                placeholder="Select Watch List..."
+                value={this.state.selectedBluedogWatchList}
+                name="selectedBluedogWatchList"
+                onChange={this.handleChange}
+                valid={this.validateItem("selectedBluedogWatchList").toString()}
+              />
+            </FormGroup>
+          </FormRow>
+        )}
         <ButtonContainer justifyContent="space-between" marginTop="25">
           <Button
             content="Remove Reason"
             secondary
             onClick={() => this.setState({ removeModalOpen: true })}
+            disabled={this.state.selectedStopCaseReasonId === ""}
           />
           <FlexBox>
-            <Message
-              show={this.state.showMessage}
-              error={this.state.message !== ""}
-              message={this.state.message}
-              marginRight={45}
-            />
             <Button content="Cancel" secondary onClick={this.clearForm} />
             <Button
               content="Update Reason"
@@ -284,6 +395,15 @@ export default class ManageStopCaseReasons extends Component {
             />
           </FlexBox>
         </ButtonContainer>
+        <FlexBox justifyContent="flex-end">
+          <Message
+            show={this.state.showMessage}
+            error={this.state.errorMessage}
+            message={this.state.message}
+            marginTop={15}
+          />
+        </FlexBox>
+
         <Modal
           isModalOpen={this.state.removeModalOpen}
           title="Remove Stop Case Reason"
@@ -304,9 +424,7 @@ export default class ManageStopCaseReasons extends Component {
               content="Remove"
               type="danger"
               onClick={() =>
-                this.validateRemoveStopCaseReason(
-                  this.state.selectedStopCaseReasonId
-                )
+                this.removeStopCaseReason(this.state.selectedStopCaseReasonId)
               }
             />
           </ButtonContainer>
@@ -315,3 +433,5 @@ export default class ManageStopCaseReasons extends Component {
     );
   }
 }
+
+export default withErrorHandling(ManageStopCaseReasons);

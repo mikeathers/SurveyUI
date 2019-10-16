@@ -23,7 +23,8 @@ export default class CaseNotesModal extends Component {
     this.state = {
       noteText: "",
       noteId: "",
-      receivedProps: false
+      receivedProps: false,
+      noteSubmitted: false
     };
 
     this.setItemToValidate = setItemToValidate.bind(this);
@@ -34,7 +35,7 @@ export default class CaseNotesModal extends Component {
   componentWillReceiveProps({ note }) {
     if (note !== null) {
       this.setState({ noteText: note.noteText });
-    }
+    } else this.setState({ noteText: "" });
   }
 
   handleChange = (e, { name, value }) => {
@@ -51,20 +52,23 @@ export default class CaseNotesModal extends Component {
   };
 
   saveNote = () => {
-    if (this.props.addNew) this.props.createNote(this.state.noteText);
-    else this.props.updateNote(this.state.noteText);
+    // if (this.props.addNew) this.props.createNote(this.state.noteText);
+    // else this.props.updateNote(this.state.noteText);
+    this.props.createNote(this.state.noteText);
     this.setState({ noteText: "", noteId: "" });
   };
 
   validateNote = () => {
     var list = validateListOfStrings(this.listToValidate());
-    console.log(list);
     if (list[list.length - 1].isValid) {
       this.saveNote();
+      this.setState({ noteSubmitted: true });
     } else {
       this.validateItems(list);
+      this.setState({ noteSubmitted: false });
     }
   };
+
   render() {
     return (
       <div>
@@ -91,13 +95,27 @@ export default class CaseNotesModal extends Component {
           </div>
           <hr />
           <div className="add-note-modal__footer">
-            <ButtonContainer marginTop="20" justifyContent="flex-end">
-              <Button content="Close" secondary onClick={this.closeModal} />
-              <Button
-                content={this.props.addNew ? "Add Note" : "Update Note"}
-                primary
-                onClick={this.validateNote}
-              />
+            <ButtonContainer
+              marginTop="20"
+              justifyContent={
+                this.props.note !== null ? "space-between" : "flex-end"
+              }
+            >
+              {this.props.note !== null && (
+                <Button
+                  content="Remove"
+                  type="danger"
+                  onClick={this.props.openRemoveNoteModal}
+                />
+              )}
+              <div>
+                <Button content="Close" secondary onClick={this.closeModal} />
+                <Button
+                  content={this.props.addNew ? "Add Note" : "Update Note"}
+                  primary
+                  onClick={this.validateNote}
+                />
+              </div>
             </ButtonContainer>
           </div>
         </Modal>

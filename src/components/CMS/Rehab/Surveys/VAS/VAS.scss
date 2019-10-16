@@ -1,0 +1,15 @@
+.soap-survey-vas {
+  &__header {
+    display: flex;
+    & p {
+      width: 140px;
+    }
+  }
+  &__content {
+    display: flex;
+    margin-bottom: 5px;
+    & p {
+      width: 140px;
+    }
+  }
+}

@@ -4,24 +4,32 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 20px 10px;
+  padding: 10px 10px;
   position: relative;
-  &:hover {
-    background-color: #eee;
-    cursor: pointer;
-  }
+  margin-bottom: 5px;
+  border: 1px solid #eee;
 
   &__note {
     width: 80%;
   }
 
+  &__note-text {
+    border: none !important;
+    overflow: visible !important;
+    resize: none !important;
+    margin-top: -5px !important;
+    padding: 10px 5px !important;
+  }
+
   &__created {
+    margin-top: 5px;
     display: flex;
     flex-direction: column;
 
     & p {
       margin-left: 10px;
       font-size: 12px !important;
+      margin-bottom: 0px;
     }
   }
 

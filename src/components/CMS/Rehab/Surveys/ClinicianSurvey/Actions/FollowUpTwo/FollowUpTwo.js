@@ -11,79 +11,26 @@ const FollowUpTwo = () => (
           <div>
             <p>
               <span className="follow-up-two__strong">{followUp.answer}</span>:{" "}
-              {followUp.text}
+              {followUp.questionText}
             </p>
             <div>
-              {followUp.followUp.map((followUp, key) =>
-                followUp.answer === "Yes" ? (
-                  <div className="follow-up-two__followup2" key={key}>
-                    <p>
-                      <span className="follow-up-two__strong">
-                        {followUp.answer}
-                      </span>
-                      : {followUp.text}
-                    </p>
-                    <div>
-                      {followUp.followUp.map((followUp, key) => (
-                        <div className="follow-up-two__followup2" key={key}>
-                          <p>
-                            <span className="follow-up-two__strong">
-                              {followUp.answer}
-                            </span>
-                            : {followUp.text}
-                          </p>
-                          {followUp.followUp.map((followUp, key) => (
-                            <div className="follow-up-two__followup2" key={key}>
-                              <p>
-                                <span className="follow-up-two__strong">
-                                  {followUp.answer}
-                                </span>
-                                : {followUp.text}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="follow-up-two__followup2" key={key}>
-                    <p>
-                      <span className="follow-up-two__strong">
-                        {followUp.answer}
-                      </span>
-                      : {followUp.text}
-                    </p>
-                    {followUp.followUp.map((followUp, key) => (
-                      <div className="follow-up-two__followup2" key={key}>
-                        <p>
-                          <span className="follow-up-two__strong">
-                            {followUp.answer}
-                          </span>
-                          : {followUp.text}
-                        </p>
-                        {followUp.followUp.map((followUp, key) => (
-                          <div className="follow-up-two__followup2" key={key}>
-                            <p>
-                              <span className="follow-up-two__strong">
-                                {followUp.answer}
-                              </span>
-                              : {followUp.text}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                )
-              )}
+              {followUp.followUp.map((followUp, key) => (
+                <div className="follow-up-two__followup2" key={key}>
+                  <p>
+                    <span className="follow-up-two__strong">
+                      {followUp.answer}
+                    </span>
+                    : {followUp.questionText}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         ) : (
           <div>
             <p>
               <span className="follow-up-two__strong">{followUp.answer}</span>:{" "}
-              {followUp.text}
+              {followUp.questionText}
             </p>
           </div>
         )}

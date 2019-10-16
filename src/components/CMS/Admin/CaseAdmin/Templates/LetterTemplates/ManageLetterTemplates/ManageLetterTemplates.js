@@ -1,5 +1,8 @@
 import React, { Component } from "react";
+import _ from "lodash";
 import * as api from "api";
+import {withErrorHandling} from "HOCs";
+import RemoveLetterTemplateModal from "./RemoveLetterTemplateModal";
 import {
   validateListOfStrings,
   validateItems,
@@ -17,27 +20,26 @@ import {
   Input,
   Button,
   ButtonContainer,
-  Modal,
   Message,
   FlexBox
 } from "components/Common";
 
 import "./ManageLetterTemplates.scss";
 
-export default class ManageLetterTemplates extends Component {
+class ManageLetterTemplates extends Component {
   _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
+      removeModalOpen: false,
       file: null,
+      fileName: "",
       selectedTemplateId: "",
-      letterTemplatesForDropdown: [],
       selectedTemplate: null,
       selectedTemplateName: "",
       selectedTemplatePath: "",
-      fileName: "",
+      letterTemplatesForDropdown: [],
       letterTemplates: [],
-      removeModalOpen: false,
       showMessage: false,
       message: "",
       errorMessage: false
@@ -51,44 +53,34 @@ export default class ManageLetterTemplates extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-    api.getLetterTemplates().then(res => {
-      if (this._isMounted) {
-        this.setState({ letterTemplates: res.data }, () => {
-          this.letterTemplatesForDropdown(res.data);
-        });
-      }
-    });
+    this.getLetterTemplates();
   }
 
   componentWillUnmount() {
     this._isMounted = false;
   }
 
-  componentWillReceiveProps() {
-    api.getLetterTemplates().then(res => {
-      if (this._isMounted) {
-        this.setState({ letterTemplates: res.data }, () => {
-          this.letterTemplatesForDropdown(res.data);
-        });
-      }
-    });
+  componentWillReceiveProps({ letterTemplates }) {
+    if (letterTemplates !== undefined) {
+      this.setState({ letterTemplates }, () => {
+        this.mapLetterTemplatesForDropdown(letterTemplates);
+      });
+    }
   }
 
-  handleChange = (e, { name, value }) => {
-    this.setItemToValidate(name);
-    this.setState({ [name]: value });
+  getLetterTemplates = async () => {
+    const response = await api.getLetterTemplates();
+    if (response !== undefined) {
+      if (response.status === 200 && this._isMounted) {
+        const letterTemplates = _.orderBy(response.data, "name");
+        this.setState({ letterTemplates }, () => {
+          this.mapLetterTemplatesForDropdown(letterTemplates);
+        });
+      }
+    } else this.props.showErrorModal();
   };
 
-  listToValidate = () => {
-    return [
-      { selectedTemplateId: this.state.selectedTemplateId },
-      { fileName: this.state.fileName },
-      { selectedTemplateName: this.state.selectedTemplateName },
-      { selectedTemplatePath: this.state.selectedTemplatePath }
-    ];
-  };
-
-  letterTemplatesForDropdown = templates => {
+  mapLetterTemplatesForDropdown = templates => {
     const letterTemplatesForDropdown = templates.map((template, key) => ({
       text: template.name,
       value: template.letterTemplateId,
@@ -97,19 +89,33 @@ export default class ManageLetterTemplates extends Component {
     this.setState({ letterTemplatesForDropdown });
   };
 
-  onSelectFile = e => {
-    const file = e.target.files[0];
-    this.setState({ file, fileName: file.name });
+  handleChange = (e, { name, value }) => {
+    this.setItemToValidate(name);
+    this.hideValidationMessage();
+    this.setState({ [name]: value });
   };
 
-  onChange = (e, { name, value }) => {
-    this.setItemToValidate(name);
-    this.setItemToValidate("selectedTemplateName");
-    this.setItemToValidate("selectedTemplatePath");
-    this.setItemToValidate("fileName");
+  handleSelectFile = e => {
+    const file = e.target.files[0];
+    this.setState({ file, fileName: file.name });
+    this.hideValidationMessage();
+  };
+
+  handleOpenFilePicker = () => {
+    const input = document.getElementById("updatefilepicker");
+    input.click();
+  };
+
+  handleDropdownChange = (e, { name, value }) => {
+    this.hideValidationMessage();
+    this.setItemsToValidate(name);
     this.setState({ [name]: value });
+    this.handleSelectLetterTemplate(value);
+  };
+
+  handleSelectLetterTemplate = letterTemplateId => {
     const selectedTemplate = this.state.letterTemplates.find(
-      m => m.letterTemplateId === value
+      m => m.letterTemplateId === letterTemplateId
     );
     const index = selectedTemplate.path.lastIndexOf("\\");
     const fileName = selectedTemplate.path.substr(index + 1);
@@ -121,99 +127,125 @@ export default class ManageLetterTemplates extends Component {
     });
   };
 
-  openFilePicker = () => {
-    const input = document.getElementById("updatefilepicker");
-    input.click();
+  listToValidate = () => {
+    return [
+      { selectedTemplateId: this.state.selectedTemplateId },
+      { fileName: this.state.fileName },
+      { selectedTemplateName: this.state.selectedTemplateName },
+      { selectedTemplatePath: this.state.selectedTemplatePath }
+    ];
   };
 
-  uploadLetterTemplate = () => {
+  setItemsToValidate = itemToValidate => {
+    this.setItemToValidate(itemToValidate);
+    this.setItemToValidate("selectedTemplateName");
+    this.setItemToValidate("selectedTemplatePath");
+    this.setItemToValidate("fileName");
+  };
+
+  sendUploadLetterTemplateRequest = async () => {
+    const { file, selectedTemplateName, selectedTemplateId } = this.state;
     const fileNameToParse = this.state.fileName;
     const fileName = fileNameToParse.slice(0, fileNameToParse.lastIndexOf("_"));
 
-    api
-      .uploadDocumentTemplate(
-        this.state.file,
-        this.state.selectedTemplateName,
-        fileName,
-        this.props.username,
-        this.state.selectedTemplateId
-      )
-      .then(res => {
-        if (this._isMounted) {
-          if (res.status === 200) {
-            this.setState(
-              {
-                letterTemplates: res.data,
-                showMessage: true,
-                removeModalOpen: false,
-                message: "Template updated successfully"
-              },
-              () => this.letterTemplatesForDropdown(res.data)
-            );
-            this.clearForm();
-            this.props.getLetterTemplates(res.data);
-          } else {
-            this.setState({
-              showMessage: true,
-              errorMessage: true,
-              message: res.data[0].message
-            });
-            this.hideMessage();
-          }
-        }
-      });
+    const response = await api.uploadDocumentTemplate(
+      file,
+      selectedTemplateName,
+      fileName,
+      this.props.username,
+      selectedTemplateId
+    );
+
+    return response;
+  };
+
+  uploadLetterTemplate = async () => {
+    var response = await this.sendUploadLetterTemplateRequest();
+    if (response !== undefined) {
+      if (response.status === 200 && this._isMounted) {
+        this.showSuccessMessage("Letter Template updated successfully");
+        this.setState({ letterTemplates: response.data });
+        this.mapLetterTemplatesForDropdown(response.data);
+        this.props.getLetterTemplates(response.data);
+      } else this.showErrorMessage(response.data[0].errorMessage);
+    } else this.props.showErrorModal();
   };
 
   validateLetterTemplate = () => {
     var list = validateListOfStrings(this.listToValidate());
-    if (list[list.length - 1].isValid) {
-      this.uploadLetterTemplate();
-    } else {
+    if (list[list.length - 1].isValid) this.uploadLetterTemplate();
+    else {
       this.validateItems(list);
+      this.showValidationMessage();
     }
   };
 
-  removeLetterTemplate = id => {
+  sendRemoveLetterTemplateRequest = async () => {
+    const { selectedTemplateId, selectedTemplatePath } = this.state;
     const template = {
-      letterTemplateId: id,
-      path: this.state.selectedTemplatePath,
+      letterTemplateId: selectedTemplateId,
+      path: selectedTemplatePath,
       actionedBy: this.props.username
     };
-    api.removeLetterTemplate(template).then(res => {
-      if (this._isMounted) {
-        if (res.status === 200) {
-          this.setState(
-            {
-              letterTemplates: res.data,
-              showMessage: true,
-              removeModalOpen: false,
-              message: "Template removed successfully."
-            },
-            () => this.letterTemplatesForDropdown(res.data)
-          );
-          this.clearForm();
-          this.props.getLetterTemplates(res.data);
-        } else {
-          this.setState({
-            removeModalOpen: false,
-            showMessage: true,
-            message: res.data[0].errorMessage,
-            errorMessage: true
-          });
-          this.hideMessage(6000);
-        }
-      }
-    });
+    return await api.removeLetterTemplate(template);
   };
 
-  validateRemoveLetterTemplate = id => {
+  removeLetterTemplate = async () => {
+    const response = await this.sendRemoveLetterTemplateRequest();
+    if (response !== undefined) {
+      if (response.status === 200 && this._isMounted) {
+        this.showSuccessMessage("Letter Template removed successfully");
+        this.setState({ letterTemplates: response.data });
+        this.mapLetterTemplatesForDropdown(response.data);
+        this.props.getLetterTemplates(response.data);
+      } else this.showErrorMessage(response.data[0].errorMessage);
+    } else this.props.showErrorModal();
+  };
+
+  validateRemoveLetterTemplate = () => {
     var list = validateListOfStrings(this.listToValidate());
     if (list[list.length - 1].isValid) {
-      this.removeLetterTemplate(id);
+      this.setState({ removeModalOpen: true });
     } else {
       this.setState({ removeModalOpen: false });
       this.validateItems(list);
+      this.showValidationMessage();
     }
+  };
+
+  showSuccessMessage = message => {
+    this.setState({
+      showMessage: true,
+      removeModalOpen: false,
+      message
+    });
+    setTimeout(() => this.clearForm(), 3000);
+  };
+
+  showErrorMessage = message => {
+    this.setState({
+      removeModalOpen: false,
+      showMessage: true,
+      message: message,
+      errorMessage: true
+    });
+    setTimeout(() => this.setState({ showMessage: false }), 3000);
+  };
+
+  showValidationMessage = () => {
+    this.setState({
+      showMessage: true,
+      errorMessage: true,
+      message: "Please fill in all the fields before submitting"
+    });
+  };
+
+  hideValidationMessage = () => {
+    this.setState({
+      showMessage: false,
+      errorMessage: false,
+      message: ""
+    });
   };
 
   clearForm = () => {
@@ -225,63 +257,76 @@ export default class ManageLetterTemplates extends Component {
         selectedTemplate: null,
         selectedTemplateName: "",
         selectedTemplatePath: "",
-        selectedTemplateId: ""
+        selectedTemplateId: "",
+        showMessage: false,
+        errorMessage: false,
+        message: ""
       });
-      setTimeout(() => this.setState({ showMessage: false }), 3000);
+      this.removeValidationErrors(this.listToValidate());
     }
   };
 
-  hideErrorMessage = () => {
-    if (this._isMounted)
-      setTimeout(
-        () => this.setState({ showMessage: false, errorMessage: false }),
-        6000
-      );
-  };
-
   render() {
+    const {
+      removeModalOpen,
+      selectedTemplateName,
+      selectedTemplateId,
+      letterTemplatesForDropdown,
+      fileName,
+      showMessage,
+      message,
+      errorMessage
+    } = this.state;
     return (
-      <Card title="Manage Letter Templates">
+      <Card title="Manage Letter Templates" id="manageLetterTemplates">
         <div>
           <FormRow>
             <FormGroup>
-              <Label text="Template To Update:" width="100" />
+              <Label text="Template To Update:" />
               <Dropdown
-                options={this.state.letterTemplatesForDropdown}
+                fullWidth
+                options={letterTemplatesForDropdown}
+                search
                 selection
-                onChange={this.onChange}
-                value={this.state.selectedTemplateId}
+                onChange={this.handleDropdownChange}
+                value={selectedTemplateId}
                 name="selectedTemplateId"
                 placeholder="Select a template..."
                 valid={this.validateItem("selectedTemplateId").toString()}
+                id="manageLetterTemplatesTemplatesDropdown"
               />
             </FormGroup>
             <FormGroup>
-              <Label text="Template Name:" width="100" />
+              <Label text="Template Name:" />
               <Input
-                value={this.state.selectedTemplateName}
+                fullWidth
+                value={selectedTemplateName}
                 placeholder="Knockout Answer Given"
                 name="selectedTemplateName"
                 onChange={this.handleChange}
                 valid={this.validateItem("selectedTemplateName").toString()}
+                id="manageLetterTemplatesTemplateNameTextBox"
               />
             </FormGroup>
           </FormRow>
           <FormRow>
             <FormGroup>
-              <Label text="File" width="100" />
+              <Label text="File" />
               <Input
+                fullWidth
                 type="file"
-                onChange={this.onSelectFile}
+                onChange={this.handleSelectFile}
                 style={{ display: "none" }}
                 id="updatefilepicker"
               />
               <Input
-                onClick={this.openFilePicker}
-                value={this.state.fileName}
+                fullWidth
+                onClick={this.handleOpenFilePicker}
+                value={fileName}
                 name="fileName"
                 placeholder="Knockout_Answer_Given_Template.docx"
                 valid={this.validateItem("fileName").toString()}
+                id="manageLetterTemplatesFileNameTextBox"
               />
             </FormGroup>
           </FormRow>
@@ -289,48 +334,44 @@ export default class ManageLetterTemplates extends Component {
             <Button
               content="Remove Template"
               secondary
-              onClick={() => this.setState({ removeModalOpen: true })}
+              onClick={this.validateRemoveLetterTemplate}
+              id="manageLetterTemplatesRemoveBtn"
+              disabled={this.state.selectedTemplateId === ""}
             />
             <div>
-              <Button content="Cancel" secondary onClick={this.clearForm} />
+              <Button
+                content="Cancel"
+                secondary
+                onClick={this.clearForm}
+                id="manageLetterTemplatesCancelBtn"
+              />
               <Button
                 content="Update Template"
                 primary
                 onClick={this.validateLetterTemplate}
+                id="manageLetterTemplatesUpdateBtn"
               />
             </div>
           </ButtonContainer>
           <FlexBox justifyContent="flex-end">
             <Message
-              show={this.state.showMessage}
-              message={this.state.message}
+              show={showMessage}
+              message={message}
               marginTop="25"
-              error={this.state.errorMessage}
+              error={errorMessage}
+              id="manageLetterTemplatesMessage"
             />
           </FlexBox>
         </div>
-        <Modal
-          isModalOpen={this.state.removeModalOpen}
-          title="Remove Letter Template"
-          message="Are you sure you want to remove this letter template?"
-          item={this.state.selectedTemplateName}
-        >
-          <ButtonContainer justifyContent="flex-end">
-            <Button
-              content="Close"
-              secondary
-              onClick={() => this.setState({ removeModalOpen: false })}
-            />
-            <Button
-              content="Remove"
-              type="danger"
-              onClick={() =>
-                this.validateRemoveLetterTemplate(this.state.selectedTemplateId)
-              }
-            />
-          </ButtonContainer>
-        </Modal>
+        <RemoveLetterTemplateModal
+          id="manageLetterTemplatesRemoveModal"
+          removeModalOpen={removeModalOpen}
+          selectedTemplateName={selectedTemplateName}
+          closeModal={() => this.setState({ removeModalOpen: false })}
+          removeLetterTemplate={this.removeLetterTemplate}
+        />
       </Card>
     );
   }
 }
+export default withErrorHandling(ManageLetterTemplates);

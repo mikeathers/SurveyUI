@@ -6,7 +6,6 @@ const PageHeader = props => {
     <div className="pageheader">
       <div className="pageheader__title">
         <h2>{props.title}</h2>
-        <h3>{props.subtitle}</h3>
       </div>
 
       <div className="pageheader__actions">{props.children}</div>

@@ -4,20 +4,20 @@ import Modal from "react-modal";
 import { yesNo } from "helpers/dropdowns";
 
 import {
-  validateListOfStrings,
-  validateItems,
-  removeValidationErrors,
   validateItem,
-  setItemToValidate
+  validateItems,
+  setItemToValidate,
+  validateListOfStrings,
+  removeValidationErrors
 } from "helpers/validation";
 
 import {
-  ButtonContainer,
+  Label,
   Button,
-  Dropdown,
   FormRow,
+  Dropdown,
   FormGroup,
-  Label
+  ButtonContainer
 } from "components/Common";
 
 import "./UpdateCallBackModal.scss";
@@ -29,34 +29,31 @@ export default class UpdateCallBackModal extends Component {
       callBackAnswered: "",
       rescheduleNeeded: "",
       startDate: new Date(),
+      callBackSubmitted: false,
+      moveRescheduledForward: false,
       buttonContent: "Complete Call Back"
     };
 
-    this.validateItems = validateItems.bind(this);
-    this.removeValidationErrors = removeValidationErrors.bind(this);
     this.validateItem = validateItem.bind(this);
+    this.validateItems = validateItems.bind(this);
     this.setItemToValidate = setItemToValidate.bind(this);
+    this.removeValidationErrors = removeValidationErrors.bind(this);
   }
 
   handleChange = (e, { name, value }) => {
-    var modal = document.querySelector(".update-callback-modal");
-
-    if (name === "callBackAnswered" && value === false) {
+    if (name === "callBackAnswered" && value === false)
       this.setState({
         rescheduleNeeded: false,
         callBackAnswered: false,
+        moveRescheduledForward: true,
         buttonContent: "Move Call Forward"
       });
-      modal.style.height = "240px";
-    } else this.setState({ buttonContent: "Complete Call Back" });
+    else this.setState({ buttonContent: "Complete Call Back" });
 
-    if (name === "rescheduleNeeded" && value === true) {
-      modal.style.height = "320px";
+    if (name === "rescheduleNeeded" && value === true)
       this.setState({ buttonContent: "Reschedule Call" });
-    } else if (name === "rescheduleNeeded" && value === false) {
-      modal.style.height = "240px";
+    else if (name === "rescheduleNeeded" && value === false)
       this.setState({ buttonContent: "Complete Call Back" });
-    }
 
     this.setItemToValidate(name);
     this.setState({ [name]: value });
@@ -71,61 +68,83 @@ export default class UpdateCallBackModal extends Component {
     ];
   };
 
-  resetState = () => {
+  callback = () => ({
+    createdBy: this.props.username,
+    completedBy: this.props.username,
+    caseId: this.props.mi3dCase.caseId,
+    callBackId: this.props.callback.callBackId,
+    actionedBy: this.props.username,
+    callbackType: this.props.callback.callBackType
+  });
+
+  rescheduleCallBack = () => ({
+    ...this.callback(),
+    callbackType: "Reschedule",
+    timeToCall: this.state.startDate
+  });
+
+  moveRescheduledCallBack = () => ({
+    ...this.callback(),
+    callbackType: "Reschedule",
+    moveRescheduledForward: true,
+    timeToCall: this.state.startDate
+  });
+
+  newInitialCallBack = () => ({
+    ...this.callback(),
+    timeToCall: this.state.startDate
+  });
+
+  updateCallBack = async () => {
+    this.setState({ callBackSubmitted: true });
+    var list = validateListOfStrings(this.listToValidate());
+    if (list[list.length - 1].isValid) {
+      if (this.state.rescheduleNeeded)
+        await this.props.rescheduleCallBack(this.rescheduleCallBack());
+      else if (
+        !this.state.callBackAnswered &&
+        this.state.moveRescheduledForward
+      )
+        await this.props.rescheduleCallBack(this.moveRescheduledCallBack());
+      else if (!this.state.callBackAnswered)
+        await this.props.moveInitialCallBack(this.newInitialCallBack());
+      else if (this.state.callBackAnswered && !this.state.rescheduleNeeded)
+        await this.props.completeCallBack(this.callback());
+    } else {
+      this.validateItems(list);
+      this.setState({ callBackSubmitted: false });
+    }
+    this.clearForm();
+  };
+
+  validateCallBack = () => {
+    var list = validateListOfStrings(this.listToValidate());
+    if (list[list.length - 1].isValid) {
+      if (this.state.rescheduleNeeded) {
+      } else if (this.state.callBackAnswered === false)
+        this.props.moveInitialCallBack(this.newInitialCallback());
+      else if (
+        this.state.callBackAnswered &&
+        this.state.rescheduleNeeded === false
+      )
+        this.props.completeCallBack(this.callback());
+    } else this.validateItems(list);
+    this.clearForm();
+  };
+
+  clearForm = () => {
     this.setState({
       callBackAnswered: "",
       rescheduleNeeded: "",
+      callBackSubmitted: false,
       buttonContent: "Complete Call Back"
     });
   };
 
   closeModal = () => {
-    this.resetState();
+    this.clearForm();
     this.props.closeModal();
     this.removeValidationErrors(this.listToValidate());
-    var modal = document.querySelector(".update-callback-modal");
-    modal.style.height = "240px";
-  };
-
-  callback = () => {
-    const callbackType = this.props.callback.callBackType;
-    return {
-      createdBy: this.props.user.name,
-      completedBy: this.props.user.name,
-      caseId: this.props.mi3dCase.caseId,
-      callBackId: this.props.callback.callBackId,
-      actionedBy: this.props.user.name,
-      callbackType
-    };
-  };
-
-  updateCallBack = () => {
-    var list = validateListOfStrings(this.listToValidate());
-
-    if (list[list.length - 1].isValid) {
-      if (this.state.rescheduleNeeded) {
-        const rescheduledCallback = {
-          ...this.callback(),
-          callbackType: "Reschedule",
-          timeToCall: this.state.startDate
-        };
-        this.props.rescheduleCallBack(rescheduledCallback);
-        this.resetState();
-      } else if (this.state.callBackAnswered === false) {
-        const newInitialCallback = {
-          ...this.callback(),
-          timeToCall: this.state.startDate
-        };
-        this.props.moveInitialCallBack(newInitialCallback);
-        this.resetState();
-      } else if (
-        this.state.callBackAnswered &&
-        this.state.rescheduleNeeded === false
-      ) {
-        this.props.completeCallBack(this.callback());
-        this.resetState();
-      }
-    } else this.validateItems(list);
   };
 
   render() {
@@ -148,11 +167,8 @@ export default class UpdateCallBackModal extends Component {
         <hr />
         <div className="update-callback-modal__body">
           <FormRow>
-            <FormGroup flexBasis="40">
-              <Label
-                text="Did the injured party answer the call?"
-                width="100"
-              />
+            <FormGroup flexBasis="45">
+              <Label text="Did the injured party answer the call?" />
               <Dropdown
                 options={yesNo}
                 selection
@@ -165,10 +181,7 @@ export default class UpdateCallBackModal extends Component {
             {callBackAnswered !== "" &&
               (callBackAnswered !== false ? (
                 <FormGroup flexBasis="40">
-                  <Label
-                    text="Do you need to reschedule the call?"
-                    width="100"
-                  />
+                  <Label text="Do you need to reschedule the call?" />
                   <Dropdown
                     options={yesNo}
                     selection
@@ -183,7 +196,7 @@ export default class UpdateCallBackModal extends Component {
           {rescheduleNeeded && (
             <FormRow>
               <FormGroup flexBasis="100">
-                <Label text="Select a time to call back" width="100" />
+                <Label text="Select a time to call back" />
                 <DatePicker
                   selected={startDate}
                   onChange={this.handleDateChange}
@@ -202,17 +215,25 @@ export default class UpdateCallBackModal extends Component {
           <ButtonContainer justifyContent="space-between">
             <div>
               <Button
-                content="Remove"
                 type="danger"
+                content="Remove"
                 onClick={this.props.showRemoveModal}
+                disabled={this.state.callBackSubmitted}
               />
             </div>
             <div>
-              <Button content="Close" secondary onClick={this.closeModal} />
               <Button
-                content={buttonContent}
+                secondary
+                content="Close"
+                onClick={this.closeModal}
+                disabled={this.state.callBackSubmitted}
+              />
+              <Button
                 primary
+                content={buttonContent}
                 onClick={this.updateCallBack}
+                disabled={this.state.callBackSubmitted}
+                loading={this.state.callBackSubmitted}
               />
             </div>
           </ButtonContainer>

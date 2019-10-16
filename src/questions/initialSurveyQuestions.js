@@ -1,3 +1,5 @@
+import * as stopCaseReasons from "helpers/stopCaseReasons";
+
 const bodypartsKnockOuts = [
   ["Neck", "Right Arm"],
   ["Neck", "Left Arm"],
@@ -10,38 +12,46 @@ const bodypartsKnockOuts = [
   ["Neck", "Lower Back"]
 ];
 
-const questions = [
+export const faceToFaceStatement =
+  "The answers you have provided indicate that you need face to face treatment";
+export const noTreatmentNeededStatement =
+  "The answers you have provided indicate that you dont need treatment";
+
+export const questions = [
   {
     questionId: 1,
     type: "yesno",
-    text: "Did you suffer any injury as a result of the accident?",
-    knockout: "No",
+    questionText: "Did you suffer any injury as a result of the accident?",
+    instantKnockoutAnswer: "No",
     instantKnockout: true,
-    knockoutText:
+    stopCaseReason: stopCaseReasons.initialSurveyKONoInjury,
+    statement:
       "You have indicated that you did not experience any symptoms which require physiotherapy. We will not be referring you to a physiotherapist."
   },
   {
     questionId: 2,
     type: "yesno",
-    text: "Do you have any symptoms now?",
-    knockout: "No",
+    questionText: "Do you have any symptoms now?",
+    instantKnockoutAnswer: "No",
     instantKnockout: true,
-    knockoutText:
+    stopCaseReason: stopCaseReasons.initialSurveyKONoSymptoms,
+    statement:
       "You have indicated that you are currently not experiencing any symptoms which require physiotherapy. We will not be referring you to a physiotherapist."
   },
   {
     questionId: 3,
     type: "yesno",
-    text: "Are you having any treatment, for example Physiotherapy?",
-    knockout: "Yes",
+    questionText: "Are you having any treatment, for example Physiotherapy?",
+    instantKnockoutAnswer: "Yes",
     instantKnockout: true,
-    knockoutText:
-      "You have indicated that you are currently receiving treatment from a physiotherapist therefore we will not be referring you for rehabiliation, however we will send you an information pack containing advice which may be of some assistance."
+    stopCaseReason: stopCaseReasons.initialSurveyKOAlreadyHavingTreatment,
+    statement:
+      "You have indicated that you are currently receiving treatment from a physiotherapist therefore we will not be referring you for rehabiliation."
   },
   {
     questionId: 4,
     type: "selection",
-    text: "What areas are affected?",
+    questionText: "What areas are affected?",
     options: [
       "Head",
       "Neck",
@@ -57,55 +67,65 @@ const questions = [
       "Mid Back",
       "Lower Back"
     ],
-    knockout: {
+    knockoutAnswer: {
       count: 3,
       knockoutSelection: bodypartsKnockOuts
-    }
+    },
+    statement: faceToFaceStatement
   },
   {
     questionId: 5,
     type: "scale",
-    text:
-      "If zero means 'no pain' and ten means 'pain as bad as it could be'. On a scale or 0-10, what is your level of pain? If more than one area is affected by pain, score the most painful."
+    questionText:
+      "If zero means 'no pain' and ten means 'pain as bad as it could be'. On a scale or 0-10, what is your level of pain? If more than one area is affected by pain, score the most painful.",
+    noTreatmentNeededAnswer: 3,
+    statement: noTreatmentNeededStatement
   },
   {
     questionId: 6,
     type: "yesno",
-    text: "Has there been loss of movement in the affected area(s)?"
+    questionText: "Has there been loss of movement in the affected area(s)?",
+    knockoutAnswer: "Yes",
+    statement: faceToFaceStatement
   },
   {
     questionId: 7,
     type: "yesno",
-    text: "Does pain disturb sleep?"
+    questionText: "Does pain disturb sleep?"
   },
   {
     questionId: 8,
     type: "yesno",
-    text: "Have you developed any headaches following the accident?",
-    knockout: "No"
+    questionText: "Have you developed any headaches following the accident?",
+    noTreatmentNeededAnswer: "No",
+    statement: noTreatmentNeededStatement
   },
   {
     questionId: 9,
     type: "yesno",
-    text:
-      "Have you developed any tingling sensations as a result of the accident?"
+    questionText:
+      "Have you developed any tingling sensations as a result of the accident?",
+    knockoutAnswer: "Yes",
+    statement: faceToFaceStatement
   },
   {
     questionId: 10,
     type: "yesno",
-    text: "Have you returned to work/school?",
-    knockout: "Yes"
+    questionText: "Have you returned to work/school?",
+    noTreatmentNeededAnswer: "Yes",
+    statement: noTreatmentNeededStatement,
+    naQuestion: true
   },
   {
     questionId: 11,
     type: "yesno",
-    text: "Are you participating in your normal hobbies?",
-    knockout: "Yes"
+    questionText: "Are you participating in your normal hobbies?",
+    noTreatmentNeededAnswer: "Yes",
+    statement: noTreatmentNeededStatement
   },
   {
     questionId: 12,
     type: "yesno",
-    text: "Are you taking pain killers?"
+    questionText: "Are you taking pain killers?"
   }
 ];
-export default questions;

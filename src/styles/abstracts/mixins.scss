@@ -1,4 +1,5 @@
 @import "../../styles/base/animations.scss";
+@import "../abstracts/variables.scss";
 
 @mixin absCenter {
   position: absolute;
@@ -141,4 +142,38 @@ ORDER: Base + typography > general layout + grid > page layout > components
       @content;
     } //2000
   }
+}
+
+@mixin modalPosition_Desktop {
+  top: 30%;
+  margin: 0 auto;
+  width: 40%;
+  z-index: 2 !important;
+}
+
+@mixin modalPosition_TabLand {
+  top: 30%;
+  margin: 0 auto;
+  width: 70%;
+  z-index: 2 !important;
+}
+
+@mixin modal {
+  position: relative;
+  background: #fff;
+  border: #9999 1px solid;
+  display: block;
+  padding: 20px;
+  overflow: visible;
+  z-index: 2 !important;
+
+  @include modalPosition_Desktop;
+
+  @include respond(tab-land) {
+    @include modalPosition_TabLand;
+  }
+
+  -webkit-box-shadow: $modal_shadow;
+  -moz-box-shadow: $modal_shadow;
+  box-shadow: $modal_shadow;
 }

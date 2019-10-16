@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { callbackTypes } from "helpers/dropdowns";
-
+import * as api from "api";
+import {withErrorHandling} from "HOCs";
 import Modal from "react-modal";
 import DatePicker from "react-datepicker";
 
@@ -25,13 +26,14 @@ import {
 import "react-datepicker/dist/react-datepicker.css";
 import "./AddCallBackModal.scss";
 
-export default class AddCallBackModal extends Component {
+class AddCallBackModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
       startDate: new Date(),
       rescheduleSelected: false,
-      callbackType: ""
+      callbackType: "",
+      callbackSubmitted: false
     };
 
     this.setItemToValidate = setItemToValidate.bind(this);
@@ -45,43 +47,71 @@ export default class AddCallBackModal extends Component {
   handleChange = (e, { name, value }) => {
     this.setItemToValidate(name);
     this.setState({ [name]: value, rescheduleSelected: false }, () => {
-      if (this.state.callbackType === "Reschedule")
-        this.setState({ rescheduleSelected: true });
+      this.handleRescheduleSelected();
     });
+  };
+
+  handleRescheduleSelected = () => {
+    if (this.state.callbackType === "Reschedule")
+      this.setState({ rescheduleSelected: true });
   };
 
   listToValidate = () => {
     return [{ callbackType: this.state.callbackType }];
   };
 
-  addCallback = () => {
-    var list = validateListOfStrings(this.listToValidate());
-    const callbackType = this.state.callbackType;
+  callback = () => ({
+    createdBy: this.props.username,
+    callbackType: this.state.callbackType,
+    caseId: this.props.mi3dCase.caseId,
+    bluedogCaseRef: this.props.mi3dCase.bluedogCaseRef,
+    actionedBy: this.props.username
+  });
 
+  rescheduledCallback = () => ({
+    ...this.callback(),
+    timeToCall: this.state.startDate
+  });
+
+  validateAddCallback = () => {
+    var list = validateListOfStrings(this.listToValidate());
     if (list[list.length - 1].isValid) {
-      const callback = {
-        createdBy: this.props.user.name,
-        callbackType,
-        caseId: this.props.mi3dCase.caseId,
-        bluedogCaseRef: this.props.mi3dCase.bluedogCaseRef,
-        actionedBy: this.props.user.name
-      };
-      if (callbackType === "Reschedule") {
-        const rescheduledCallback = {
-          ...callback,
-          timeToCall: this.state.startDate
-        };
-        this.props.addCallback(rescheduledCallback);
-      } else this.props.addCallback(callback);
-      this.closeModal();
-    } else {
-      this.validateItems(list);
-    }
+      if (this.state.callbackType === "Reschedule")
+        this.addCallback(this.rescheduledCallback());
+      else this.addCallback(this.callback());
+    } else this.validateItems(list);
+  };
+
+  showSuccessMessage = message => {
+    this.setState({
+      message,
+      errorMessage: false,
+      showMessage: true
+    });
+  };
+
+  showErrorMessage = message => {
+    this.setState({
+      showMessage: true,
+      errorMessage: true,
+      message,
+      callbackSubmitted: false
+    });
+  };
+
+  addCallback = async callback => {
+    this.setState({ callbackSubmitted: true });
+    await this.props.addCallback(callback);
+    this.setState({ callbackSubmitted: false });
   };
 
   closeModal = () => {
     this.removeValidationErrors(this.listToValidate());
-    this.setState({ rescheduleSelected: false, callbackType: "" });
+    this.setState({
+      callbackType: "",
+      rescheduleSelected: false,
+      callbackSubmitted: false
+    });
     this.props.closeModal();
   };
 
@@ -93,6 +123,7 @@ export default class AddCallBackModal extends Component {
         isOpen={this.props.isModalOpen}
         contentLabel="Add Call Back"
         className="add-callback-modal"
+        id="addCallBackModal"
       >
         <div className="add-callback-modal__header">
           <h3>Add a Call Back</h3>
@@ -110,10 +141,11 @@ export default class AddCallBackModal extends Component {
                 onChange={this.handleChange}
                 valid={this.validateItem("callbackType").toString()}
                 id="callback-type-dropdown"
+                value={this.state.callbackType}
               />
             </FormGroup>
             {rescheduleSelected && (
-              <FormGroup>
+              <FormGroup flexBasis="30">
                 <Label text="Call Back Time:" />
                 <DatePicker
                   selected={startDate}
@@ -144,12 +176,15 @@ export default class AddCallBackModal extends Component {
               content="Close"
               secondary
               onClick={this.closeModal}
+              disabled={this.state.callbackSubmitted}
             />
             <Button
               id="add-callback-button"
               content="Add"
               primary
-              onClick={this.addCallback}
+              onClick={this.validateAddCallback}
+              disabled={this.state.callbackSubmitted}
+              loading={this.state.callbackSubmitted}
             />
           </ButtonContainer>
         </div>
@@ -157,3 +192,5 @@ export default class AddCallBackModal extends Component {
     );
   }
 }
+
+export default withErrorHandling(AddCallBackModal);

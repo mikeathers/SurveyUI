@@ -3,22 +3,22 @@ import Modal from "react-modal";
 import { telephoneTypes, preferredOptions } from "helpers/dropdowns";
 
 import {
-  validateListOfStrings,
   validateItems,
-  removeValidationErrors,
   validateItem,
-  setItemToValidate
+  setItemToValidate,
+  validateListOfStrings,
+  removeValidationErrors
 } from "helpers/validation";
 
 import {
-  Button,
-  ButtonContainer,
-  Input,
-  FormGroup,
-  FormRow,
   Form,
+  Input,
+  Button,
+  FormRow,
   Dropdown,
-  TextArea
+  TextArea,
+  FormGroup,
+  ButtonContainer
 } from "components/Common";
 
 import "./ContactNumberModal.scss";
@@ -27,37 +27,23 @@ class ContactNumberModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      contactNumberId: "",
-      contactNumberType: "",
-      contactNumber: "",
+      notes: "",
       preferred: "",
-      notes: ""
+      contactNumber: "",
+      contactNumberId: "",
+      contactNumberType: ""
     };
-    this.setItemToValidate = setItemToValidate.bind(this);
-    this.validateItems = validateItems.bind(this);
     this.validateItem = validateItem.bind(this);
+    this.validateItems = validateItems.bind(this);
+    this.setItemToValidate = setItemToValidate.bind(this);
     this.removeValidationErrors = removeValidationErrors.bind(this);
   }
 
   componentWillReceiveProps(props) {
     if (props.telephoneInfo !== undefined) {
-      if (props.telephoneInfo.contactNumberId !== undefined && !props.addNew) {
-        this.setState({
-          contactNumberId: props.telephoneInfo.contactNumberId,
-          contactNumberType: props.telephoneInfo.contactNumberType,
-          contactNumber: props.telephoneInfo.contactNumber,
-          preferred: props.telephoneInfo.preferred,
-          notes: props.telephoneInfo.notes
-        });
-      } else {
-        this.setState({
-          contactNumberId: "",
-          contactNumberType: "",
-          contactNumber: "",
-          preferred: "",
-          notes: ""
-        });
-      }
+      if (props.telephoneInfo.contactNumberId !== undefined && !props.addNew)
+        this.setContactNumber(props.telephoneInfo);
+      else this.clearContactNumber();
     }
   }
 
@@ -68,39 +54,58 @@ class ContactNumberModal extends Component {
 
   listToValidate = () => {
     return [
+      { preferred: this.state.preferred },
       { contactNumber: this.state.contactNumber },
-      { contactNumberType: this.state.contactNumberType },
-      { preferred: this.state.preferred }
+      { contactNumberType: this.state.contactNumberType }
     ];
   };
 
+  setContactNumber = telephoneInfo => {
+    this.setState({
+      notes: telephoneInfo.notes,
+      preferred: telephoneInfo.preferred,
+      contactNumber: telephoneInfo.contactNumber,
+      contactNumberId: telephoneInfo.contactNumberId,
+      contactNumberType: telephoneInfo.contactNumberType
+    });
+  };
+
+  clearContactNumber = () => {
+    this.setState({
+      notes: "",
+      preferred: "",
+      contactNumber: "",
+      contactNumberId: "",
+      contactNumberType: ""
+    });
+  };
+
+  contactDetails = () => ({
+    notes: this.state.notes,
+    partyId: this.props.partyId,
+    preferred: this.state.preferred,
+    contactNumber: this.state.contactNumber,
+    bluedogCaseRef: this.props.bluedogCaseRef,
+    contactNumberId: this.state.contactNumberId,
+    contactNumberType: this.state.contactNumberType
+  });
+
   saveNumber = () => {
-    const details = {
-      contactNumberId: this.state.contactNumberId,
-      contactNumberType: this.state.contactNumberType,
-      contactNumber: this.state.contactNumber,
-      preferred: this.state.preferred,
-      notes: this.state.notes,
-      bluedogCaseRef: this.props.bluedogCaseRef,
-      partyId: this.props.partyId
-    };
     var list = validateListOfStrings(this.listToValidate());
     if (list[list.length - 1].isValid) {
-      if (this.props.addNew) this.props.saveNumber(details);
-      else this.props.updateNumber(details);
-    } else {
-      this.validateItems(list);
-    }
+      if (this.props.addNew) this.props.saveNumber(this.contactDetails());
+      else this.props.updateNumber(this.contactDetails());
+    } else this.validateItems(list);
   };
 
   closeModal = () => {
     this.removeValidationErrors(this.listToValidate());
     this.setState({
-      contactNumberId: "",
-      contactNumberType: "",
-      contactNumber: "",
+      notes: "",
       preferred: "",
-      notes: ""
+      contactNumber: "",
+      contactNumberId: "",
+      contactNumberType: ""
     });
     this.props.closeModal();
   };
@@ -168,14 +173,17 @@ class ContactNumberModal extends Component {
         </div>
         <hr />
         <div className="contact-modal__footer">
-          <ButtonContainer justifyContent="space-between" marginTop={15}>
-            <div>
+          <ButtonContainer
+            justifyContent={this.props.addNew ? "flex-end" : "space-between"}
+            marginTop={15}
+          >
+            {!this.props.addNew && (
               <Button
                 content="Remove"
                 type="danger"
                 onClick={this.props.showRemoveModal}
               />
-            </div>
+            )}
             <div>
               <Button content="Close" secondary onClick={this.closeModal} />
               <Button

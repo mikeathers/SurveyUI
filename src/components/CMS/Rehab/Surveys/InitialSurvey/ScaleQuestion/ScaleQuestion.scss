@@ -1,0 +1,58 @@
+@import "../../../../../../styles/abstracts/variables.scss";
+
+.rc-slider-track {
+  position: absolute;
+  left: 0;
+  height: 4px;
+  border-radius: 6px;
+  background-color: $color_primary;
+}
+
+.rc-slider-handle {
+  border: 1px solid $color_grey_mid;
+}
+
+.rc-slider-handle:active {
+  border-color: $color_primary;
+  box-shadow: 0 0 5px $color_primary;
+}
+
+.rc-slider-handle:focus {
+  border-color: none;
+  box-shadow: none;
+}
+
+.rc-slider-handle:hover {
+  border-color: $color_primary;
+}
+
+.rc-slider-handle-click-focused:focus {
+  border: 1px solid $color_primary;
+}
+
+.scale-question {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.1s ease;
+  border: 1px solid #fff;
+  padding: 1rem;
+  &:hover {
+    border: 1px solid #eee;
+    box-shadow: $box_shadow_primary;
+  }
+
+  &__slide-value {
+    font-size: 20px;
+    font-weight: 500;
+    align-self: flex-end;
+  }
+
+  &__clear {
+    display: flex;
+    align-self: flex-end;
+    margin-top: 15px;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

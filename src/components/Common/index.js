@@ -23,3 +23,4 @@ export * from "./PageAction/PageAction";
 export * from "./Label/Label";
 export * from "./FlexBox/FlexBox";
 export * from "./ErrorModal/ErrorModal";
+export * from "./LoadingModal/LoadingModal";

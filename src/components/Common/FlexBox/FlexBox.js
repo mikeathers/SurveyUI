@@ -7,7 +7,8 @@ const FlexBox = props => {
     justifyContent: props.justifyContent,
     alignItems: props.alignItems,
     marginTop: `${props.marginTop}px`,
-    marginBottom: `${props.marginBottom}px`
+    marginBottom: `${props.marginBottom}px`,
+    marginRight: `${props.marginRight}px`
   };
   return <div style={style}>{props.children}</div>;
 };

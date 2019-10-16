@@ -1,0 +1,22 @@
+@import "../../../../../../../../styles/abstracts/variables.scss";
+.painkiller-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  &__option {
+    flex-basis: 30%;
+  }
+
+  &__clear-options {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  &__check {
+    padding: 5px;
+    margin-bottom: 5px;
+  }
+}

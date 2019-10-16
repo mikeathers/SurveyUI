@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import * as api from "api";
-import moment from "moment";
+import EmailTemplateInfo from "./EmailTemplateInfo";
+import RemoveEmailTemplateModal from "./RemoveEmailTemplateModal";
 import {
   Card,
   Dropdown,
@@ -9,9 +9,8 @@ import {
   Label,
   Button,
   ButtonContainer,
-  FlexBox,
-  Modal,
-  Message
+  Message,
+  FlexBox
 } from "components/Common";
 
 import "./EmailTemplatesList.scss";
@@ -21,115 +20,134 @@ export default class EmailTemplatesList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      emailTemplates: [],
       selectedTemplateId: "",
       selectedTemplate: null,
-      emailTemplatesForDropdown: [],
       removeModalOpen: false,
       showMessage: false,
-      message: ""
+      errorMessage: false,
+      message: "",
+      emailTemplates:
+        props.emailTemplates !== undefined ? props.emailTemplates : [],
+      emailTemplatesForDropdown:
+        props.emailTemplatesForDropdown !== undefined
+          ? props.emailTemplatesForDropdown
+          : []
     };
   }
 
   componentDidMount() {
     this._isMounted = true;
-    api.getEmailTemplates().then(res => {
-      if (this._isMounted) {
-        this.setState({ emailTemplates: res.data }, () =>
-          this.emailTemplatesForDropdown(res.data)
-        );
-      }
-    });
-  }
-
-  componentWillReceiveProps({ clearForm }) {
-    if (clearForm) {
-      this.setState({ selectedTemplate: null, selectedTemplateId: "" });
-      this.props.formCleared();
-    }
-    api.getEmailTemplates().then(res => {
-      if (this._isMounted) {
-        this.setState({ emailTemplates: res.data }, () =>
-          this.emailTemplatesForDropdown(res.data)
-        );
-      }
-    });
   }
 
   componentWillUnmount() {
     this._isMounted = false;
   }
 
-  emailTemplatesForDropdown = templates => {
-    const emailTemplatesForDropdown = templates.map((template, key) => ({
-      text: template.name,
-      value: template.emailTemplateId,
-      key
-    }));
-    this.setState({ emailTemplatesForDropdown });
-  };
+  componentWillReceiveProps({
+    emailTemplates,
+    emailTemplatesForDropdown,
+    selectedTemplate
+  }) {
+    if (emailTemplates !== undefined) this.setState({ emailTemplates });
+    if (emailTemplatesForDropdown !== undefined)
+      this.setState({ emailTemplatesForDropdown });
+    if (selectedTemplate !== null) this.setState({ selectedTemplate });
+    else this.setState({ selectedTemplateId: "", selectedTemplate: null });
+  }
 
   handleChange = (e, { value }) => {
+    this.setState({ selectedTemplateId: value });
+    this.handleSelectTemplate(value);
+  };
+
+  handleSelectTemplate = templateId => {
     const selectedTemplate = this.state.emailTemplates.find(
-      m => m.emailTemplateId === value
+      m => m.emailTemplateId === templateId
     );
     this.props.getSelectedTemplate(selectedTemplate);
-    this.setState({ selectedTemplateId: value, selectedTemplate });
+    this._isMounted && this.setState({ selectedTemplate });
   };
 
   clearSelectedTemplate = () => {
-    this.setState({ selectedTemplateId: "" });
+    this._isMounted &&
+      this.setState({ selectedTemplateId: "", selectedTemplate: null });
     this.props.clearSelectedTemplate();
   };
 
-  removeEmailTemplate = id => {
-    const removeEmailTemplateRequest = {
-      emailTemplateId: id,
-      actionedBy: this.props.username
-    };
-    api.removeEmailTemplate(removeEmailTemplateRequest).then(res => {
-      if (this._isMounted) {
-        if (res.status === 200) {
-          this.setState({
-            emailTemplates: res.data.data,
-            removeModalOpen: false,
-            selectedTemplate: null
-          });
-          this.emailTemplatesForDropdown(res.data.data);
-          this.clearSelectedTemplate();
+  showSuccessMessage = message => {
+    this._isMounted &&
+      this.setState({
+        removeModalOpen: false,
+        showMessage: true,
+        message,
+        errorMessage: false
+      });
+    setTimeout(() => {
+      this.removeValidationMessage();
+      this.clearSelectedTemplate();
+    }, 2000);
+  };
 
-          this.setState({ showMessage: true });
-          setTimeout(() => this.setState({ showMessage: false }), 3000);
-        } else {
-          this.setState({ showMessage: true });
-          setTimeout(() => this.setState({ showMessage: false }), 6000);
-          this.setState({
-            removeModalOpen: false,
-            message: res.data.errors[0].errorMessage
-          });
-        }
-      }
-    });
+  showErrorMessage = message => {
+    this._isMounted &&
+      this.setState({
+        removeModalOpen: false,
+        showMessage: true,
+        errorMessage: true,
+        message
+      });
+    setTimeout(() => this.removeValidationMessage(), 3000);
+  };
+
+  removeEmailTemplate = async () => {
+    const response = await this.props.removeEmailTemplate(
+      this.state.selectedTemplateId
+    );
+    if (response.status === 200)
+      this.showSuccessMessage("Email template removed successfully");
+    else this.showErrorMessage(response.data[0].errorMessage);
+  };
+
+  removeValidationMessage = () => {
+    this._isMounted &&
+      this.setState({
+        showMessage: false,
+        errorMessage: false,
+        message: ""
+      });
+  };
+
+  closeRemoveModal = () => {
+    this._isMounted && this.setState({ removeModalOpen: false });
   };
 
   render() {
-    const { selectedTemplate } = this.state;
+    const {
+      selectedTemplate,
+      selectedTemplateId,
+      emailTemplatesForDropdown,
+      removeModalOpen,
+      showMessage,
+      message,
+      errorMessage
+    } = this.state;
     return (
-      <Card title="Manage Email Templates">
+      <Card title="Manage Email Templates" id="emailTemplatesList">
         <FormRow>
           <FormGroup>
-            <Label text="Email Templates:" width="100" />
+            <Label text="Email Templates:" />
             <FlexBox>
               <Dropdown
-                width="200"
+                fullWidth
                 selection
-                options={this.state.emailTemplatesForDropdown}
+                options={emailTemplatesForDropdown}
                 placeholder="Select a template.."
                 onChange={this.handleChange}
-                value={this.state.selectedTemplateId}
+                value={selectedTemplateId}
+                id="emailTemplatesListEmailTemplatesDropdown"
               />
-
               <Button
+                id="emailTemplatesListClearBtn"
                 content="Clear"
                 marginleft="10"
                 secondary
@@ -138,91 +156,38 @@ export default class EmailTemplatesList extends Component {
             </FlexBox>
           </FormGroup>
         </FormRow>
-        {this.state.selectedTemplate !== null && (
-          <div>
-            <FormRow marginTop="35">
-              <FormGroup flexBasis="30">
-                <Label text="Template Name:" width="100" />
-                <Label text={selectedTemplate.name} thin width="100" />
-              </FormGroup>
-              <FormGroup flexBasis="30" width="100">
-                <Label text="Associated Letter:" width="100" />
-                <Label
-                  text={selectedTemplate.letterTemplate.name}
-                  thin
-                  width="100"
-                />
-              </FormGroup>
-              <FormGroup flexBasis="30">
-                <Label text="Send To:" width="100" />
-                <Label text={selectedTemplate.sendTo} thin width="100" />
-              </FormGroup>
-            </FormRow>
-            <FormRow marginTop="35">
-              <FormGroup flexBasis="30">
-                <Label text="Created By:" width="100" />
-                <Label text={selectedTemplate.createdBy} thin width="100" />
-              </FormGroup>
-              <FormGroup flexBasis="30">
-                <Label text="Last Updated By:" width="100" />
-                <Label text={selectedTemplate.lastUpdatedBy} thin width="100" />
-              </FormGroup>
-              <FormGroup flexBasis="30">
-                <Label text="Last Updated On:" width="100" />
-                <Label
-                  text={moment(selectedTemplate.lastUpdatedOn).format(
-                    "DD/MM/YYYY hh:mm A"
-                  )}
-                  thin
-                  width="100"
-                />
-              </FormGroup>
-            </FormRow>
+        {selectedTemplate !== null && (
+          <>
+            <EmailTemplateInfo
+              id="emailTemplateInfo"
+              selectedTemplate={selectedTemplate}
+            />
             <ButtonContainer
-              justifyContent={
-                this.state.showMessage ? "space-between" : "flex-end"
-              }
+              justifyContent={showMessage ? "space-between" : "flex-end"}
               marginTop="35"
             >
               <Message
-                show={this.state.showMessage}
-                error={this.state.message !== ""}
-                message={this.state.message}
+                show={showMessage}
+                error={errorMessage}
+                message={message}
                 width="60"
               />
               <Button
+                id="removeEmailTemplateBtn"
                 content="Remove Email Template"
                 secondary
                 onClick={() => this.setState({ removeModalOpen: true })}
               />
             </ButtonContainer>
-          </div>
+          </>
         )}
-        <Modal
-          isModalOpen={this.state.removeModalOpen}
-          title="Remove Email Template"
-          message="Are you sure you want to remove this template?"
-          item={
-            this.state.selectedTemplate !== null
-              ? this.state.selectedTemplate.name
-              : ""
-          }
-        >
-          <ButtonContainer justifyContent="flex-end">
-            <Button
-              content="Close"
-              secondary
-              onClick={() => this.setState({ removeModalOpen: false })}
-            />
-            <Button
-              content="Remove"
-              type="danger"
-              onClick={() =>
-                this.removeEmailTemplate(this.state.selectedTemplateId)
-              }
-            />
-          </ButtonContainer>
-        </Modal>
+        <RemoveEmailTemplateModal
+          id="removeEmailTemplateModal"
+          closeModal={this.closeRemoveModal}
+          removeEmailTemplate={this.removeEmailTemplate}
+          selectedTemplate={selectedTemplate}
+          removeModalOpen={removeModalOpen}
+        />
       </Card>
     );
   }

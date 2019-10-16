@@ -1,0 +1,16 @@
+@import "../../../../styles/abstracts/mixins.scss";
+@import "../../../../styles/abstracts/variables.scss";
+
+.stop-case-modal {
+  @include modal;
+
+  &__title {
+    margin: 0 0 10px 0;
+    font-weight: 300;
+    height: 24px;
+  }
+
+  &__body {
+    padding: 0 10px;
+  }
+}

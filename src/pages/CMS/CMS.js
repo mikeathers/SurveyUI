@@ -1,44 +1,36 @@
 import React, { Component } from "react";
 import { Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
-import {
-  selectPrimaryItem,
-  selectSecondaryItem,
-  hideErrorModal,
-  logoutUser
-} from "actions";
 
-import { ErrorModal } from "components/Common";
+import {
+  logoutUser,
+  getUserDetails,
+  selectPrimaryItem,
+  selectSecondaryItem
+} from "actions";
 
 import Menu from "components/CMS/Menu/Menu";
 import Header from "components/CMS/Header/Header";
 import UserBar from "components/CMS/UserBar/UserBar";
 import Case from "containers/CMS/Rehab/Case/Case";
 import Survey from "containers/CMS/Rehab/Surveys/Surveys";
+import ClinicianSurveyComplete from "containers/CMS/Rehab/CompletedSurvey/CompletedSurvey";
 
 import * as menuItems from "routes/secondaryMenuItems";
 
 import "./CMS.scss";
 
 class CMS extends Component {
-  state = {
-    showErrorModal: this.props.showErrorModal
-  };
   componentDidMount() {
-    if (this.props.history.location.pathname === "/cms") {
-      // this.props.history.push("/cms/rehab/survey/initial/20007506/1");
-
-      // this.props.history.push("/cms/rehab/case/20007485/1");
-
-      this.props.history.push("/cms/rehab/dashboard");
-      this.props.selectPrimaryItem("Rehab");
-      this.props.selectSecondaryItem("Dashboard");
-
-      // this.props.history.push("/cms/admin/case");
-      // this.props.selectPrimaryItem("Admin");
-      // this.props.selectSecondaryItem("Case");
-    }
+    this.props.getUserDetails();
+    if (this.props.history.location.pathname === "/cms") this.goToCases();
   }
+
+  goToCases = () => {
+    this.props.history.push("/cms/rehab/cases");
+    this.props.selectPrimaryItem("Rehab");
+    this.props.selectSecondaryItem("Cases");
+  };
 
   renderRoutes = () => {
     let routes = [];
@@ -76,33 +68,32 @@ class CMS extends Component {
               />
               <Route path="/cms/rehab/survey/soap/:id" component={Survey} />
               <Route
-                path="/cms/rehab/survey/customersatisfaction/:id"
+                path="/cms/rehab/survey/discharge/:id"
                 component={Survey}
+              />
+              <Route
+                path="/cms/rehab/completedsurvey/clinician"
+                component={ClinicianSurveyComplete}
               />
               {this.renderRoutes()}
             </Switch>
           </div>
         </div>
-        <ErrorModal
-          isModalOpen={this.props.showErrorModal}
-          closeModal={() => this.props.hideErrorModal()}
-        />
       </div>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  selectedPrimaryItem: state.menus.selectedPrimaryItem,
-  showErrorModal: state.shared.showErrorModal,
-  username: state.auth.user.name
+  username: state.auth.user.name,
+  selectedPrimaryItem: state.menus.selectedPrimaryItem
 });
 
 const mapDispatchToProps = dispatch => ({
+  logout: () => dispatch(logoutUser()),
+  getUserDetails: () => dispatch(getUserDetails()),
   selectPrimaryItem: item => dispatch(selectPrimaryItem(item)),
-  selectSecondaryItem: item => dispatch(selectSecondaryItem(item)),
-  hideErrorModal: () => dispatch(hideErrorModal()),
-  logout: () => dispatch(logoutUser())
+  selectSecondaryItem: item => dispatch(selectSecondaryItem(item))
 });
 
 export default connect(

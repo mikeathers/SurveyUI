@@ -1,0 +1,27 @@
+@import "../../../../../../../styles/abstracts/variables.scss";
+.painkiller-question {
+  margin-bottom: 1rem;
+  transition: box-shadow 0.1s ease;
+  border: 1px solid #fff;
+  padding: 1rem;
+  &:hover {
+    border: 1px solid #eee;
+    box-shadow: $box_shadow_primary;
+  }
+  &__options {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  &__option {
+    flex-basis: 100%;
+  }
+
+  &__clear-options {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

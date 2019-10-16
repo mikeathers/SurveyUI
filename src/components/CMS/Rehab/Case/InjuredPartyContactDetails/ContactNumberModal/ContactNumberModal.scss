@@ -1,23 +1,8 @@
+@import "../../../../../../styles/abstracts/variables.scss";
+@import "../../../../../../styles/abstracts/mixins.scss";
+
 .contact-modal {
-  position: relative;
-  background: #fff;
-  border: #9999 1px solid;
-  display: block;
-  padding: 20px;
-  overflow: visible;
-
-  top: 50%;
-  left: 50%;
-  right: auto;
-  bottom: auto;
-  transform: translate(-50%, -50%);
-  height: 370px;
-  width: 650px;
-  z-index: 2 !important;
-
-  -webkit-box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
-  -moz-box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
-  box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
+  @include modal;
 
   & .ui.selection.dropdown {
     min-width: 120px;
@@ -30,7 +15,6 @@
   &__title {
     margin: 0 0 10px 0;
     font-weight: 300;
-    height: 30px;
   }
 
   &__body {
@@ -38,11 +22,6 @@
     font-weight: 300;
     margin: 0 0 15px 0;
     word-break: break-word;
-    height: 210px;
     padding-left: 10px;
-    //min-height: 170px;
   }
-
-  // &__footer {
-  // }
 }

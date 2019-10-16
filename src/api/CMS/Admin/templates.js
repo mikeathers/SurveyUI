@@ -18,14 +18,17 @@ export const uploadDocumentTemplate = async (
   formData.append("letterTemplateId", letterTemplateId);
   try {
     const res = await axios({
+      withCredentials: true,
       method: "POST",
-      url: DEV_URL + "template/uploaddocumenttemplate",
+      url: DEV_URL + "template/upload-document-template",
       dataType: "json",
       data: formData,
       "Content-Type": "multipart/form-data"
     });
     return res;
-  } catch (err) {}
+  } catch (err) {
+    return err.response;
+  }
 };
 
 export const uploadEmailTemplateImage = async file => {
@@ -33,107 +36,126 @@ export const uploadEmailTemplateImage = async file => {
   formData.append("file", file);
   try {
     const res = await axios({
+      withCredentials: true,
       method: "POST",
-      url: DEV_URL + "template/uploademailtemplateimage",
+      url: DEV_URL + "template/upload-email-template-image",
       dataType: "json",
       data: formData,
       "Content-Type": "multipart/form-data"
     });
     return res;
-  } catch (err) {}
+  } catch (err) {
+    return err.response;
+  }
 };
 
 export const getTemplateStrings = async () => {
   try {
     const res = await axios({
+      withCredentials: true,
       method: "GET",
-      url: DEV_URL + "template/gettemplatestrings",
+      url: DEV_URL + "template/get-template-strings",
       dataType: "json"
     });
     return res;
   } catch (err) {
-    return err;
+    return err.response;
   }
 };
 
 export const saveEmailTemplate = async template => {
   try {
     const res = await axios({
+      withCredentials: true,
       method: "POST",
-      url: DEV_URL + "template/saveemailtemplate",
+      url: DEV_URL + "template/save-email-template",
       dataType: "json",
       data: template
     });
     return res;
-  } catch (err) {}
+  } catch (err) {
+    return err.response;
+  }
 };
 
 export const removeEmailTemplate = async emailTemplateRequest => {
   try {
     const res = await axios({
+      withCredentials: true,
       method: "DELETE",
-      url: DEV_URL + "template/removeemailtemplate",
+      url: DEV_URL + "template/remove-email-template",
       dataType: "json",
       data: emailTemplateRequest
     });
     return res;
-  } catch (err) {}
+  } catch (err) {
+    return err.response;
+  }
 };
 
 export const getEmailTemplates = async () => {
   try {
     const res = await axios({
+      withCredentials: true,
       method: "GET",
-      url: DEV_URL + "template/getemailtemplates",
+      url: DEV_URL + "template/get-email-templates",
       dataType: "json"
     });
     return res;
   } catch (err) {
-    return err;
+    return err.response;
   }
 };
 
 export const getLetterTemplates = async () => {
   try {
     const res = await axios({
+      withCredentials: true,
       method: "GET",
-      url: DEV_URL + "template/getlettertemplates",
+      url: DEV_URL + "template/get-letter-templates",
       dataType: "json"
     });
     return res;
   } catch (err) {
-    return err;
+    return err.response;
   }
 };
 
 export const getEmailTemplate = async emailTemplateRequest => {
   try {
     const res = await axios({
+      withCredentials: true,
       method: "POST",
-      url: DEV_URL + "template/getemailtemplate",
+      url: DEV_URL + "template/get-email-template",
       dataType: "json",
       data: emailTemplateRequest
     });
     return res;
-  } catch (err) {}
+  } catch (err) {
+    return err.response;
+  }
 };
 
 export const removeLetterTemplate = async template => {
   try {
     const res = await axios({
+      withCredentials: true,
       method: "DELETE",
-      url: DEV_URL + "template/removelettertemplate",
+      url: DEV_URL + "template/remove-letter-template",
       dataType: "json",
       data: template
     });
     return res;
-  } catch (err) {}
+  } catch (err) {
+    return err.response;
+  }
 };
 
 export const downloadLetterTemplate = async path => {
   try {
     const res = await axios({
-      url: DEV_URL + "template/downloadlettertemplate",
+      withCredentials: true,
+      url: DEV_URL + "template/download-letter-template",
       method: "POST",
       dataType: "json",
       data: { path },
@@ -141,5 +163,7 @@ export const downloadLetterTemplate = async path => {
       responseType: "blob"
     });
     return res;
-  } catch (err) {}
+  } catch (err) {
+    return err.response;
+  }
 };

@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import moment from "moment";
 import _ from "lodash";
 import { Card } from "components/Common";
@@ -10,7 +9,7 @@ const ActivityRow = props => (
   <tr>
     <td>{props.activity.activity}</td>
     <td>{props.activity.actionedBy}</td>
-    <td>{moment(props.activity.actionedOn).format("DD/MM/YYYY hh:mm A")}</td>
+    <td>{moment(props.activity.actionedOn).format("DD/MM/YYYY HH:mm")}</td>
   </tr>
 );
 
@@ -27,7 +26,7 @@ class CaseActivities extends Component {
   render() {
     return (
       <Card title="Case Activity">
-        <div className="case-activity">
+        <div className="case-activity scrollable-card">
           {this.orderedActivities() !== undefined &&
           this.orderedActivities().length > 0 ? (
             <table className="case-activity__table">
@@ -51,14 +50,11 @@ class CaseActivities extends Component {
               </tbody>
             </table>
           ) : (
-            <p className="light">This case has had no activity.</p>
+            <p className="light">No case activities have been completed...</p>
           )}
         </div>
       </Card>
     );
   }
 }
-const mapStateToProps = state => ({
-  mi3dCase: state.case.mi3dCase
-});
-export default connect(mapStateToProps)(CaseActivities);
+export default CaseActivities;

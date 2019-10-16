@@ -8,11 +8,17 @@ class Card extends Component {
     super(props);
     this.state = {
       isOpen: props.isOpenByDefault !== null ? props.isOpenByDefault : false,
-      disabled: props.disabled !== null ? props.disabled : false
+      disabled: props.disabled !== null ? props.disabled : false,
+      receivedProps: false
     };
   }
-  componentWillReceiveProps({ disabled }) {
-    this.setState({ disabled });
+  componentWillReceiveProps(nextProps) {
+    if (nextProps !== undefined) {
+      this.setState({
+        disabled: nextProps.disabled,
+        isOpen: nextProps.isOpenByDefault
+      });
+    }
   }
 
   render() {

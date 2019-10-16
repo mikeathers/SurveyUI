@@ -4,7 +4,6 @@ import "./Header.scss";
 
 class Header extends Component {
   showSideMenu = () => {
-    document.documentElement.classList.toggle("pull-content-right");
     document.documentElement.classList.toggle("side-menu-open");
   };
   render() {

@@ -1,0 +1,58 @@
+@import "../../../../styles/abstracts/mixins.scss";
+@import "../../../../styles/abstracts/variables.scss";
+
+.dpa-modal {
+  @include modal;
+
+  @include respond(tab-land) {
+    top: 15%;
+  }
+
+  height: 80%;
+  width: 50%;
+  top: 10%;
+
+  &__container {
+    height: 99%;
+    overflow: hidden;
+    overflow: auto;
+  }
+
+  &__title {
+    margin: 0 0 10px 0;
+    font-weight: 300;
+    height: 30px;
+  }
+
+  &__body {
+    padding-left: 10px;
+    word-break: break-word;
+  }
+
+  &__footer {
+    padding: 0 10px;
+  }
+
+  &__bold {
+    font-weight: 500;
+  }
+
+  &__opening-statement {
+    margin-bottom: 20px;
+    margin-top: 10px !important;
+
+    & p {
+      font-size: 15px !important;
+      margin-bottom: 10px;
+    }
+  }
+
+  &__closing-statement {
+    margin-top: 20px;
+
+    & p {
+      font-size: 15px !important;
+      margin-bottom: 20px;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+@import "../../../../../../styles/abstracts/variables.scss";
+.yesno-question {
+  margin-bottom: 1rem;
+  transition: box-shadow 0.1s ease;
+  border: 1px solid #fff;
+  padding: 1rem;
+  &:hover {
+    border: 1px solid #eee;
+    box-shadow: $box_shadow_primary;
+  }
+
+  &__buttons {
+    display: flex;
+
+    & label {
+      margin-right: 20px;
+    }
+  }
+
+  &__clear {
+    display: flex;
+    justify-content: flex-end;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

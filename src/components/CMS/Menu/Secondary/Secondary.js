@@ -11,6 +11,9 @@ import "./Secondary.scss";
 class Secondary extends Component {
   selectMenuItem = item => {
     this.props.selectSecondaryItem(item);
+    document.getElementById("navbar-toggle").checked = false;
+    document.documentElement.classList.toggle("pull-content-right");
+    document.documentElement.classList.toggle("side-menu-open");
   };
 
   renderItems = () => {

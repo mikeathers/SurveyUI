@@ -1,0 +1,8 @@
+.discharge-survey-initial-pain-killers {
+  width: 50%;
+  &__content {
+    & > p:last-child {
+      margin-bottom: 25px;
+    }
+  }
+}

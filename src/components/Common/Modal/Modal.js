@@ -19,6 +19,7 @@ const sModal = props => {
         <p>{props.message}</p>
         <p> {props.item !== undefined ? props.item : ""}</p>
       </div>
+      {props.content}
       <hr />
       <div className="default-modal__footer">{props.children}</div>
     </Modal>

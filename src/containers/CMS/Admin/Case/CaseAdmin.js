@@ -1,11 +1,12 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import CaseAdminMenu from "components/CMS/Admin/CaseAdmin/CaseAdminMenu/CaseAdminMenu";
 import StopCaseReasons from "components/CMS/Admin/CaseAdmin/StopCaseReasons/StopCaseReasons/StopCaseReasons";
 import EmailTemplates from "components/CMS/Admin/CaseAdmin/Templates/EmailTemplates/EmailTemplates/EmailTemplates";
 import LetterTemplates from "components/CMS/Admin/CaseAdmin/Templates/LetterTemplates/LetterTemplates/LetterTemplates";
 import { Container, PageHeader } from "components/Common";
 
-export default class CaseAdmin extends Component {
+class CaseAdmin extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -25,11 +26,27 @@ export default class CaseAdmin extends Component {
   renderComponent = () => {
     switch (this.state.selectedItem) {
       case "letterTemplates":
-        return <LetterTemplates />;
+        return (
+          <LetterTemplates
+            id="letterTemplates"
+            username={this.props.username}
+          />
+        );
       case "emailTemplates":
-        return <EmailTemplates />;
-      case "caseReasons":
-        return <StopCaseReasons />;
+        return (
+          <EmailTemplates
+            id="emailTemplates"
+            username={this.props.username}
+            bluedogCase={this.props.bluedogCase}
+          />
+        );
+      case "stopCaseReasons":
+        return (
+          <StopCaseReasons
+            id="stopCaseReasons"
+            username={this.props.username}
+          />
+        );
       default:
         return null;
     }
@@ -37,15 +54,22 @@ export default class CaseAdmin extends Component {
 
   render() {
     return (
-      <Container fluid>
+      <Container fluid id="caseAdmin">
         <PageHeader title="Case Admin" />
         <CaseAdminMenu
-          selected={this.state.selectedItem}
+          id="caseAdminMenu"
           selectItem={this.selectItem}
+          selected={this.state.selectedItem}
         />
-
         {this.renderComponent()}
       </Container>
     );
   }
 }
+
+const mapStateToProps = state => ({
+  username: state.auth.user.name,
+  bluedogCase: state.case.selectedCase
+});
+
+export default connect(mapStateToProps)(CaseAdmin);

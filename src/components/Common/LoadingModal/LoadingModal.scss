@@ -1,0 +1,26 @@
+.loading-modal {
+  position: relative;
+  background: #fff;
+  // border: #9999 1px solid;
+  display: block;
+  padding: 20px;
+  overflow: visible;
+
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  width: 10%;
+  transform: translate(-0%, -50%);
+  z-index: 2 !important;
+
+  // -webkit-box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
+  // -moz-box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
+  // box-shadow: 2px 3px 46px -13px rgba(0, 0, 0, 0.75);
+
+  &__body {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+  }
+}

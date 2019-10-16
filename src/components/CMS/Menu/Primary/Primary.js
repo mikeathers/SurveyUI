@@ -12,7 +12,7 @@ class Primary extends Component {
 
     switch (item) {
       case "Rehab":
-        this.props.selectSecondaryItem("Dashboard");
+        this.props.selectSecondaryItem("New Cases");
         break;
       case "Admin":
         this.props.selectSecondaryItem("Case");

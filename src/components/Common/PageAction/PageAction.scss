@@ -32,3 +32,14 @@
     z-index: 1;
   }
 }
+
+.pageaction-disabled {
+  height: 30px;
+  border: 1px solid transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 15px;
+  position: relative;
+  color: $color_light_text;
+}

@@ -1,18 +1,16 @@
 import React, { Component } from "react";
 import _ from "lodash";
-import { connect } from "react-redux";
-import { updateMi3dCase } from "actions";
 import * as api from "api";
-
+import {withErrorHandling} from "HOCs";
 import CaseNotesModal from "./CaseNotesModal/CaseNotesModal";
 import Note from "./Note/Note";
 
 import {
   Card,
-  ButtonContainer,
   Button,
   Message,
-  Modal
+  Modal,
+  ButtonContainer
 } from "components/Common";
 
 import "./CaseNotes.scss";
@@ -22,12 +20,13 @@ class CaseNotes extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      addNoteModalOpen: false,
-      showMessage: false,
       message: "",
-      selectedNote: null,
       addNew: true,
-      removeModalOpen: false
+      selectedNote: null,
+      showMessage: false,
+      errorMessage: false,
+      removeModalOpen: false,
+      addNoteModalOpen: false
     };
   }
 
@@ -55,94 +54,73 @@ class CaseNotes extends Component {
     });
   };
 
-  createNote = noteText => {
-    const caseNote = {
-      noteText,
-      createdBy: this.props.user.name,
-      caseId: this.props.mi3dCase.caseId,
-      actionedBy: this.props.user.name
-    };
-    api.createCaseNote(caseNote).then(res => {
-      if (res.status === 200) {
-        this.props.updateMi3dCase(res.data);
-        if (this._isMounted) {
-          this.setState({
-            showMessage: true,
-            addNoteModalOpen: false
-          });
-          setTimeout(() => this.setState({ showMessage: false }), 3000);
-        }
-      } else {
-        if (this._isMounted) {
-          this.setState({
-            showMessage: true,
-            message: res.data.erros[0].errorMessage,
-            addNoteModalOpen: false
-          });
-        }
-      }
-    });
+  caseNote = noteText => ({
+    noteText,
+    party: "System",
+    rehabUser: "Mi3D",
+    type: "Case Activity",
+    direction: "Internal",
+    createdBy: this.props.username,
+    caseId: this.props.mi3dCase.caseId,
+    actionedBy: this.props.username,
+    bluedogCaseRef: this.props.bluedogCase.bluedogCaseRef
+  });
+
+  createNote = async noteText => {
+    const response = await api.createCaseNote(this.caseNote(noteText));
+    if (response !== undefined) {
+      if (response.status === 200) {
+        this.props.updateMi3dCase(response.data);
+        this.showSuccessMessage("Note has been created successfully");
+      } else this.showErrorMessage(response.data[0].errorMessage);
+    } else this.props.showErrorModal();
   };
 
-  updateNote = note => {
-    const caseNote = {
-      noteText: note,
-      createdBy: this.props.user.name,
-      caseId: this.props.mi3dCase.caseId,
-      caseNoteId: this.state.selectedNote.caseNoteId,
-      actionedBy: this.props.user.name
-    };
-    api.updateCaseNote(caseNote).then(res => {
-      if (res.status === 200) {
-        this.props.updateMi3dCase(res.data);
-        if (this._isMounted) {
-          this.setState({ showMessage: true, addNoteModalOpen: false });
-          setTimeout(() => this.setState({ showMessage: false }), 3000);
-        }
-      } else {
-        if (this._isMounted) {
-          this.setState({
-            showMessage: true,
-            message: res.data.errors[0].errorMessage,
-            addNoteModalOpen: false
-          });
-        }
-      }
-    });
+  updateNote = async noteText => {
+    const response = await api.updateCaseNote(this.caseNote(noteText));
+    if (response !== undefined) {
+      if (response.status === 200) {
+        this.props.updateMi3dCase(response.data);
+        this.showSuccessMessage("Note has been updated successfully");
+      } else this.showErrorMessage(response.data[0].errorMessage);
+    } else this.props.showErrorModal();
   };
 
-  openRemoveNoteModal = note => {
-    this.setState({ selectedNote: note, removeModalOpen: true });
+  openRemoveNoteModal = () => {
+    this.setState({ removeModalOpen: true });
   };
 
-  removeNote = () => {
-    const caseNote = {
-      caseId: this.props.mi3dCase.caseId,
-      caseNoteId: this.state.selectedNote.caseNoteId,
-      actionedBy: this.props.user.name
-    };
-    api.removeCaseNote(caseNote).then(res => {
-      if (res.status === 200) {
-        this.props.updateMi3dCase(res.data);
-        if (this._isMounted) {
-          this.setState({
-            showMessage: true,
-            removeModalOpen: false,
-            selectedNote: {}
-          });
-          setTimeout(() => this.setState({ showMessage: false }), 3000);
-        }
-      } else {
-        if (this._isMounted) {
-          this.setState({
-            showMessage: true,
-            message: res.data.erros[0].errorMessage,
-            removeModalOpen: false,
-            selectedNote: {}
-          });
-        }
-      }
-    });
+  removeNote = async () => {
+    const response = await api.removeCaseNote(this.caseNote(""));
+    if (response !== undefined) {
+      if (response.status === 200) {
+        this.props.updateMi3dCase(response.data);
+        this.showSuccessMessage("Note removed successfully");
+      } else this.showErrorMessage(response.data[0].errorMessage);
+    } else this.props.showErrorModal();
+  };
+
+  showSuccessMessage = message => {
+    this._isMounted &&
+      this.setState({
+        message,
+        showMessage: true,
+        selectedNote: null,
+        errorMessage: false,
+        addNoteModalOpen: false,
+        removeModalOpen: false
+      });
+    setTimeout(() => this.setState({ showMessage: false }), 3000);
+  };
+
+  showErrorMessage = message => {
+    this._isMounted &&
+      this.setState({
+        message,
+        showMessage: true,
+        errorMessage: true
+      });
+    setTimeout(() => this.setState({ showMessage: false }), 3000);
   };
 
   render() {
@@ -153,22 +131,17 @@ class CaseNotes extends Component {
     );
     return (
       <Card title="Case Notes" collapsible={false} openByDefault={false}>
-        {caseNotes != null && caseNotes.length > 0 ? (
-          caseNotes.map((note, key) => (
-            <Note
-              note={note}
-              key={key}
-              openNote={() => this.openNote(note)}
-              showRemoveModal={() => this.openRemoveNoteModal(note)}
-            />
-          ))
-        ) : (
-          <p className="light">No notes have been added..</p>
-        )}
+        <div className="scrollable-card">
+          {caseNotes != null && caseNotes.length > 0 ? (
+            caseNotes.map((note, key) => <Note note={note} key={key} />)
+          ) : (
+            <p className="light">No notes have been added..</p>
+          )}
+        </div>
         <ButtonContainer marginTop={15} justifyContent="flex-end">
           <Message
             show={this.state.showMessage}
-            error={this.state.message !== ""}
+            error={this.state.errorMessage}
             message={this.state.message}
             marginRight={45}
           />
@@ -185,6 +158,7 @@ class CaseNotes extends Component {
           note={this.state.selectedNote}
           addNew={this.state.addNew}
           updateNote={this.updateNote}
+          openRemoveNoteModal={() => this.openRemoveNoteModal()}
         />
         <Modal
           isModalOpen={this.state.removeModalOpen}
@@ -205,14 +179,4 @@ class CaseNotes extends Component {
   }
 }
 
-const MapDispatchToProps = dispatch => ({
-  updateMi3dCase: updatedCase => dispatch(updateMi3dCase(updatedCase))
-});
-const mapStateToProps = state => ({
-  mi3dCase: state.case.mi3dCase,
-  user: state.auth.user
-});
-export default connect(
-  mapStateToProps,
-  MapDispatchToProps
-)(CaseNotes);
+export default withErrorHandling(CaseNotes);

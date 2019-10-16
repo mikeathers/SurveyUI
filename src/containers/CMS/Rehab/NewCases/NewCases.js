@@ -1,112 +1,183 @@
 import React, { Component } from "react";
+import * as api from "api";
 import { connect } from "react-redux";
+import { isObjectValid } from "helpers/validation";
+import {withErrorHandling} from "HOCs";
+
 import {
+  updateMi3dCase,
+  updateMi3dCaseId,
   selectBluedogCase,
   selectSecondaryItem,
-  updateMi3dCase,
-  updateMi3dCaseId
+  clearSelectedCases
 } from "actions";
-import * as api from "api";
-import { checkForErrors, isObjectValid } from "helpers/validation";
 
-import { Container, Row, Col, PageHeader, ErrorModal } from "components/Common";
+import {
+  Row,
+  Col,
+  Modal,
+  Button,
+  Container,
+  PageHeader,
+  LoadingModal,
+  ButtonContainer
+} from "components/Common";
 
 import CaseList from "components/CMS/Rehab/NewCases/CaseList/CaseList";
 
 import "./NewCases.scss";
 
 class NewCases extends Component {
-  _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
       cases: [],
-      showErrorModal: false,
       hasErrors: false,
-      errorMessage: null
+      errorMessage: null,
+      showErrorModal: false,
+      showLoadingModal: false,
+      showInvalidCaseModal: false
     };
-    this.checkForErrors = checkForErrors.bind(this);
   }
 
   componentDidMount() {
     this._isMounted = true;
     this.getClinicianCases();
+    this.props.clearSelectedCases();
   }
 
   componentWillUnmount() {
     this._isMounted = false;
   }
 
-  getClinicianCases = () => {
-    api.getClinicianCases().then(res => {
-      if (this._isMounted) {
-        if (!this.checkForErrors(res, "modal")) {
-          this.setState({ cases: res });
-        }
+  hideLoadingModal = () => {
+    this.setState({ showLoadingModal: false });
+  };
+
+  getClinicianCases = async () => {
+    const response = await api.getClinicianCases();
+    if (response !== undefined) {
+      if (this._isMounted && response.status === 200)
+        this.setState({ cases: response.data });
+      else this.props.showErrorModal();
+    } else this.props.showErrorModal();
+  };
+
+  getInjuredPartyDetails = async openedCase => {
+    const response = await api.getInjuredPartyDetails(
+      openedCase.bluedogCaseRef
+    );
+    if (response !== undefined) {
+      if (response.status === 200) {
+        this.props.selectBluedogCase(response.data);
+        return this.caseToCreate(openedCase, response.data);
+      } else {
+        this.props.showErrorModal();
+        this.hideLoadingModal();
+        return null;
       }
-    });
+    } else {
+      this.props.showErrorModal();
+      this.hideLoadingModal();
+    }
   };
 
-  getInjuredPartyDetails = openedCase => {
-    return api.getInjuredPartyDetails(openedCase.bluedogCaseRef).then(res => {
-      console.log(res);
-      this.props.selectBluedogCase(res);
-      if (!this.checkForErrors(res, "modal")) {
-        const caseToCreate = {
-          ...openedCase,
-          firstName: res.firstName,
-          lastName: res.lastName,
-          instructingPartyName: res.instructingPartyName
-        };
-        return caseToCreate;
-      }
-    });
+  caseToCreate = (openedCase, injuredParty) => ({
+    ...openedCase,
+    firstName: injuredParty.firstName,
+    lastName: injuredParty.lastName,
+    instructingPartyName: injuredParty.instructingParty.name
+  });
+
+  createCaseIfDoesntExist = async caseToCreate => {
+    const openCaseResult = await api.openCase(caseToCreate);
+    if (openCaseResult !== undefined) {
+      const caseId = openCaseResult.data.caseId;
+      this.props.updateMi3dCaseId(caseId);
+      return caseId;
+    } else {
+      this.props.showErrorModal();
+      this.hideLoadingModal();
+    }
   };
 
-  createCaseIfDoesntExist = caseToCreate => {
-    return api.openCase(caseToCreate).then(res => {
-      if (!this.checkForErrors(res, "modal")) {
-        const caseId = res.data.caseId;
-        this.props.updateMi3dCaseId(caseId);
-        return caseId;
-      }
-    });
+  getCase = async caseId => {
+    const getCaseResult = await api.getCase(caseId);
+    if (getCaseResult !== undefined)
+      this.props.updateMi3dCase(getCaseResult.data);
+    else {
+      this.props.showErrorModal();
+      this.hideLoadingModal();
+    }
   };
 
-  getCase = caseId => {
-    api.getCase(caseId).then(res => {
-      if (!this.checkForErrors(res, "modal")) {
-        this.props.updateMi3dCase(res.data);
-      }
-    });
+  updateBluedogCaseStatus = async bluedogCaseRef => {
+    await api.updateBluedogCaseStatus(bluedogCaseRef);
   };
 
-  updateBluedogCaseStatus = bluedogCaseRef => {
-    api.updateBluedogCaseStatus(bluedogCaseRef);
-  };
-
-  selectCase = openedCase => {
-    this.getInjuredPartyDetails(openedCase).then(caseToCreate => {
-      if (!isObjectValid(caseToCreate))
-        this.setState({
-          showErrorModal: true,
-          errorMessage:
-            "The Bluedog case does not have all the relevant fields for a case to be created."
-        });
-      else {
-        this.createCaseIfDoesntExist(caseToCreate).then(caseId => {
-          this.getCase(caseId);
-          this.updateBluedogCaseStatus(openedCase.bluedogCaseRef);
-          this.props.selectSecondaryItem("Cases");
-          this.props.history.push(
-            `/cms/rehab/case/${openedCase.bluedogCaseRef}`
+  selectCase = async openedCase => {
+    if (this.caseHasValidDetails(openedCase)) {
+      const injuredPartyDetails = await this.getInjuredPartyDetails(openedCase);
+      if (
+        injuredPartyDetails !== null &&
+        this.caseHasValidDetails(injuredPartyDetails)
+      ) {
+        this.showLoadingModal();
+        if (isObjectValid(injuredPartyDetails)) {
+          const caseId = await this.createCaseIfDoesntExist(
+            injuredPartyDetails
           );
-        });
-        this.setState({
-          showErrorModal: false,
-          errorMessage: null
-        });
-      }
+          if (caseId !== undefined) {
+            await this.getCase(caseId);
+            this.updateBluedogCaseStatus(openedCase.bluedogCaseRef);
+            this.hideErrorMessage();
+            this.goToCase(openedCase.bluedogCaseRef);
+          } else {
+            this.props.showErrorModal();
+            this.hideLoadingModal();
+          }
+        } else {
+          this.showErrorMessage(
+            "The Bluedog case does not have all the relevant fields for a case to be created."
+          );
+        }
+      } else this.showInvalidCaseModal();
+    } else this.showInvalidCaseModal();
+  };
+
+  caseHasValidDetails = openedCase => {
+    return (
+      openedCase.instructingParty !== null &&
+      (openedCase.instructingParty !== "" && openedCase.firstName !== null) &&
+      (openedCase.firstName !== "" && openedCase.lastName !== null) &&
+      openedCase.lastName !== ""
+    );
+  };
+
+  goToCase = bluedogCaseRef => {
+    this.props.selectSecondaryItem("Cases");
+    this.props.history.push(`/cms/rehab/case/${bluedogCaseRef}`);
+  };
+
+  showInvalidCaseModal = () => {
+    this.setState({ showInvalidCaseModal: true });
+  };
+
+  showLoadingModal = () => {
+    this.setState({ showLoadingModal: true });
+  };
+
+  showErrorMessage = message => {
+    this.setState({
+      showErrorModal: true,
+      errorMessage: message
+    });
+  };
+
+  hideErrorMessage = () => {
+    this.setState({
+      showErrorModal: false,
+      errorMessage: null
     });
   };
 
@@ -120,25 +191,35 @@ class NewCases extends Component {
             <CaseList cases={cases} selectCase={this.selectCase} />
           </Col>
         </Row>
-        <ErrorModal
-          isModalOpen={this.state.showErrorModal}
-          closeModal={() =>
-            this.setState({ showErrorModal: false, errorMessage: null })
-          }
-          errorMessage={this.state.errorMessage}
-        />
+        <LoadingModal isModalOpen={this.state.showLoadingModal} />
+        <Modal
+          isModalOpen={this.state.showInvalidCaseModal}
+          title="Invalid Case Details"
+          message="This case has invalid details and cannot be worked on"
+        >
+          <ButtonContainer justifyContent="flex-end">
+            <Button
+              content="Close"
+              secondary
+              onClick={() => this.setState({ showInvalidCaseModal: false })}
+            />
+          </ButtonContainer>
+        </Modal>
       </Container>
     );
   }
 }
 const mapDispatchToProps = dispatch => ({
-  selectBluedogCase: selectedCase => dispatch(selectBluedogCase(selectedCase)),
-  selectSecondaryItem: menuItem => dispatch(selectSecondaryItem(menuItem)),
+  updateMi3dCaseId: caseId => dispatch(updateMi3dCaseId(caseId)),
   updateMi3dCase: selectedCase => dispatch(updateMi3dCase(selectedCase)),
-  updateMi3dCaseId: caseId => dispatch(updateMi3dCaseId(caseId))
+  selectSecondaryItem: menuItem => dispatch(selectSecondaryItem(menuItem)),
+  selectBluedogCase: selectedCase => dispatch(selectBluedogCase(selectedCase)),
+  clearSelectedCases: () => dispatch(clearSelectedCases())
 });
 
-export default connect(
-  null,
-  mapDispatchToProps
-)(NewCases);
+export default withErrorHandling(
+  connect(
+    null,
+    mapDispatchToProps
+  )(NewCases)
+);

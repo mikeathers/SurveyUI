@@ -1,0 +1,45 @@
+@import "../../../../../../styles/abstracts/mixins.scss";
+@import "../../../../../../styles/abstracts/variables.scss";
+
+.chase-complete-modal {
+  @include modal;
+
+  top: 15%;
+
+  &__title {
+    margin: 0 0 10px 0;
+    font-weight: 300;
+    height: 30px;
+  }
+
+  &__body {
+    margin: 0 0 15px 0;
+    min-height: 50px;
+    padding: 5px;
+
+    & p {
+      font-size: 15px !important;
+      font-weight: 300;
+    }
+  }
+
+  &__description {
+    display: flex;
+    margin-bottom: 5px;
+    & p:first-of-type {
+      margin-right: 5px;
+    }
+  }
+
+  &__course-duration {
+    margin-left: 10px;
+  }
+
+  &__surpress-correspondence {
+    margin-left: 15px;
+  }
+}
+
+.chase-complete-modal--initial {
+  top: 30%;
+}

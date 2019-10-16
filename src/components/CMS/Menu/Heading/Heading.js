@@ -4,7 +4,7 @@ import "./Heading.scss";
 
 const Heading = props => (
   <div className="menu-heading">
-    <h3>{props.heading}</h3>
+    <h4>{props.heading}</h4>
     <hr />
   </div>
 );

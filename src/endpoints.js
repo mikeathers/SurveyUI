@@ -1,4 +1,4 @@
-export const env = "dev";
+export const env = undefined;
 
 export const dev = {
   MI3D_API_URL: "http://premex.microservices.mi3d.cases-dev.expedia.org/api/",
@@ -13,7 +13,7 @@ export const qa = {
   MI3D_API_URL: "http://premex.microservices.mi3d.cases-qa.expedia.org/api/",
   BLUEDOG_API_URL: "http://premex.bluedog.repository-qa.expedia.org/api/",
   DOCUMENT_BUILDER_API_URL:
-    "http://premex.microservices.documentbuilder-qa.expedia.org/api/",
+    "http://premex.microservices.documentbuilder.expedia.org/api/",
   EMAIL_MANAGEMENT_API_URL:
     "http://premex.microservices.emailmanagement-qa.expedia.org/api/"
 };
@@ -33,6 +33,12 @@ export const getBluedogEndpoint = environment => {
 
   if (environment !== undefined && environment === "dev")
     return dev.BLUEDOG_API_URL;
+
+  if (environment !== undefined && environment === "qa")
+    return qa.BLUEDOG_API_URL;
+
+  if (environment !== undefined && environment === "prod")
+    return prod.BLUEDOG_API_URL;
 
   switch (process.env.REACT_APP_ENV) {
     case "DEVELOPMENT":
@@ -54,6 +60,9 @@ export const getCasesEndpoint = environment => {
     return dev.MI3D_API_URL;
 
   if (environment !== undefined && environment === "qa") return qa.MI3D_API_URL;
+
+  if (environment !== undefined && environment === "prod")
+    return prod.MI3D_API_URL;
 
   switch (process.env.REACT_APP_ENV) {
     case "DEVELOPMENT":
@@ -77,6 +86,9 @@ export const getDocumentBuilderEndpoint = environment => {
   if (environment !== undefined && environment === "qa")
     return qa.DOCUMENT_BUILDER_API_URL;
 
+  if (environment !== undefined && environment === "prod")
+    return prod.DOCUMENT_BUILDER_API_URL;
+
   switch (process.env.REACT_APP_ENV) {
     case "DEVELOPMENT":
       return dev.DOCUMENT_BUILDER_API_URL;
@@ -90,11 +102,17 @@ export const getDocumentBuilderEndpoint = environment => {
 };
 
 export const getEmailManagementEndpoint = environment => {
-  // if (environment !== undefined && environment === "local")
-  //   return "http://localhost:50601/api/";
+  if (environment !== undefined && environment === "local")
+    return "http://localhost:51545/api/";
 
   if (environment !== undefined && environment === "dev")
     return dev.EMAIL_MANAGEMENT_API_URL;
+
+  if (environment !== undefined && environment === "qa")
+    return qa.EMAIL_MANAGEMENT_API_URL;
+
+  if (environment !== undefined && environment === "prod")
+    return prod.EMAIL_MANAGEMENT_API_URL;
 
   switch (process.env.REACT_APP_ENV) {
     case "DEVELOPMENT":

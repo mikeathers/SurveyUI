@@ -1,0 +1,28 @@
+@import "../../../../../styles/abstracts/variables.scss";
+@import "../../../../../styles/abstracts/mixins.scss";
+
+.case-locked-modal {
+  @include modal;
+
+  &__title {
+    margin: 0 0 10px 0;
+    font-weight: 300;
+    height: 30px;
+  }
+
+  &__body {
+    margin: 0 0 15px 0;
+    word-break: break-all;
+    min-height: 50px;
+    padding: 5px 15px;
+
+    & p {
+      font-size: 15px !important;
+      font-weight: 300;
+    }
+  }
+
+  &__course-duration {
+    margin-left: 10px;
+  }
+}

@@ -8,7 +8,7 @@ const sModal = props => {
     <Modal
       ariaHideApp={false}
       isOpen={props.isModalOpen}
-      contentLabel="Default Modal"
+      contentLabel="Error Modal"
       className="error-modal"
     >
       <div className="error-modal__header">
@@ -17,15 +17,15 @@ const sModal = props => {
       <hr />
       <div className="error-modal__body">
         <p>
-          {props.errorMessage !== null
-            ? props.errorMessage
-            : "An error has occured whilst processing this request, please try again later or contact the System Administrator."}
+          An error has occured whilst processing this request, please try again
+          later or contact the System Administrator.
         </p>
       </div>
       <hr />
       <div className="error-modal__footer">
         <ButtonContainer marginTop="25" justifyContent="flex-end">
           <Button content="Close" secondary onClick={props.closeModal} />
+          <Button content="Back to Cases" primary onClick={props.backToCases} />
         </ButtonContainer>
       </div>
     </Modal>

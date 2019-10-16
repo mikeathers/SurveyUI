@@ -3,10 +3,12 @@ import { TextArea as Text } from "semantic-ui-react";
 
 const TextArea = props => {
   const style = {
-    border: props.valid === "false" ? "1px solid red" : "",
-    borderRadius: "3px"
+    borderRadius: "3px",
+    marginRight: `${props.marginright}px`,
+    width: `${props.width}%`
   };
-  return <Text style={style} {...props} />;
+  const className = props.valid === "false" ? "validate" : props.className;
+  return <Text className={className} style={style} {...props} />;
 };
 
 export { TextArea };

@@ -4,3 +4,4 @@ export * from "./surveys";
 export * from "./documents";
 export * from "./email";
 export * from "./bluedog";
+export * from "./chases";

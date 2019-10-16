@@ -26,6 +26,9 @@
     color: $color_white_faded;
     width: 100%;
     display: flex;
+    align-items: center;
+    font-size: 14px !important;
+    font-family: "Roboto";
   }
 }
 
@@ -35,7 +38,7 @@
   border: none;
   border-radius: 3px;
   transition: all 0.3s ease;
-  border-left: $color_primary 1px solid;
+  border-left: $color_mi3d_orange 1px solid;
 
   &:hover {
     background-color: $color_faded_selected;

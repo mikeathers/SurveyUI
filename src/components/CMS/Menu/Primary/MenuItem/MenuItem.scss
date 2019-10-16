@@ -35,17 +35,22 @@
     align-items: center;
     flex-direction: column;
   }
+
+  & p {
+    font-size: 14px !important;
+    font-family: "Roboto";
+  }
 }
 
 .primary-menu-item--selected {
   background-color: $color_premex_green;
-  background-color: $color_primary;
+  background-color: $color_mi3d_orange;
   color: $color_white;
   transition: all 0.3s ease;
 
   &:hover {
     background-color: $color_premex_green;
-    background-color: $color_primary;
+    background-color: $color_mi3d_orange;
     transition: all 0.3s ease;
     color: $color_white;
   }

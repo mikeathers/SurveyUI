@@ -4,7 +4,7 @@ import "./Label.scss";
 
 const Label = props => {
   const style = {
-    width: `${props.width}%`,
+    width: `${props.width}px`,
     marginTop: `${props.marginTop}px`,
     cursor: props.button && "pointer",
     fontWeight: props.thin ? "200" : "500"

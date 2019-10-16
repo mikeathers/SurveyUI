@@ -15,7 +15,8 @@ export default class CaseList extends Component {
         callBackType: callBack.callBackType,
         createdOn: moment(callBack.createdOn),
         createdBy: callBack.createdBy,
-        caseId: callBack.caseId
+        caseId: callBack.caseId,
+        injuredPartyName: callBack.injuredPartyName
       };
     });
     return _.orderBy(callBacksParsed, [m => m.timeToCall], ["asc"]);
@@ -23,29 +24,36 @@ export default class CaseList extends Component {
 
   render() {
     const { callbacks, selectCase } = this.props;
-    const callbacksOrdered = this.orderCallbacks(callbacks);
     return (
-      <DataTable
-        list={callbacksOrdered}
-        selectRow={selectCase}
-        showInactive={this.showInactive}
-        timeSensitiveValue="timeToCall"
-        cols={[
-          {
-            value: "bluedogCaseRef",
-            title: "Case Reference",
-            sortable: true
-          },
-          { value: "callBackType", title: "Type", sortable: true },
-          { value: "timeToCall", title: "Time to Call", sortable: true },
-          {
-            value: "createdBy",
-            title: "Created By",
-            sortable: true
-          },
-          { value: "createdOn", title: "Created On", sortable: false }
-        ]}
-      />
+      <div id="callBacksCaseList">
+        <DataTable
+          id="callBacksDataTable"
+          list={this.orderCallbacks(callbacks)}
+          selectRow={selectCase}
+          showInactive={this.showInactive}
+          timeSensitiveValue="timeToCall"
+          cols={[
+            {
+              value: "injuredPartyName",
+              title: "Injured Party Name",
+              sortable: true
+            },
+            {
+              value: "bluedogCaseRef",
+              title: "Case Reference",
+              sortable: true
+            },
+            { value: "callBackType", title: "Type", sortable: true },
+            { value: "timeToCall", title: "Time to Call", sortable: true },
+            {
+              value: "createdBy",
+              title: "Created By",
+              sortable: true
+            },
+            { value: "createdOn", title: "Created On", sortable: false }
+          ]}
+        />
+      </div>
     );
   }
 }
